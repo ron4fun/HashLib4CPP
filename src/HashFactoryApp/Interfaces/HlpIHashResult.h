@@ -3,6 +3,10 @@
 
 #include "../Utils/HlpHashLibTypes.h"
 
+class IIHashResult;
+
+typedef shared_ptr<IIHashResult> IHashResult;
+
 class IIHashResult
 {
 public:
@@ -14,9 +18,9 @@ public:
 	virtual uint64_t GetUInt64() const = 0;
 	virtual string ToString(const bool a_group = false) const = 0;
 	virtual int32_t GetHashCode() const = 0;
+	virtual bool CompareTo(const IHashResult &a_hashResult) const = 0;
 
 }; // end class IHashResult
 
-typedef shared_ptr<IIHashResult> IHashResult;
 
 #endif // !HLPIHASHRESULT_H

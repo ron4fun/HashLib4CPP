@@ -81,6 +81,11 @@ public:
 		return *this;
 	} // end funcion operator=
 	
+	virtual bool CompareTo(const IHashResult &a_hashResult) const
+	{
+		return HashResult::SlowEquals(a_hashResult->GetBytes(), *hash);
+	} // end function CompareTo
+
 	bool operator==(const HashResult &a_hashResult) const
 	{
 		return HashResult::SlowEquals(a_hashResult.GetBytes(), *hash);
