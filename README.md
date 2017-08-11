@@ -1,5 +1,5 @@
 # HashLib4CPP
-HashLib4CPP is a C++ library that provides an easy to use interface for computing hashes and checksums of strings, files, streams, bytearrays and untyped data to mention but a few.
+HashLib4CPP is a C++11 library that provides an easy to use interface for computing hashes and checksums of strings, files, streams, bytearrays and untyped data to mention but a few.
 It also supports Incremental Hashing.
 
 **Supported Algorithms:**
