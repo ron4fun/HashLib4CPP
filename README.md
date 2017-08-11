@@ -23,7 +23,7 @@ It also supports Incremental Hashing.
     
     PBKDF2_HMAC for any of the above.
 
-**Tested Compilers:**
+**Tested Enviroments:**
      
     Visual Studio 2015.
 
