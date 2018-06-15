@@ -26,6 +26,7 @@ It also supports Incremental Hashing.
 **Tested Enviroments:**
      
     Visual Studio 2015.
+    Visual Studio 2017.
 
     
 **Usage Examples.**
@@ -49,7 +50,7 @@ It also supports Incremental Hashing.
 
  **Unit Tests:**
 To run the unit tests, you should have [boost library](http://www.boost.org/) installed in your workstation.
-
+For VisualStudio, set environment variable BOOST_ROOT to your boost root folder (where the bjam binary is)
 
 ###License
 

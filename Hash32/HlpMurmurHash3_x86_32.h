@@ -52,25 +52,59 @@ public:
 		len = a_length;
 		i = a_index;
 		ptr_a_data = &a_data[0];
-		nBlocks = len >> 2;
+		total_length += len;
+        
+        //consume last pending bytes
+        if (idx && a_length)
+        {
+            /*                       buf    data
+                 idx = 1, len = 3 -> [0, 1[ + [0, 3[ => Block = [], buf []
+                 idx = 1, len = 4 -> [0, 1[ + [0, 3[ => Block = [], buf = data[3, 4[
+                 idx = 1, len = 5 -> [0, 1[ + [0, 3[ => Block = [], buf = data[3, 5[
+                 ...
+                 idx = 1, len = 7 -> [0, 1[ + [0, 3[ => Block = [3,7[, buf []
+                 idx = 2, len = 3 -> [0, 2[ + [0, 2[ => Block = [], buf [2, 3[
+                 idx = 2, len = 4 -> [0, 2[ + [0, 2[ => Block = [], buf [2, 4[
+                 ...
+                 idx = 2, len = 6 -> [0, 2[ + [0, 2[ => Block = [2,6[, buf []
+            */
+            assert(a_index == 0); //nothing would work anyways if a_index is !=0
+
+            while (idx < 4 && len)
+            {
+                (*buf)[idx++] = *(ptr_a_data + a_index);
+                a_index++;
+                len--;
+            }
+            
+            if (idx == 4)
+            {
+                uint8_t *ptr_Fm_buf = &(*buf)[0];
+			    k = Converters::ReadBytesAsUInt32LE(ptr_Fm_buf, 0);
+			    TransformUInt32Fast(k);
+                idx = 0;
+            }
+        }
+
+        nBlocks = (len) >> 2;
+        offset = 0;
 
 		// body
 		while (i < nBlocks)
 		{
-			k = Converters::ReadBytesAsUInt32LE(ptr_a_data, a_index + i * 4);
+			k = Converters::ReadBytesAsUInt32LE(ptr_a_data, a_index + (i * 4));
 			TransformUInt32Fast(k);
 			i++;
 		} // end while
 
-		total_length += len;
-
-		offset = (i * 4);
-
-		while (offset < len)
+        //save pending end bytes
+        offset = a_index + (i * 4);
+		while (offset < (len + a_index))
 		{
 			ByteUpdate(a_data[offset]);
 			offset++;
 		} // end while
+
 	} // end function TransformBytes
 
 	virtual IHashResult TransformFinal()
@@ -117,8 +151,8 @@ private:
 	void Finish()
 	{
 		 register uint32_t k = 0;
-		
-		 // tail
+
+         // tail
 		 if (idx != 0)
 		 {
 			 switch (idx)
