@@ -820,18 +820,33 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
 	IHash hash = HashFactory::Hash32::CreateMurmurHash3_x86_32();
+    string MurMur3Data = "HashLib4Pascal012345678";
+    string MurMur3ExpectedResult = "F378A0E5";
+    int i;
 
-	hash->Initialize();
-	hash->TransformString(DefaultData.substr(0, 3));
-	hash->TransformString(DefaultData.substr(3, 3));
-	hash->TransformString(DefaultData.substr(6, 3));
-	hash->TransformString(DefaultData.substr(9, 3));
-	hash->TransformString(DefaultData.substr(12));
+    int c_chunkSize[] = {1,     //Test many chunk of < sizeof(int)
+                         2,     //Test many chunk of < sizeof(int)
+                         3,     //Test many chunk of < sizeof(int)
+                         4,     //Test many chunk of = sizeof(int)
+                         5,     //Test many chunk of > sizeof(int)
+                         6,     //Test many chunk of > sizeof(int)
+                         7,     //Test many chunk of > sizeof(int)
+                         8,     //Test many chunk of > 2*sizeof(int)
+                         9};    //Test many chunk of > 2*sizeof(int)
+    
+    for(int x = 0; x < sizeof(c_chunkSize)/sizeof(int); x++)
+    {         
+        int size = c_chunkSize[x];
+	    hash->Initialize();
+        for(i=size; i < MurMur3Data.length(); i += size)
+	        hash->TransformString(MurMur3Data.substr(i-size, size));
+	    hash->TransformString(MurMur3Data.substr(i-size));
 
-	string ActualString = hash->TransformFinal()->ToString();
-
-	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+        string ActualString = hash->TransformFinal()->ToString();
+	    BOOST_CHECK(MurMur3ExpectedResult == ActualString);
+    }
 }
+
 
 BOOST_AUTO_TEST_CASE(TestRandomString)
 {
