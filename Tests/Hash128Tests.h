@@ -62,16 +62,37 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
 	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x64_128();
 
-	hash->Initialize();
-	hash->TransformString(DefaultData.substr(0, 3));
-	hash->TransformString(DefaultData.substr(3, 3));
-	hash->TransformString(DefaultData.substr(6, 3));
-	hash->TransformString(DefaultData.substr(9, 3));
-	hash->TransformString(DefaultData.substr(12));
+    string MurMur3Data = "HashLib4Pascal012345678HashLib4Pascal012345678HashLib4Pascal012345678HashLib4Pascal012345678";
+    string MurMur3ExpectedResult = "380BB6EFADE13DFBA82A58BE1BBC60E9";
+    int i;
 
-	string ActualString = hash->TransformFinal()->ToString();
+    int c_chunkSize[] = { 1,         //Test many chunk of < sizeof(int128)
+                         2,          //Test many chunk of < sizeof(int128)
+                         29,         //Test many chunk of < sizeof(int128)
+                         30,         //Test many chunk of = sizeof(int128)
+                         31,         //Test many chunk of > sizeof(int128)
+                         32,         //Test many chunk of > sizeof(int128)
+                         33,         //Test many chunk of > sizeof(int128)
+                         34,         //Test many chunk of > sizeof(int128)
+                         29 * 2,     //Test many chunk of < sizeof(int128)*2
+                         30 * 2,     //Test many chunk of = sizeof(int128)*2
+                         31 * 2,     //Test many chunk of > sizeof(int128)*2
+                         32 * 2,     //Test many chunk of > sizeof(int128)*2
+                         33 * 2,     //Test many chunk of > sizeof(int128)*2
+                         34 * 2 };   //Test many chunk of > sizeof(int128)*2
+    
+    for(int x = 0; x < sizeof(c_chunkSize)/sizeof(int); x++)
+    {         
+        int size = c_chunkSize[x];
+	    hash->Initialize();
+        for(i=size; i < MurMur3Data.length(); i += size)
+	        hash->TransformString(MurMur3Data.substr(i-size, size));
+	    hash->TransformString(MurMur3Data.substr(i-size));
 
-	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+        string ActualString = hash->TransformFinal()->ToString();
+	    BOOST_CHECK(MurMur3ExpectedResult == ActualString);
+    }
+
 }
 
 BOOST_AUTO_TEST_CASE(TestZerotoFour)
@@ -145,16 +166,36 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
 	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x86_128();
 
-	hash->Initialize();
-	hash->TransformString(DefaultData.substr(0, 3));
-	hash->TransformString(DefaultData.substr(3, 3));
-	hash->TransformString(DefaultData.substr(6, 3));
-	hash->TransformString(DefaultData.substr(9, 3));
-	hash->TransformString(DefaultData.substr(12));
+    string MurMur3Data = "HashLib4Pascal012345678HashLib4Pascal012345678HashLib4Pascal012345678HashLib4Pascal012345678";
+    string MurMur3ExpectedResult = "CE383F71F9B801A4C03634DAB47ACC7A";
+    int i;
 
-	string ActualString = hash->TransformFinal()->ToString();
+    int c_chunkSize[] = { 1,         //Test many chunk of < sizeof(int128)
+                         2,          //Test many chunk of < sizeof(int128)
+                         29,         //Test many chunk of < sizeof(int128)
+                         30,         //Test many chunk of = sizeof(int128)
+                         31,         //Test many chunk of > sizeof(int128)
+                         32,         //Test many chunk of > sizeof(int128)
+                         33,         //Test many chunk of > sizeof(int128)
+                         34,         //Test many chunk of > sizeof(int128)
+                         29 * 2,     //Test many chunk of < sizeof(int128)*2
+                         30 * 2,     //Test many chunk of = sizeof(int128)*2
+                         31 * 2,     //Test many chunk of > sizeof(int128)*2
+                         32 * 2,     //Test many chunk of > sizeof(int128)*2
+                         33 * 2,     //Test many chunk of > sizeof(int128)*2
+                         34 * 2 };   //Test many chunk of > sizeof(int128)*2
+    
+    for(int x = 0; x < sizeof(c_chunkSize)/sizeof(int); x++)
+    {         
+        int size = c_chunkSize[x];
+	    hash->Initialize();
+        for(i=size; i < MurMur3Data.length(); i += size)
+	        hash->TransformString(MurMur3Data.substr(i-size, size));
+	    hash->TransformString(MurMur3Data.substr(i-size));
 
-	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+        string ActualString = hash->TransformFinal()->ToString();
+	    BOOST_CHECK(MurMur3ExpectedResult == ActualString);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(TestZerotoFour)

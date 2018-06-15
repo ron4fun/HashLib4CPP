@@ -72,20 +72,38 @@ public:
 		len = a_length;
 		i = a_index;
 		lIdx = 0;
-		nBlocks = len >> 4;
-
+		total_length += len;
 		ptr_a_data = &a_data[0];
+
+        //consume last pending bytes
+        if (idx && len)
+        {
+            assert(a_index == 0); //nothing would work anyways if a_index is !=0
+
+            while (idx < 16 && len)
+            {
+                (*buf)[idx++] = *(ptr_a_data + a_index);
+                a_index++;
+                len--;
+            }
+            
+            if (idx == 16)
+                ProcessPenginds();
+        }
+
+		nBlocks = len >> 4;
+        offset = 0;
 
 		// body
 		while (i < nBlocks)
 		{
-			k1 = Converters::ReadBytesAsUInt32LE(ptr_a_data, lIdx);
+			k1 = Converters::ReadBytesAsUInt32LE(ptr_a_data, a_index + lIdx);
 			lIdx += 4;
-			k2 = Converters::ReadBytesAsUInt32LE(ptr_a_data, lIdx);
+			k2 = Converters::ReadBytesAsUInt32LE(ptr_a_data, a_index + lIdx);
 			lIdx += 4;
-			k3 = Converters::ReadBytesAsUInt32LE(ptr_a_data, lIdx);
+			k3 = Converters::ReadBytesAsUInt32LE(ptr_a_data, a_index + lIdx);
 			lIdx += 4;
-			k4 = Converters::ReadBytesAsUInt32LE(ptr_a_data, lIdx);
+			k4 = Converters::ReadBytesAsUInt32LE(ptr_a_data, a_index + lIdx);
 			lIdx += 4;
 
 			k1 = k1 * C1;
@@ -131,11 +149,8 @@ public:
 			i++;
 		} // end if
 
-		total_length += len;
-
-		offset = (i * 16);
-
-		while (offset < len)
+		offset = a_index + (i * 16);
+		while (offset < (a_index + len))
 		{
 			ByteUpdate(a_data[offset]);
 			offset++;
@@ -145,11 +160,16 @@ public:
 private:
 	void ByteUpdate(const uint8_t a_b)
 	{
+		(*buf)[idx] = a_b;
+		idx++;
+        ProcessPenginds();
+    }
+
+    void ProcessPenginds()
+    {
 		register uint32_t k1, k2, k3, k4;
 		uint8_t *ptr_Fm_buf = 0;
 		
-		(*buf)[idx] = a_b;
-		idx++;
 		if (idx >= 16)
 		{
 			ptr_Fm_buf = &(*buf)[0];
