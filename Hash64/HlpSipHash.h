@@ -60,25 +60,53 @@ public:
 		register int32_t i, Length, iter, offset;
 		const uint8_t *ptr_a_data = &a_data[a_index];
 
-	
+
 		Length = a_length;
 		i = a_index;
 
+		total_length += Length;
+
+		// consume last pending bytes
+
+		if ((idx != 0) && (a_length != 0))
+		{
+			#ifdef DEBUG
+
+			assert(a_index == 0); // nothing would work anyways if a_index is !=0
+
+			#endif // DEBUG
+
+			while ((idx < 8) && (Length != 0))
+			{
+				(*buf)[idx] = *(ptr_a_data + a_index);
+				idx++;
+				a_index++;
+				Length--;
+			}
+			if (idx == 8)
+			{
+				uint8_t *ptr_Fm_buf = &(*buf)[0];
+				m = Converters::ReadBytesAsUInt64LE(ptr_Fm_buf, 0);
+				ProcessBlock(m);
+				idx = 0;
+			}
+		}
+
 		iter = Length >> 3;
+
+		// body
 
 		while (i < iter)
 		{
-			m = Converters::ReadBytesAsUInt64LE(ptr_a_data, i * 8);
+			m = Converters::ReadBytesAsUInt64LE(ptr_a_data, a_index + (i * 8));
 			ProcessBlock(m);
-			m = 0;
 			i++;
 		} // end while
 
-		total_length += Length;
+		  // save pending end bytes
+		offset = a_index + (i * 8);
 
-		offset = (i * 8);
-
-		while (offset < Length)
+		while (offset < (Length + a_index))
 		{
 			ByteUpdate(a_data[offset]);
 			offset++;
