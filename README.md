@@ -55,3 +55,12 @@ For VisualStudio, set environment variable BOOST_ROOT to your boost root folder 
 ###License
 
 This "Software" is Licensed Under  **`MIT License (MIT)`** .
+
+#### Tip Jar
+* :dollar: **Bitcoin**: `1Mcci95WffSJnV6PsYG7KD1af1gDfUvLe6`
+
+
+Conclusion
+--------------------------------------------------
+
+   Special thanks to [Xor-el](https://github.com/xor-el) for making this library avialable in the first place.
