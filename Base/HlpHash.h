@@ -164,80 +164,83 @@ public:
 	virtual void TransformStream(ifstream &a_stream, const int64_t a_length = -1)
 	{
 		int32_t readed = 0, LBufferSize;
-		uint64_t size;
+		uint64_t size, new_size;
 		int64_t total;
 
 		total = 0;
 		size = GetStreamSize(a_stream);
+
 		if (a_stream)
 		{
 			if (a_length > -1)
 			{
-				if (uint64_t(a_stream.peek() + a_length) > size)
+				if (uint64_t(a_stream.tellg() + a_length) > size)
 					throw IndexOutOfRangeHashLibException(Hash::IndexOutOfRange);
 			} // end if
 
-			if (a_stream.peek() >= size)
+			if (a_stream.tellg() >= size)
 				return;
 		} // end if
 		else
 			throw ArgumentNilHashLibException(Hash::UnAssignedStream);
 
 
-		if (buffer_size > size) // Sanity Check
-			LBufferSize = BUFFER_SIZE;
+		if (size > BUFFER_SIZE)
+		{
+			if (a_length == -1) LBufferSize = BUFFER_SIZE;
+			else
+			{
+				LBufferSize = a_length > BUFFER_SIZE ? BUFFER_SIZE : a_length;
+			}
+		}
 		else
-			LBufferSize = buffer_size;
-
+		{
+			LBufferSize = a_length == -1 ? size : a_length;
+		}	
 
 		HashLibByteArray data = HashLibByteArray(LBufferSize);
-		int32_t init_pos;
-		int32_t end_pos;
 
-		//readed = end_pos - init_pos;
-		if (a_length == -1)
+		if (LBufferSize == BUFFER_SIZE)
 		{
 			while (true)
 			{
-				init_pos = int32_t(a_stream.tellg());
-				a_stream.readsome((char*)&data[0], LBufferSize);
-				end_pos = int32_t(a_stream.tellg());
-				readed = end_pos - init_pos;
+				a_stream.read((char*)&data[0], LBufferSize);
 
-				if (readed != LBufferSize)
+				readed = a_stream.gcount();
+				if (readed != BUFFER_SIZE)
 				{
-					TransformBytes(data, 0, readed);
-					break;
-				} // end if
-				else
-				{
-					TransformBytes(data, 0, readed);
-					total = total + readed;
-				} // end else
-			} // end while
-		} // end if
-		else
-		{
-			while (true)
-			{
-				init_pos = int32_t(a_stream.tellg());
-				a_stream.readsome((char*)&data[0], LBufferSize);
-				end_pos = int32_t(a_stream.tellg());
-				readed = end_pos - init_pos;
+					data.resize(readed);
 
-				if ((total + int64_t(readed)) >= a_length)
-				{
-					TransformBytes(data, 0, int32_t(a_length - total));
+					TransformBytes(data, 0, readed);
+
 					break;
 				}
-				else
+					
+				if (readed == 0) break;
+
+				total = total + readed;
+
+				TransformBytes(data, 0, readed);
+
+				if (a_length != -1 && a_length - total <= BUFFER_SIZE)
 				{
-					TransformBytes(data, 0, readed);
-					total = total + readed;
-				} // end else
+					new_size = a_length - total;
+					data.resize(new_size);
+
+					a_stream.read((char*)&data[0], new_size);
+
+					TransformBytes(data, 0, new_size);
+					break;
+				}
+			
 			} // end while
-		} // end else
-		
+		}
+		else
+		{
+			a_stream.read((char*)&data[0], LBufferSize);
+
+			TransformBytes(data, 0, LBufferSize);
+		}		
 	} // end function TransformStream
 
 	virtual void TransformFile(const string &a_file_name,
