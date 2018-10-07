@@ -37,6 +37,7 @@ It also supports **Incremental Hashing**, **Cloning** and **NullDigest**.
     int main()
     {
         IHash hash = HashFactory::Crypto::CreateMD5();
+			
 		IHash clone = hash->Clone();
 
         IHMAC hmac = HashFactory::HMAC::CreateHMAC(hash);
