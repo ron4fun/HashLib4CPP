@@ -28,6 +28,20 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		DEK HashInstance;
+
+		HashInstance = DEK();
+	
+		HashInstance._list = _list;
+		
+		IHash hash = make_shared<DEK>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 protected:
 	virtual IHashResult ComputeAggregatedBytes(const HashLibByteArray &a_data)
 	{

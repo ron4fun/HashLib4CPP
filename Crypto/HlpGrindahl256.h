@@ -27,35 +27,31 @@ public:
 	{
 		name = __func__;
 
-		state = shared_ptr<uint32_t>(new uint32_t[13], default_delete<uint32_t[]>());
-		temp = shared_ptr<uint32_t>(new uint32_t[13], default_delete<uint32_t[]>());
-		
-		if (initialized != 'I')
-		{
-			memmove(table_0.get(), master_table, 256 * sizeof(uint32_t));
-
-			CalcTable(1, table_1.get());
-			CalcTable(2, table_2.get());
-			CalcTable(3, table_3.get());
-
-			initialized = 'I';
-		} // end if
+		state.resize(13);
+		temp.resize(13);
+	
 	} // end constructor
 
-	~Grindahl256()
+	virtual IHash Clone() const
 	{
-		//delete[] state;
-		//delete[] temp;
-		//delete[] table_0;
-		//delete[] table_1;
-		//delete[] table_2;
-		//delete[] table_3;
-	} // end destructor
+		Grindahl256 HashInstance;
+
+		HashInstance = Grindahl256();
+		HashInstance.state = state;
+		HashInstance.temp = temp;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Grindahl256>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
-		memset(state.get(), 0, 13 * sizeof(uint32_t));
-		memset(temp.get(), 0, 13 * sizeof(uint32_t));
+		memset(&state[0], 0, 13 * sizeof(uint32_t));
+		memset(&temp[0], 0, 13 * sizeof(uint32_t));
 
 		BlockHash::Initialize();
 	} // end function Initialize
@@ -76,9 +72,9 @@ protected:
 
 		TransformBytes(pad, 0, padding_size - 4);
 
-		state.get()[0] = Converters::ReadBytesAsUInt32LE(&pad[0], padding_size - 4);
+		state[0] = Converters::ReadBytesAsUInt32LE(&pad[0], padding_size - 4);
 
-		state.get()[0] = Converters::be2me_32(state.get()[0]);
+		state[0] = Converters::be2me_32(state[0]);
 
 		InjectMsg(true);
 
@@ -93,7 +89,7 @@ protected:
 	{
 		HashLibByteArray result = HashLibByteArray(8 * sizeof(uint32_t));
 
-		Converters::be32_copy(state.get() + 5, 0, &result[0], 0, (int32_t)result.size());
+		Converters::be32_copy(&state[0] + 5, 0, &result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult
@@ -101,9 +97,9 @@ protected:
 	virtual void TransformBlock(const uint8_t *a_data,
 		const int32_t a_data_length, const int32_t a_index)
 	{
-		state.get()[0] = Converters::ReadBytesAsUInt32LE(a_data, a_index);
+		state[0] = Converters::ReadBytesAsUInt32LE(a_data, a_index);
 
-		state.get()[0] = Converters::be2me_32(state.get()[0]);
+		state[0] = Converters::be2me_32(state[0]);
 
 		InjectMsg(false);
 	} // end function TransformBlock
@@ -120,87 +116,98 @@ private:
 
 	inline void InjectMsg(const bool a_full_process)
 	{
-		state.get()[12] = state.get()[12] ^ 0x01;
+		state[12] = state[12] ^ 0x01;
 
 		if (a_full_process)
-			temp.get()[0] = table_0.get()[uint8_t(state.get()[12] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[11] >> 16)] ^ table_2.get()[uint8_t(state.get()[9] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[3])];
+			temp[0] = table_0[uint8_t(state[12] >> 24)] ^ table_1
+			[uint8_t(state[11] >> 16)] ^ table_2[uint8_t(state[9] >> 8)
+			] ^ table_3[uint8_t(state[3])];
 
-		temp.get()[1] = table_0.get()[uint8_t(state.get()[0] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[12] >> 16)] ^ table_2.get()[uint8_t(state.get()[10] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[4])];
+		temp[1] = table_0[uint8_t(state[0] >> 24)] ^ table_1
+			[uint8_t(state[12] >> 16)] ^ table_2[uint8_t(state[10] >> 8)
+			] ^ table_3[uint8_t(state[4])];
 
-		temp.get()[2] = table_0.get()[uint8_t(state.get()[1] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[0] >> 16)] ^ table_2.get()[uint8_t(state.get()[11] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[5])];
+		temp[2] = table_0[uint8_t(state[1] >> 24)] ^ table_1
+			[uint8_t(state[0] >> 16)] ^ table_2[uint8_t(state[11] >> 8)
+			] ^ table_3[uint8_t(state[5])];
 
-		temp.get()[3] = table_0.get()[uint8_t(state.get()[2] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[1] >> 16)] ^ table_2.get()[uint8_t(state.get()[12] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[6])];
+		temp[3] = table_0[uint8_t(state[2] >> 24)] ^ table_1
+			[uint8_t(state[1] >> 16)] ^ table_2[uint8_t(state[12] >> 8)
+			] ^ table_3[uint8_t(state[6])];
 
-		temp.get()[4] = table_0.get()[uint8_t(state.get()[3] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[2] >> 16)] ^ table_2.get()[uint8_t(state.get()[0] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[7])];
+		temp[4] = table_0[uint8_t(state[3] >> 24)] ^ table_1
+			[uint8_t(state[2] >> 16)] ^ table_2[uint8_t(state[0] >> 8)
+			] ^ table_3[uint8_t(state[7])];
 
-		temp.get()[5] = table_0.get()[uint8_t(state.get()[4] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[3] >> 16)] ^ table_2.get()[uint8_t(state.get()[1] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[8])];
+		temp[5] = table_0[uint8_t(state[4] >> 24)] ^ table_1
+			[uint8_t(state[3] >> 16)] ^ table_2[uint8_t(state[1] >> 8)
+			] ^ table_3[uint8_t(state[8])];
 
-		temp.get()[6] = table_0.get()[uint8_t(state.get()[5] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[4] >> 16)] ^ table_2.get()[uint8_t(state.get()[2] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[9])];
+		temp[6] = table_0[uint8_t(state[5] >> 24)] ^ table_1
+			[uint8_t(state[4] >> 16)] ^ table_2[uint8_t(state[2] >> 8)
+			] ^ table_3[uint8_t(state[9])];
 
-		temp.get()[7] = table_0.get()[uint8_t(state.get()[6] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[5] >> 16)] ^ table_2.get()[uint8_t(state.get()[3] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[10])];
+		temp[7] = table_0[uint8_t(state[6] >> 24)] ^ table_1
+			[uint8_t(state[5] >> 16)] ^ table_2[uint8_t(state[3] >> 8)
+			] ^ table_3[uint8_t(state[10])];
 
-		temp.get()[8] = table_0.get()[uint8_t(state.get()[7] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[6] >> 16)] ^ table_2.get()[uint8_t(state.get()[4] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[11])];
+		temp[8] = table_0[uint8_t(state[7] >> 24)] ^ table_1
+			[uint8_t(state[6] >> 16)] ^ table_2[uint8_t(state[4] >> 8)
+			] ^ table_3[uint8_t(state[11])];
 
-		temp.get()[9] = table_0.get()[uint8_t(state.get()[8] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[7] >> 16)] ^ table_2.get()[uint8_t(state.get()[5] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[12])];
+		temp[9] = table_0[uint8_t(state[8] >> 24)] ^ table_1
+			[uint8_t(state[7] >> 16)] ^ table_2[uint8_t(state[5] >> 8)
+			] ^ table_3[uint8_t(state[12])];
 
-		temp.get()[10] = table_0.get()[uint8_t(state.get()[9] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[8] >> 16)] ^ table_2.get()[uint8_t(state.get()[6] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[0])];
+		temp[10] = table_0[uint8_t(state[9] >> 24)] ^ table_1
+			[uint8_t(state[8] >> 16)] ^ table_2[uint8_t(state[6] >> 8)
+			] ^ table_3[uint8_t(state[0])];
 
-		temp.get()[11] = table_0.get()[uint8_t(state.get()[10] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[9] >> 16)] ^ table_2.get()[uint8_t(state.get()[7] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[1])];
+		temp[11] = table_0[uint8_t(state[10] >> 24)] ^ table_1
+			[uint8_t(state[9] >> 16)] ^ table_2[uint8_t(state[7] >> 8)
+			] ^ table_3[uint8_t(state[1])];
 
-		temp.get()[12] = table_0.get()[uint8_t(state.get()[11] >> 24)] ^ table_1.get()
-			[uint8_t(state.get()[10] >> 16)] ^ table_2.get()[uint8_t(state.get()[8] >> 8)
-			] ^ table_3.get()[uint8_t(state.get()[2])];
+		temp[12] = table_0[uint8_t(state[11] >> 24)] ^ table_1
+			[uint8_t(state[10] >> 16)] ^ table_2[uint8_t(state[8] >> 8)
+			] ^ table_3[uint8_t(state[2])];
 
-		//uint32_t *u = temp.get();
-		//temp.get() = state.get();
+		
 		::swap(temp, state);
-		//state.get() = u;
 
 	} // end function InjectMsg
 
+	static char initializedStaticLoader()
+	{
+		memmove(&table_0[0], master_table, 256 * sizeof(uint32_t));
+
+		CalcTable(1, &table_1[0]);
+		CalcTable(2, &table_2[0]);
+		CalcTable(3, &table_3[0]);
+
+		return 'I';
+	}
+
 private:
-	shared_ptr<uint32_t> state;
-	shared_ptr<uint32_t> temp;
+	HashLibUInt32Array state;
+	HashLibUInt32Array temp;
 
 	static char initialized;
-	static shared_ptr<uint32_t> table_0;
-	static shared_ptr<uint32_t> table_1;
-	static shared_ptr<uint32_t> table_2;
-	static shared_ptr<uint32_t> table_3;
+	static HashLibUInt32Array table_0;
+	static HashLibUInt32Array table_1;
+	static HashLibUInt32Array table_2;
+	static HashLibUInt32Array table_3;
 	
 	static const uint32_t master_table[256];
 
 }; // end class Grindahl256
 
-char Grindahl256::initialized = 0;
-shared_ptr<uint32_t> Grindahl256::table_0 = shared_ptr<uint32_t>(new uint32_t[256], default_delete<uint32_t[]>());
-shared_ptr<uint32_t> Grindahl256::table_1 = shared_ptr<uint32_t>(new uint32_t[256], default_delete<uint32_t[]>());
-shared_ptr<uint32_t> Grindahl256::table_2 = shared_ptr<uint32_t>(new uint32_t[256], default_delete<uint32_t[]>());
-shared_ptr<uint32_t> Grindahl256::table_3 = shared_ptr<uint32_t>(new uint32_t[256], default_delete<uint32_t[]>());
+
+HashLibUInt32Array Grindahl256::table_0 = HashLibUInt32Array(256);
+HashLibUInt32Array Grindahl256::table_1 = HashLibUInt32Array(256);
+HashLibUInt32Array Grindahl256::table_2 = HashLibUInt32Array(256);
+HashLibUInt32Array Grindahl256::table_3 = HashLibUInt32Array(256);
+
+char Grindahl256::initialized = Grindahl256::initializedStaticLoader();
 
 const uint32_t Grindahl256::master_table[256] = {0xC66363A5, 0xF87C7C84,
 	0xEE777799, 0xF67B7B8D, 0xFFF2F20D, 0xD66B6BBD, 0xDE6F6FB1, 0x91C5C554,
@@ -246,5 +253,6 @@ const uint32_t Grindahl256::master_table[256] = {0xC66363A5, 0xF87C7C84,
 	0x09898980, 0x1A0D0D17, 0x65BFBFDA, 0xD7E6E631, 0x844242C6, 0xD06868B8,
 	0x824141C3, 0x299999B0, 0x5A2D2D77, 0x1E0F0F11, 0x7BB0B0CB, 0xA85454FC,
 	0x6DBBBBD6, 0x2C16163A};
+
 
 #endif // !HLPHLPGRINDAHL256_H

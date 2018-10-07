@@ -27,23 +27,32 @@ public:
 	{
 		name = __func__;
 
-		hash = shared_ptr<uint32_t>(new uint32_t[5], default_delete<uint32_t[]>());
-		data = shared_ptr<uint32_t>(new uint32_t[20], default_delete<uint32_t[]>());
+		hash.resize(5);
+		data.resize(20);
 	} // end constructor
 
-	~HAS160()
+	virtual IHash Clone() const
 	{
-		//delete[] hash;
-		//delete[] data;
-	} // end destructor
+		HAS160 HashInstance;
+
+		HashInstance = HAS160();
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<HAS160>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
-		hash.get()[0] = 0x67452301;
-		hash.get()[1] = 0xEFCDAB89;
-		hash.get()[2] = 0x98BADCFE;
-		hash.get()[3] = 0x10325476;
-		hash.get()[4] = 0xC3D2E1F0;
+		hash[0] = 0x67452301;
+		hash[1] = 0xEFCDAB89;
+		hash[2] = 0x98BADCFE;
+		hash[3] = 0x10325476;
+		hash[4] = 0xC3D2E1F0;
 
 		BlockHash::Initialize();
 	} // end function Initialize
@@ -77,7 +86,7 @@ protected:
 	{
 		HashLibByteArray result = HashLibByteArray(5 * sizeof(uint32_t));
 
-		Converters::le32_copy(&hash.get()[0], 0, &result[0], 0, (int32_t)result.size());
+		Converters::le32_copy(&hash[0], 0, &result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult
@@ -87,23 +96,23 @@ protected:
 	{
 		register uint32_t A, B, C, D, E, T;
 
-		A = hash.get()[0];
-		B = hash.get()[1];
-		C = hash.get()[2];
-		D = hash.get()[3];
-		E = hash.get()[4];
+		A = hash[0];
+		B = hash[1];
+		C = hash[2];
+		D = hash[3];
+		E = hash[4];
 
-		Converters::le32_copy(a_data, a_index, &data.get()[0], 0, 64);
+		Converters::le32_copy(a_data, a_index, &data[0], 0, 64);
 
-		data.get()[16] = data.get()[0] ^ data.get()[1] ^ data.get()[2] ^ data.get()[3];
-		data.get()[17] = data.get()[4] ^ data.get()[5] ^ data.get()[6] ^ data.get()[7];
-		data.get()[18] = data.get()[8] ^ data.get()[9] ^ data.get()[10] ^ data.get()[11];
-		data.get()[19] = data.get()[12] ^ data.get()[13] ^ data.get()[14] ^ data.get()[15];
+		data[16] = data[0] ^ data[1] ^ data[2] ^ data[3];
+		data[17] = data[4] ^ data[5] ^ data[6] ^ data[7];
+		data[18] = data[8] ^ data[9] ^ data[10] ^ data[11];
+		data[19] = data[12] ^ data[13] ^ data[14] ^ data[15];
 
 		register uint32_t r = 0;
 		while (r < 20)
 		{
-			T = data.get()[index[r]] + (A << rot[r] | A >> tor[r]) + ((B & C) | (~B & D)) + E;
+			T = data[index[r]] + (A << rot[r] | A >> tor[r]) + ((B & C) | (~B & D)) + E;
 			E = D;
 			D = C;
 			C = B << 10 | B >> 22;
@@ -112,15 +121,15 @@ protected:
 			r += 1;
 		} // end while
 
-		data.get()[16] = data.get()[3] ^ data.get()[6] ^ data.get()[9] ^ data.get()[12];
-		data.get()[17] = data.get()[2] ^ data.get()[5] ^ data.get()[8] ^ data.get()[15];
-		data.get()[18] = data.get()[1] ^ data.get()[4] ^ data.get()[11] ^ data.get()[14];
-		data.get()[19] = data.get()[0] ^ data.get()[7] ^ data.get()[10] ^ data.get()[13];
+		data[16] = data[3] ^ data[6] ^ data[9] ^ data[12];
+		data[17] = data[2] ^ data[5] ^ data[8] ^ data[15];
+		data[18] = data[1] ^ data[4] ^ data[11] ^ data[14];
+		data[19] = data[0] ^ data[7] ^ data[10] ^ data[13];
 
 		r = 20;
 		while (r < 40)
 		{
-			T = data.get()[index[r]] + 0x5A827999 + (A << rot[r - 20] | A >> tor[r - 20]) + (B ^ C ^ D) + E;
+			T = data[index[r]] + 0x5A827999 + (A << rot[r - 20] | A >> tor[r - 20]) + (B ^ C ^ D) + E;
 			E = D;
 			D = C;
 			C = B << 17 | B >> 15;
@@ -129,15 +138,15 @@ protected:
 			r += 1;
 		} // end while
 			
-		data.get()[16] = data.get()[5] ^ data.get()[7] ^ data.get()[12] ^ data.get()[14];
-		data.get()[17] = data.get()[0] ^ data.get()[2] ^ data.get()[9] ^ data.get()[11];
-		data.get()[18] = data.get()[4] ^ data.get()[6] ^ data.get()[13] ^ data.get()[15];
-		data.get()[19] = data.get()[1] ^ data.get()[3] ^ data.get()[8] ^ data.get()[10];
+		data[16] = data[5] ^ data[7] ^ data[12] ^ data[14];
+		data[17] = data[0] ^ data[2] ^ data[9] ^ data[11];
+		data[18] = data[4] ^ data[6] ^ data[13] ^ data[15];
+		data[19] = data[1] ^ data[3] ^ data[8] ^ data[10];
 
 		r = 40;
 		while (r < 60)
 		{
-			T = data.get()[index[r]] + 0x6ED9EBA1 + (A << rot[r - 40] | A >> tor[r - 40]) + (C ^ (B | ~D)) + E;
+			T = data[index[r]] + 0x6ED9EBA1 + (A << rot[r - 40] | A >> tor[r - 40]) + (C ^ (B | ~D)) + E;
 			E = D;
 			D = C;
 			C = B << 25 | B >> 7;
@@ -146,15 +155,15 @@ protected:
 			r += 1;
  		} // end while
 	
-		data.get()[16] = data.get()[2] ^ data.get()[7] ^ data.get()[8] ^ data.get()[13];
-		data.get()[17] = data.get()[3] ^ data.get()[4] ^ data.get()[9] ^ data.get()[14];
-		data.get()[18] = data.get()[0] ^ data.get()[5] ^ data.get()[10] ^ data.get()[15];
-		data.get()[19] = data.get()[1] ^ data.get()[6] ^ data.get()[11] ^ data.get()[12];
+		data[16] = data[2] ^ data[7] ^ data[8] ^ data[13];
+		data[17] = data[3] ^ data[4] ^ data[9] ^ data[14];
+		data[18] = data[0] ^ data[5] ^ data[10] ^ data[15];
+		data[19] = data[1] ^ data[6] ^ data[11] ^ data[12];
 
 		r = 60;
 		while (r < 80)
 		{
-			T = data.get()[index[r]] + 0x8F1BBCDC + (A << rot[r - 60] | A >> tor[r - 60]) + (B ^ C ^ D) + E;
+			T = data[index[r]] + 0x8F1BBCDC + (A << rot[r - 60] | A >> tor[r - 60]) + (B ^ C ^ D) + E;
 			E = D;
 			D = C;
 			C = B << 30 | B >> 2;
@@ -163,19 +172,19 @@ protected:
 			r += 1;
 		} // end while
 	
-		hash.get()[0] = hash.get()[0] + A;
-		hash.get()[1] = hash.get()[1] + B;
-		hash.get()[2] = hash.get()[2] + C;
-		hash.get()[3] = hash.get()[3] + D;
-		hash.get()[4] = hash.get()[4] + E;
+		hash[0] = hash[0] + A;
+		hash[1] = hash[1] + B;
+		hash[2] = hash[2] + C;
+		hash[3] = hash[3] + D;
+		hash[4] = hash[4] + E;
 
-		memset(&data.get()[0], 0, 20 * sizeof(uint32_t));
+		memset(&data[0], 0, 20 * sizeof(uint32_t));
 
 	} // end function TransformBlock
 
 private:
-	shared_ptr<uint32_t> hash;
-	shared_ptr<uint32_t> data;
+	HashLibUInt32Array hash;
+	HashLibUInt32Array data;
 
 	static const int32_t rot[20]; 
 	static const int32_t tor[20];

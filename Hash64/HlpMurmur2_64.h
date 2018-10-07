@@ -18,6 +18,7 @@
 
 #include "../Nullable/HlpNullable.h"
 #include "../Base/HlpMultipleTransformNonBlock.h"
+#include "../Utils/HlpUtils.h"
 
 
 class Murmur2_64 : public MultipleTransformNonBlock, public IIHash64, public IIHashWithKey, public IITransformBlock
@@ -30,6 +31,21 @@ public:
 
 		key = CKEY;
 	} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Murmur2_64 HashInstance;
+
+		HashInstance = Murmur2_64();
+		HashInstance.key = key;
+		HashInstance.working_key = working_key;
+		HashInstance._list = _list;
+
+		IHash hash = make_shared<Murmur2_64>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
@@ -171,7 +187,7 @@ private:
 		else
 		{
 			if (value.size() != GetKeyLength().GetValue())
-				throw ArgumentHashLibException(InvalidKeyLength + GetKeyLength().GetValue());
+				throw ArgumentHashLibException(Utils::string_format(InvalidKeyLength, GetKeyLength().GetValue()));
 			key = Converters::ReadBytesAsUInt32LE(&value[0], 0);
 		} // end else
 	} // end function SetKey

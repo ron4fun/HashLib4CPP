@@ -31,11 +31,29 @@ public:
 		name = __func__;
 
 		key = CKEY;
-		memory = make_shared<HashLibByteArray>(32);
+		memory.resize(32);
 	} // end constructor
 
-	~XXHash64()
-	{} // end destructor
+	virtual IHash Clone() const
+	{
+		XXHash64 HashInstance;
+
+		HashInstance = XXHash64();
+		HashInstance.key = key;
+		HashInstance.hash = hash;
+		HashInstance.total_len = total_len;
+		HashInstance.memsize = memsize;
+		HashInstance.v1 = v1;
+		HashInstance.v2 = v2;
+		HashInstance.v3 = v3;
+		HashInstance.v4 = v4;
+		HashInstance.memory = memory;
+
+		IHash hash = make_shared<XXHash64>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
@@ -53,12 +71,12 @@ public:
 		register uint64_t _v1, _v2, _v3, _v4;
 
 		const uint8_t *ptrBuffer = &a_data[a_index];
-		uint8_t * ptrTemp, *ptrMemory = &(*memory)[0];
+		uint8_t * ptrTemp, *ptrMemory = &memory[0];
 		total_len = total_len + uint64_t(a_length);
 
 		if ((memsize + uint32_t(a_length)) < uint32_t(32))
 		{
-			ptrTemp = (uint8_t *)&(*memory)[0] + memsize;
+			ptrTemp = (uint8_t *)&memory[0] + memsize;
 
 			memmove(ptrTemp, ptrBuffer, a_length);
 
@@ -71,7 +89,7 @@ public:
 
 		if (memsize > 0)
 		{
-			ptrTemp = (uint8_t *)&(*memory)[0] + memsize;
+			ptrTemp = (uint8_t *)&memory[0] + memsize;
 
 			memmove(ptrTemp, ptrBuffer, 32 - memsize);
 
@@ -110,7 +128,7 @@ public:
 
 		if (ptrBuffer < ptrEnd)
 		{
-			ptrTemp = &(*memory)[0];
+			ptrTemp = &memory[0];
 			memmove(ptrTemp, ptrBuffer, ptrEnd - ptrBuffer);
 			memsize = ptrEnd - ptrBuffer;
 		} // end if
@@ -147,7 +165,7 @@ public:
 
 		hash += total_len;
 
-		ptrBuffer = &(*memory)[0];
+		ptrBuffer = &memory[0];
 
 		ptrEnd = ptrBuffer + memsize;
 		while ((ptrBuffer + 8) <= ptrEnd)
@@ -202,7 +220,7 @@ private:
 		else
 		{
 			if (value.size() != GetKeyLength().GetValue())
-				throw ArgumentHashLibException(InvalidKeyLength + GetKeyLength().GetValue());
+				throw ArgumentHashLibException(Utils::string_format(InvalidKeyLength, GetKeyLength().GetValue()));
 			key = Converters::ReadBytesAsUInt64LE(&value[0], 0);
 		} // end else
 	} // end function SetKey
@@ -220,7 +238,7 @@ private:
 
 	uint64_t total_len, v1, v2, v3, v4;
 	uint32_t memsize;
-	shared_ptr<HashLibByteArray> memory;
+	HashLibByteArray memory;
 
 	static const char *InvalidKeyLength;
 

@@ -29,6 +29,19 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		PJW HashInstance;
+
+		HashInstance = PJW();
+		HashInstance.hash = hash;
+
+		IHash hash = make_shared<PJW>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		hash = 0;

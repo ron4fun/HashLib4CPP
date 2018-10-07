@@ -27,22 +27,31 @@ public:
 	{
 		name = __func__;
 
-		temp = shared_ptr<uint8_t>(new uint8_t[48], default_delete<uint8_t[]>());
-		state = make_shared<HashLibByteArray>(16);
-		checksum = make_shared<HashLibByteArray>(16);
+		temp.resize(48);
+		state.resize(16);
+		checksum.resize(16);
 	} // end constructor
 
-	~MD2()
+	virtual IHash Clone() const
 	{
-		//delete[] temp;
-		//delete state;
-		//delete checksum;
-	} // end destructor
+		MD2 HashInstance;
+
+		HashInstance = MD2();
+		HashInstance.state = state;
+		HashInstance.checksum = checksum;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<MD2>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
-		memset(&(*state)[0], 0, 16 * sizeof(uint8_t));
-		memset(&(*checksum)[0], 0, 16 * sizeof(uint8_t));
+		memset(&state[0], 0, 16 * sizeof(uint8_t));
+		memset(&checksum[0], 0, 16 * sizeof(uint8_t));
 
 		BlockHash::Initialize();
 	} // end function Initialize
@@ -63,13 +72,13 @@ protected:
 		} // end while
 		
 		TransformBytes(pad, 0, padLen);
-		TransformBytes(*checksum, 0, 16);
+		TransformBytes(checksum, 0, 16);
 
 	} // end function Finish
 
 	virtual HashLibByteArray GetResult()
 	{
-		return *state;
+		return state;
 	} // end function GetResult
 		
 	virtual void TransformBlock(const uint8_t *a_data,
@@ -77,42 +86,42 @@ protected:
 	{
 		register uint32_t t = 0;
 
-		memmove(&temp.get()[0], &(*state)[0], 16);
-		memmove(&temp.get()[16], &a_data[a_index], 16);
+		memmove(&temp[0], &(state)[0], 16);
+		memmove(&temp[16], &a_data[a_index], 16);
 
 		for (register uint32_t i = 0; i < 16; i++)
 		{
-			temp.get()[i + 32] = (uint8_t)((*state)[i] ^ a_data[i + a_index]);
+			temp[i + 32] = (uint8_t)((state)[i] ^ a_data[i + a_index]);
 		} // end for
 			
 		for (register uint32_t i = 0; i < 18; i++)
 		{
 			for (register uint32_t j = 0; j < 48; j++)
 			{
-				temp.get()[j] = (uint8_t)(temp.get()[j] ^ pi[t]);
-				t = temp.get()[j];
+				temp[j] = (uint8_t)(temp[j] ^ pi[t]);
+				t = temp[j];
 			} // end for
 
 			t = (uint8_t)(t + i);
 		} // end for
 
-		memmove(&(*state)[0], &temp.get()[0], 16);
+		memmove(&state[0], &temp[0], 16);
 
-		t = (*checksum)[15];
+		t = checksum[15];
 
 		for (register uint32_t i = 0; i < 16; i++)
 		{
-			(*checksum)[i] = (*checksum)[i] ^ (pi[a_data[i + a_index] ^ t]);
-			t = (*checksum)[i];
+			checksum[i] = checksum[i] ^ (pi[a_data[i + a_index] ^ t]);
+			t = checksum[i];
 		} // end for
 		
-		memset(&temp.get()[0], 0, 48);
+		memset(&temp[0], 0, 48);
 	} // end function TransformBlock
 
 private:
-	shared_ptr<HashLibByteArray> state;
-	shared_ptr<HashLibByteArray> checksum;
-	shared_ptr<uint8_t> temp;
+	HashLibByteArray state;
+	HashLibByteArray checksum;
+	HashLibByteArray temp;
 
 	static const uint8_t pi[256];
 

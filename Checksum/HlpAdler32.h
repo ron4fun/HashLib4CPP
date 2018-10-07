@@ -29,6 +29,20 @@ public:
 		name = __func__;
 	} // end constructor
 	
+	virtual IHash Clone() const
+	{
+		Adler32 HashInstance;
+
+		HashInstance = Adler32();
+		HashInstance.a = a;
+		HashInstance.b = b;
+
+		IHash hash = make_shared<Adler32>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		a = 1;

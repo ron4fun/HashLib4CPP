@@ -29,6 +29,19 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		Bernstein HashInstance;
+
+		HashInstance = Bernstein();
+		HashInstance.hash = hash;
+
+		IHash hash = make_shared<Bernstein>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		hash = 5381;

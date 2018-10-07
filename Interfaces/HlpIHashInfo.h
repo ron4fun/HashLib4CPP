@@ -71,10 +71,16 @@ class IIPBKDF2_HMACNotBuildIn : public IIPBKDF2_HMAC
 
 typedef shared_ptr<IIPBKDF2_HMACNotBuildIn> IPBKDF2_HMACNotBuildIn;
 
-class IIHMAC : public virtual IIWithKey
-{}; // end class IHMAC
+class IIHMAC;
 
 typedef shared_ptr<IIHMAC> IHMAC;
+
+class IIHMAC : public virtual IIWithKey
+{
+public:
+	virtual IHMAC CloneHMAC() const = 0;
+
+}; // end class IHMAC
 
 class IIHMACNotBuildIn : public virtual IIHMAC
 {}; // end class IHMACNotBuildIn

@@ -27,59 +27,33 @@ public:
 	{
 		name = __func__;
 
-		state = shared_ptr<uint32_t>(new uint32_t[8], default_delete<uint32_t[]>());
-		hash = shared_ptr<uint32_t>(new uint32_t[8], default_delete<uint32_t[]>());
-		data = shared_ptr<uint32_t>(new uint32_t[8], default_delete<uint32_t[]>());
-		m = shared_ptr<uint32_t>(new uint32_t[8], default_delete<uint32_t[]>());
-		s = shared_ptr<uint32_t>(new uint32_t[8], default_delete<uint32_t[]>());
-
-	
-		if (initialized != 'I')
-		{
-			register uint32_t ax, bx, cx, dx;
-
-			HashLibMatrixUInt32Array sbox = HashLibMatrixUInt32Array({ HashLibUInt32Array({ 4, 10, 9,
-				2, 13, 8, 0, 14, 6, 11, 1, 12, 7, 15, 5, 3 }), HashLibUInt32Array({ 14,
-					11, 4, 12, 6, 13, 15, 10, 2, 3, 8, 1, 0, 7, 5, 9 }),
-				HashLibUInt32Array({ 5, 8, 1, 13, 10, 3, 4, 2, 14, 15, 12, 7, 6, 0, 9,
-					11 }), HashLibUInt32Array({ 7, 13, 10, 1, 0, 8, 9, 15, 14, 4, 6, 12, 11,
-						2, 5, 3 }), HashLibUInt32Array({ 6, 12, 7, 1, 5, 15, 13, 8, 4, 10, 9,
-							14, 0, 3, 11, 2 }), HashLibUInt32Array({ 4, 11, 10, 0, 7, 2, 1, 13, 3,
-								6, 8, 5, 9, 12, 15, 14 }), HashLibUInt32Array({ 13, 11, 4, 1, 3, 15, 5,
-									9, 0, 10, 14, 7, 6, 8, 2, 12 }), HashLibUInt32Array({ 1, 15, 13, 0, 5,
-										7, 10, 4, 9, 2, 3, 14, 6, 11, 8, 12 }) });
-
-			register uint32_t i = 0;
-
-			for (register uint32_t a = 0; a < 16; a++)
-			{
-				ax = sbox[1][a] << 15;
-				bx = sbox[3][a] << 23;
-				cx = sbox[5][a];
-				cx = Bits::RotateRight32(cx, 1);
-				dx = sbox[7][a] << 7;
-
-				for (register uint32_t b = 0; b < 16; b++)
-				{
-					Gost::sbox1.get()[i] = ax | (sbox[0][b] << 11);
-					Gost::sbox2.get()[i] = bx | (sbox[2][b] << 19);
-					Gost::sbox3.get()[i] = cx | (sbox[4][b] << 27);
-					Gost::sbox4.get()[i] = dx | (sbox[6][b] << 3);
-					i++;
-				} // end for
-			} // end for
-			
-			initialized = 'I';
-		} // end if
+		state.resize(8);
+		hash.resize(8);
+		data.resize(8);
+		m.resize(8);
+		s.resize(8);
 	} // end constructor
 
-	~Gost()
-	{} // end destructor
+	virtual IHash Clone() const
+	{
+		Gost HashInstance;
+
+		HashInstance = Gost();
+		HashInstance.state = state;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash Hash = make_shared<Gost>(HashInstance);
+		Hash->SetBufferSize(GetBufferSize());
+
+		return Hash;
+	}
 
 	virtual void Initialize()
 	{
-		memset(&state.get()[0], 0, 8 * sizeof(uint32_t));
-		memset(&hash.get()[0], 0, 8 * sizeof(uint32_t));
+		memset(&state[0], 0, 8 * sizeof(uint32_t));
+		memset(&hash[0], 0, 8 * sizeof(uint32_t));
 
 		BlockHash::Initialize();
 	} // end function Initialize
@@ -90,14 +64,14 @@ private:
 		register uint32_t u0, u1, u2, u3, u4, u5, u6, u7, v0, v1, v2, v3, v4, v5, v6, v7, w0, w1, w2,
 			w3, w4, w5, w6, w7, key0, key1, key2, key3, key4, key5, key6, key7, r, l, t;
 
-		u0  = hash.get()[0];
-		u1 = hash.get()[1];
-		u2 = hash.get()[2];
-		u3 = hash.get()[3];
-		u4 = hash.get()[4];
-		u5 = hash.get()[5];
-		u6 = hash.get()[6];
-		u7 = hash.get()[7];
+		u0 = hash[0];
+		u1 = hash[1];
+		u2 = hash[2];
+		u3 = hash[3];
+		u4 = hash[4];
+		u5 = hash[5];
+		u6 = hash[6];
+		u7 = hash[7];
 
 		v0 = a_m[0];
 		v1 = a_m[1];
@@ -138,112 +112,112 @@ private:
 			key7 = (w1 >> 24) | ((w3 & 0xFF000000) >> 16) |
 				((w5 & 0xFF000000) >> 8) | (w7 & 0xFF000000);
 
-			r = hash.get()[i];
-			l = hash.get()[i + 1];
+			r = hash[i];
+			l = hash[i + 1];
 
 			t = key0 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key1 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key2 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key3 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key4 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key5 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key6 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key7 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key0 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key1 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key2 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key3 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key4 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key5 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key6 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key7 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key0 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key1 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key2 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key3 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key4 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key5 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key6 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key7 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key7 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key6 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key5 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key4 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key3 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key2 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key1 + r;
-			l = l ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			l = l ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 			t = key0 + l;
-			r = r ^ (sbox1.get()[uint8_t(t)] ^ sbox2.get()[uint8_t(t >> 8)] ^ sbox3.get()
-				[uint8_t(t >> 16)] ^ sbox4.get()[t >> 24]);
+			r = r ^ (sbox1[uint8_t(t)] ^ sbox2[uint8_t(t >> 8)] ^ sbox3
+				[uint8_t(t >> 16)] ^ sbox4[t >> 24]);
 
 			t = r;
 			r = l;
 			l = t;
 				
-			s.get()[i] = r;
-			s.get()[i + 1] = l;
+			s[i] = r;
+			s[i + 1] = l;
 
 			if (i == 6)
 				break;
@@ -287,73 +261,73 @@ private:
 			i += 2;
 		} // end while
 
-		u0 = a_m[0] ^ s.get()[6];
-		u1 = a_m[1] ^ s.get()[7];
-		u2 = a_m[2] ^ (s.get()[0] << 16) ^ (s.get()[0] >> 16) ^ (s.get()[0] & 0xFFFF)
-			^ (s.get()[1] & 0xFFFF) ^ (s.get()[1] >> 16) ^ (s.get()[2] << 16)
-			^ s.get()[6] ^ (s.get()[6] << 16) ^ (s.get()[7] & 0xFFFF0000) ^ (s.get()[7] >> 16);
-		u3 = a_m[3] ^ (s.get()[0] & 0xFFFF) ^ (s.get()[0] << 16) ^ (s.get()[1] & 0xFFFF)
-			^ (s.get()[1] << 16) ^ (s.get()[1] >> 16) ^ (s.get()[2] << 16) ^ (s.get()[2] >> 16)
-			^ (s.get()[3] << 16) ^ s.get()[6] ^ (s.get()[6] << 16) ^ (s.get()[6] >> 16)
-			^ (s.get()[7] & 0xFFFF) ^ (s.get()[7] << 16) ^ (s.get()[7] >> 16);
-		u4 = a_m[4] ^ (s.get()[0] & 0xFFFF0000) ^ (s.get()[0] << 16) ^ (s.get()[0] >> 16)
-			^ (s.get()[1] & 0xFFFF0000) ^ (s.get()[1] >> 16) ^ (s.get()[2] << 16)
-			^ (s.get()[2] >> 16) ^ (s.get()[3] << 16) ^ (s.get()[3] >> 16) ^ (s.get()[4] << 16)
-			^ (s.get()[6] << 16) ^ (s.get()[6] >> 16) ^ (s.get()[7] & 0xFFFF) ^ (s.get()[7] << 16)
-			^ (s.get()[7] >> 16);
-		u5 = a_m[5] ^ (s.get()[0] << 16) ^ (s.get()[0] >> 16) ^ (s.get()[0] & 0xFFFF0000)
-			^ (s.get()[1] & 0xFFFF) ^ s.get()[2] ^ (s.get()[2] >> 16) ^ (s.get()[3] << 16)
-			^ (s.get()[3] >> 16) ^ (s.get()[4] << 16) ^ (s.get()[4] >> 16) ^ (s.get()[5] << 16)
-			^ (s.get()[6] << 16) ^ (s.get()[6] >> 16) ^ (s.get()[7] & 0xFFFF0000)
-			^ (s.get()[7] << 16) ^ (s.get()[7] >> 16);
-		u6 = a_m[6] ^ s.get()[0] ^ (s.get()[1] >> 16) ^ (s.get()[2] << 16)
-			^ s.get()[3] ^ (s.get()[3] >> 16) ^ (s.get()[4] << 16) ^ (s.get()[4] >> 16)
-			^ (s.get()[5] << 16) ^ (s.get()[5] >> 16) ^ s.get()[6] ^ (s.get()[6] << 16)
-			^ (s.get()[6] >> 16) ^ (s.get()[7] << 16);
-		u7 = a_m[7] ^ (s.get()[0] & 0xFFFF0000) ^ (s.get()[0] << 16) ^ (s.get()[1] & 0xFFFF)
-			^ (s.get()[1] << 16) ^ (s.get()[2] >> 16) ^ (s.get()[3] << 16)
-			^ s.get()[4] ^ (s.get()[4] >> 16) ^ (s.get()[5] << 16) ^ (s.get()[5] >> 16)
-			^ (s.get()[6] >> 16) ^ (s.get()[7] & 0xFFFF) ^ (s.get()[7] << 16) ^ (s.get()[7] >> 16);
+		u0 = a_m[0] ^ s[6];
+		u1 = a_m[1] ^ s[7];
+		u2 = a_m[2] ^ (s[0] << 16) ^ (s[0] >> 16) ^ (s[0] & 0xFFFF)
+			^ (s[1] & 0xFFFF) ^ (s[1] >> 16) ^ (s[2] << 16)
+			^ s[6] ^ (s[6] << 16) ^ (s[7] & 0xFFFF0000) ^ (s[7] >> 16);
+		u3 = a_m[3] ^ (s[0] & 0xFFFF) ^ (s[0] << 16) ^ (s[1] & 0xFFFF)
+			^ (s[1] << 16) ^ (s[1] >> 16) ^ (s[2] << 16) ^ (s[2] >> 16)
+			^ (s[3] << 16) ^ s[6] ^ (s[6] << 16) ^ (s[6] >> 16)
+			^ (s[7] & 0xFFFF) ^ (s[7] << 16) ^ (s[7] >> 16);
+		u4 = a_m[4] ^ (s[0] & 0xFFFF0000) ^ (s[0] << 16) ^ (s[0] >> 16)
+			^ (s[1] & 0xFFFF0000) ^ (s[1] >> 16) ^ (s[2] << 16)
+			^ (s[2] >> 16) ^ (s[3] << 16) ^ (s[3] >> 16) ^ (s[4] << 16)
+			^ (s[6] << 16) ^ (s[6] >> 16) ^ (s[7] & 0xFFFF) ^ (s[7] << 16)
+			^ (s[7] >> 16);
+		u5 = a_m[5] ^ (s[0] << 16) ^ (s[0] >> 16) ^ (s[0] & 0xFFFF0000)
+			^ (s[1] & 0xFFFF) ^ s[2] ^ (s[2] >> 16) ^ (s[3] << 16)
+			^ (s[3] >> 16) ^ (s[4] << 16) ^ (s[4] >> 16) ^ (s[5] << 16)
+			^ (s[6] << 16) ^ (s[6] >> 16) ^ (s[7] & 0xFFFF0000)
+			^ (s[7] << 16) ^ (s[7] >> 16);
+		u6 = a_m[6] ^ s[0] ^ (s[1] >> 16) ^ (s[2] << 16)
+			^ s[3] ^ (s[3] >> 16) ^ (s[4] << 16) ^ (s[4] >> 16)
+			^ (s[5] << 16) ^ (s[5] >> 16) ^ s[6] ^ (s[6] << 16)
+			^ (s[6] >> 16) ^ (s[7] << 16);
+		u7 = a_m[7] ^ (s[0] & 0xFFFF0000) ^ (s[0] << 16) ^ (s[1] & 0xFFFF)
+			^ (s[1] << 16) ^ (s[2] >> 16) ^ (s[3] << 16)
+			^ s[4] ^ (s[4] >> 16) ^ (s[5] << 16) ^ (s[5] >> 16)
+			^ (s[6] >> 16) ^ (s[7] & 0xFFFF) ^ (s[7] << 16) ^ (s[7] >> 16);
 
-		v0 = hash.get()[0] ^ (u1 << 16) ^ (u0 >> 16);
-		v1 = hash.get()[1] ^ (u2 << 16) ^ (u1 >> 16);
-		v2 = hash.get()[2] ^ (u3 << 16) ^ (u2 >> 16);
-		v3 = hash.get()[3] ^ (u4 << 16) ^ (u3 >> 16);
-		v4 = hash.get()[4] ^ (u5 << 16) ^ (u4 >> 16);
-		v5 = hash.get()[5] ^ (u6 << 16) ^ (u5 >> 16);
-		v6 = hash.get()[6] ^ (u7 << 16) ^ (u6 >> 16);
-		v7 = hash.get()[7] ^ (u0 & 0xFFFF0000) ^ (u0 << 16) ^ (u7 >> 16)
+		v0 = hash[0] ^ (u1 << 16) ^ (u0 >> 16);
+		v1 = hash[1] ^ (u2 << 16) ^ (u1 >> 16);
+		v2 = hash[2] ^ (u3 << 16) ^ (u2 >> 16);
+		v3 = hash[3] ^ (u4 << 16) ^ (u3 >> 16);
+		v4 = hash[4] ^ (u5 << 16) ^ (u4 >> 16);
+		v5 = hash[5] ^ (u6 << 16) ^ (u5 >> 16);
+		v6 = hash[6] ^ (u7 << 16) ^ (u6 >> 16);
+		v7 = hash[7] ^ (u0 & 0xFFFF0000) ^ (u0 << 16) ^ (u7 >> 16)
 			^ (u1 & 0xFFFF0000) ^ (u1 << 16) ^ (u6 << 16)
 			^ (u7 & 0xFFFF0000);
 
-		hash.get()[0]  = (v0 & 0xFFFF0000) ^ (v0 << 16) ^ (v0 >> 16)
+		hash[0]  = (v0 & 0xFFFF0000) ^ (v0 << 16) ^ (v0 >> 16)
 			^ (v1 >> 16) ^ (v1 & 0xFFFF0000) ^ (v2 << 16) ^ (v3 >> 16)
 			^ (v4 << 16) ^ (v5 >> 16) ^ v5 ^ (v6 >> 16) ^ (v7 << 16)
 			^ (v7 >> 16) ^ (v7 & 0xFFFF);
-		hash.get()[1]  = (v0 << 16) ^ (v0 >> 16) ^ (v0 & 0xFFFF0000)
+		hash[1]  = (v0 << 16) ^ (v0 >> 16) ^ (v0 & 0xFFFF0000)
 			^ (v1 & 0xFFFF) ^ v2 ^ (v2 >> 16) ^ (v3 << 16) ^ (v4 >> 16)
 			^ (v5 << 16) ^ (v6 << 16) ^ v6 ^ (v7 & 0xFFFF0000)
 			^ (v7 >> 16);
-		hash.get()[2]  = (v0 & 0xFFFF) ^ (v0 << 16) ^ (v1 << 16) ^ (v1 >> 16)
+		hash[2]  = (v0 & 0xFFFF) ^ (v0 << 16) ^ (v1 << 16) ^ (v1 >> 16)
 			^ (v1 & 0xFFFF0000) ^ (v2 << 16) ^ (v3 >> 16)
 			^ v3 ^ (v4 << 16) ^ (v5 >> 16) ^ v6 ^ (v6 >> 16)
 			^ (v7 & 0xFFFF) ^ (v7 << 16) ^ (v7 >> 16);
-		hash.get()[3]  = (v0 << 16) ^ (v0 >> 16) ^ (v0 & 0xFFFF0000)
+		hash[3]  = (v0 << 16) ^ (v0 >> 16) ^ (v0 & 0xFFFF0000)
 			^ (v1 & 0xFFFF0000) ^ (v1 >> 16) ^ (v2 << 16) ^ (v2 >> 16)
 			^ v2 ^ (v3 << 16) ^ (v4 >> 16) ^ v4 ^ (v5 << 16)
 			^ (v6 << 16) ^ (v7 & 0xFFFF) ^ (v7 >> 16);
-		hash.get()[4]  = (v0 >> 16) ^ (v1 << 16) ^ v1 ^ (v2 >> 16)
+		hash[4]  = (v0 >> 16) ^ (v1 << 16) ^ v1 ^ (v2 >> 16)
 			^ v2 ^ (v3 << 16) ^ (v3 >> 16) ^ v3 ^ (v4 << 16)
 			^ (v5 >> 16) ^ v5 ^ (v6 << 16) ^ (v6 >> 16) ^ (v7 << 16);
-		hash.get()[5]  = (v0 << 16) ^ (v0 & 0xFFFF0000) ^ (v1 << 16)
+		hash[5]  = (v0 << 16) ^ (v0 & 0xFFFF0000) ^ (v1 << 16)
 			^ (v1 >> 16) ^ (v1 & 0xFFFF0000) ^ (v2 << 16)
 			^ v2 ^ (v3 >> 16) ^ v3 ^ (v4 << 16) ^ (v4 >> 16)
 			^ v4 ^ (v5 << 16) ^ (v6 << 16) ^ (v6 >> 16)
 			^ v6 ^ (v7 << 16) ^ (v7 >> 16) ^ (v7 & 0xFFFF0000);
-		hash.get()[6]  = v0 ^ v2 ^ (v2 >> 16) ^ v3 ^ (v3 << 16)
+		hash[6]  = v0 ^ v2 ^ (v2 >> 16) ^ v3 ^ (v3 << 16)
 			^ v4 ^ (v4 >> 16) ^ (v5 << 16) ^ (v5 >> 16)
 			^ v5 ^ (v6 << 16) ^ (v6 >> 16) ^ v6 ^ (v7 << 16) ^ v7;
-		hash.get()[7]  = v0 ^ (v0 >> 16) ^ (v1 << 16) ^ (v1 >> 16)
+		hash[7]  = v0 ^ (v0 >> 16) ^ (v1 << 16) ^ (v1 >> 16)
 			^ (v2 << 16) ^ (v3 >> 16) ^ v3 ^ (v4 << 16)
 			^ v4 ^ (v5 >> 16) ^ v5 ^ (v6 << 16) ^ (v6 >> 16)
 			^ (v7 << 16) ^ v7;
@@ -377,7 +351,7 @@ protected:
 
 		Compress(&length[0]);
 
-		Compress(&state.get()[0]);
+		Compress(&state[0]);
 
 	} // end function Finish
 
@@ -385,7 +359,7 @@ protected:
 	{
 		HashLibByteArray result = HashLibByteArray(8 * sizeof(uint32_t));
 
-		Converters::le32_copy((uint32_t*)(&hash.get()[0]), 0, (uint8_t*)&result[0], 0, (int32_t)result.size());
+		Converters::le32_copy((uint32_t*)(&hash[0]), 0, (uint8_t*)&result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult
@@ -397,15 +371,15 @@ protected:
 
 		c = 0;
 
-		Converters::le32_copy(a_data, a_index, data.get(), 0, 32);
+		Converters::le32_copy(a_data, a_index, &data[0], 0, 32);
 
 		for (register uint32_t i = 0; i < 8; i++)
 		{
-			a = data.get()[i];
-			m.get()[i] = a;
-			b = state.get()[i];
-			c = a + c + state.get()[i];
-			state.get()[i] = c;
+			a = data[i];
+			m[i] = a;
+			b = state[i];
+			c = a + c + state[i];
+			state[i] = c;
 
 			if ((c < a) || (c < b))
 				c = 1;
@@ -414,33 +388,72 @@ protected:
 
 		} // end for
 			
-		Compress(&m.get()[0]);
+		Compress(&m[0]);
 
-		memset(m.get(), 0, 8 * sizeof(uint32_t));
-		memset(data.get(), 0, 8 * sizeof(uint32_t));
+		memset(&m[0], 0, 8 * sizeof(uint32_t));
+		memset(&data[0], 0, 8 * sizeof(uint32_t));
 
 	} // end function TransformBlock
 
+	static char initializedStaticLoader()
+	{
+		register uint32_t ax, bx, cx, dx;
+
+		HashLibMatrixUInt32Array sbox = HashLibMatrixUInt32Array({ HashLibUInt32Array({ 4, 10, 9,
+			2, 13, 8, 0, 14, 6, 11, 1, 12, 7, 15, 5, 3 }), HashLibUInt32Array({ 14,
+				11, 4, 12, 6, 13, 15, 10, 2, 3, 8, 1, 0, 7, 5, 9 }),
+			HashLibUInt32Array({ 5, 8, 1, 13, 10, 3, 4, 2, 14, 15, 12, 7, 6, 0, 9,
+				11 }), HashLibUInt32Array({ 7, 13, 10, 1, 0, 8, 9, 15, 14, 4, 6, 12, 11,
+					2, 5, 3 }), HashLibUInt32Array({ 6, 12, 7, 1, 5, 15, 13, 8, 4, 10, 9,
+						14, 0, 3, 11, 2 }), HashLibUInt32Array({ 4, 11, 10, 0, 7, 2, 1, 13, 3,
+							6, 8, 5, 9, 12, 15, 14 }), HashLibUInt32Array({ 13, 11, 4, 1, 3, 15, 5,
+								9, 0, 10, 14, 7, 6, 8, 2, 12 }), HashLibUInt32Array({ 1, 15, 13, 0, 5,
+									7, 10, 4, 9, 2, 3, 14, 6, 11, 8, 12 }) });
+
+		register uint32_t i = 0;
+
+		for (register uint32_t a = 0; a < 16; a++)
+		{
+			ax = sbox[1][a] << 15;
+			bx = sbox[3][a] << 23;
+			cx = sbox[5][a];
+			cx = Bits::RotateRight32(cx, 1);
+			dx = sbox[7][a] << 7;
+
+			for (register uint32_t b = 0; b < 16; b++)
+			{
+				sbox1[i] = ax | (sbox[0][b] << 11);
+				sbox2[i] = bx | (sbox[2][b] << 19);
+				sbox3[i] = cx | (sbox[4][b] << 27);
+				sbox4[i] = dx | (sbox[6][b] << 3);
+				i++;
+			} // end for
+		} // end for
+			
+		return 'I';
+	}
 
 protected:
-	shared_ptr<uint32_t> state;
-	shared_ptr<uint32_t> hash;
-	shared_ptr<uint32_t> data;
-	shared_ptr<uint32_t> m;
-	shared_ptr<uint32_t> s;
+	HashLibUInt32Array state;
+	HashLibUInt32Array hash;
+	HashLibUInt32Array data;
+	HashLibUInt32Array m;
+	HashLibUInt32Array s;
 	
 	static char initialized;
-	static shared_ptr<uint32_t> sbox1;
-	static shared_ptr<uint32_t> sbox2;
-	static shared_ptr<uint32_t> sbox3;
-	static shared_ptr<uint32_t> sbox4;
+	static HashLibUInt32Array sbox1;
+	static HashLibUInt32Array sbox2;
+	static HashLibUInt32Array sbox3;
+	static HashLibUInt32Array sbox4;
 }; // end class Gost
 
-char Gost::initialized = 0;
-shared_ptr<uint32_t> Gost::sbox1 = shared_ptr<uint32_t>(new uint32_t[256], default_delete<uint32_t[]>());
-shared_ptr<uint32_t> Gost::sbox2 = shared_ptr<uint32_t>(new uint32_t[256], default_delete<uint32_t[]>());
-shared_ptr<uint32_t> Gost::sbox3 = shared_ptr<uint32_t>(new uint32_t[256], default_delete<uint32_t[]>());
-shared_ptr<uint32_t> Gost::sbox4 = shared_ptr<uint32_t>(new uint32_t[256], default_delete<uint32_t[]>());
+
+HashLibUInt32Array Gost::sbox1 = HashLibUInt32Array(256);
+HashLibUInt32Array Gost::sbox2 = HashLibUInt32Array(256);
+HashLibUInt32Array Gost::sbox3 = HashLibUInt32Array(256);
+HashLibUInt32Array Gost::sbox4 = HashLibUInt32Array(256);
+
+char Gost::initialized = Gost::initializedStaticLoader();
 
 
 #endif //!HLPGOST_H

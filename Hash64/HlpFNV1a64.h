@@ -28,6 +28,19 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		FNV1a64 HashInstance;
+
+		HashInstance = FNV1a64();
+		HashInstance.hash = hash;
+
+		IHash hash = make_shared<FNV1a64>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		hash = 14695981039346656037;

@@ -19,7 +19,7 @@
 #include "../Base/HlpHash.h"
 #include "../Nullable/HlpNullable.h"
 #include "../Interfaces/HlpIHashInfo.h"
-
+#include "../Utils/HlpUtils.h"
 
 
 class XXHash32 : public Hash, public IIBlockHash, public IIHash32, public IIHashWithKey, public IITransformBlock
@@ -34,8 +34,26 @@ public:
 		memory = make_shared<HashLibByteArray>(16);
 	} // end constructor
 
-	~XXHash32()
-	{} // end destructor
+	virtual IHash Clone() const
+	{
+		XXHash32 HashInstance;
+
+		HashInstance = XXHash32();
+		HashInstance.key = key;
+		HashInstance.hash = hash;
+		HashInstance.total_len = total_len;
+		HashInstance.memsize = memsize;
+		HashInstance.v1 = v1;
+		HashInstance.v2 = v2;
+		HashInstance.v3 = v3;
+		HashInstance.v4 = v4;
+		HashInstance.memory = memory;
+
+		IHash hash = make_shared<XXHash32>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
@@ -177,7 +195,7 @@ private:
 		else
 		{
 			if (value.size() != GetKeyLength().GetValue())
-				throw ArgumentHashLibException(InvalidKeyLength + GetKeyLength().GetValue());
+				throw ArgumentHashLibException(Utils::string_format(InvalidKeyLength, GetKeyLength().GetValue()));
 			key = Converters::ReadBytesAsUInt32LE(&value[0], 0);
 		} // end else
 	} // end function SetKey

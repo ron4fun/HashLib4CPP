@@ -19,7 +19,7 @@
 #include "../Base/HlpHash.h"
 #include "../Nullable/HlpNullable.h"
 #include "../Interfaces/HlpIHashInfo.h"
-
+#include "../Utils/HlpUtils.h"
 
 class MurmurHash3_x86_32 : public Hash, public IIHash32, public IIHashWithKey, public IITransformBlock
 {
@@ -33,8 +33,22 @@ public:
 		buf = make_shared<HashLibByteArray>(4);
 	} // end constructor
 
-	~MurmurHash3_x86_32()
-	{} // end destructor
+	virtual IHash Clone() const
+	{
+		MurmurHash3_x86_32 HashInstance;
+
+		HashInstance = MurmurHash3_x86_32();
+		HashInstance.key = key;
+		HashInstance.h = h;
+		HashInstance.total_length = total_length;
+		HashInstance.idx = idx;
+		*(HashInstance.buf) = *buf;
+
+		IHash hash = make_shared<MurmurHash3_x86_32>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
@@ -68,8 +82,8 @@ public:
                  ...
                  idx = 2, len = 6 -> [0, 2[ + [0, 2[ => Block = [2,6[, buf []
             */
-            assert(a_index == 0); //nothing would work anyways if a_index is !=0
-
+            //assert(a_index == 0); //nothing would work anyways if a_index is !=0
+			
             while (idx < 4 && len)
             {
                 (*buf)[idx++] = *(ptr_a_data + a_index);
@@ -211,7 +225,7 @@ private:
 		else
 		{
 			if (value.size() != GetKeyLength().GetValue())
-				throw ArgumentHashLibException(InvalidKeyLength + GetKeyLength().GetValue());
+				throw ArgumentHashLibException(Utils::string_format(InvalidKeyLength, GetKeyLength().GetValue()));
 			key = Converters::ReadBytesAsUInt32LE(&value[0], 0);
 		} // end else
 	} // end function SetKey

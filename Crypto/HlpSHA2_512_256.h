@@ -28,16 +28,31 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		SHA2_512_256 HashInstance;
+
+		HashInstance = SHA2_512_256();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<SHA2_512_256>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
-		state.get()[0] = 0x22312194FC2BF72C;
-		state.get()[1] = 0x9F555FA3C84C64C2;
-		state.get()[2] = 0x2393B86B6F53B151;
-		state.get()[3] = 0x963877195940EABD;
-		state.get()[4] = 0x96283EE2A88EFFE3;
-		state.get()[5] = 0xBE5E1E2553863992;
-		state.get()[6] = 0x2B0199FC2C85B8AA;
-		state.get()[7] = 0x0EB72DDC81C52CA2;
+		state[0] = 0x22312194FC2BF72C;
+		state[1] = 0x9F555FA3C84C64C2;
+		state[2] = 0x2393B86B6F53B151;
+		state[3] = 0x963877195940EABD;
+		state[4] = 0x96283EE2A88EFFE3;
+		state[5] = 0xBE5E1E2553863992;
+		state[6] = 0x2B0199FC2C85B8AA;
+		state[7] = 0x0EB72DDC81C52CA2;
 
 		SHA2_512Base::Initialize();
 	} // end function Initialize
@@ -46,7 +61,7 @@ protected:
 	virtual HashLibByteArray GetResult()
 	{
 		HashLibByteArray result = HashLibByteArray(4 * sizeof(uint64_t));
-		Converters::be64_copy(&state.get()[0], 0, &result[0], 0, (int32_t)result.size());
+		Converters::be64_copy(&state[0], 0, &result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult

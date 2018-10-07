@@ -28,25 +28,55 @@ public:
 		name = __func__;
 
 		security_level = int32_t(a_security_level);
-		HashSize = GetHashSize();
+		HashSize = GetHashSize(a_hash_size);
 		BlockSize = GetBlockSize();
 		size = HashSize >> 2;
-		state = shared_ptr<uint32_t>(new uint32_t[size], default_delete<uint32_t[]>());
-		work = shared_ptr<uint32_t>(new uint32_t[16], default_delete<uint32_t[]>());
+		state.resize(size);
+		work.resize(16);
 		
 	} // end constructor
 
-	~Snefru()
-	{} // end destructor
+	virtual IHash Clone() const
+	{
+		Snefru HashInstance = Snefru(security_level, GetHashSize(hash_size));
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Snefru>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+	virtual string GetName() const
+	{
+		return Utils::string_format("%s_%u_%u",
+			name, security_level, hash_size * 8);
+	}
 
 	virtual void Initialize()
 	{
-		memset(state.get(), 0, size * sizeof(uint32_t));
+		memset(&state[0], 0, size * sizeof(uint32_t));
 
 		BlockHash::Initialize();
 	} // end function Initialize
 
 protected:
+	static inline HashSize GetHashSize(const int32_t a_HashSize)
+	{
+		switch (a_HashSize)
+		{
+		case 16:
+			return HashSize::HashSize128;
+		case 32:
+			return HashSize::HashSize256;
+		default:
+			throw ArgumentInvalidHashLibException(
+				Utils::string_format(InvalidHashSize, a_HashSize));
+		}
+	}
+
 	virtual void Finish()
 	{
 		int32_t padindex;
@@ -73,7 +103,7 @@ protected:
 	{
 		HashLibByteArray result = HashLibByteArray(size * sizeof(uint32_t));
 
-		Converters::be32_copy(state.get(), 0, &result[0], 0, (int32_t)result.size());
+		Converters::be32_copy(&state[0], 0, &result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult
@@ -83,8 +113,8 @@ protected:
 	{
 		register uint32_t i, j, k, shift;
 		
-		uint32_t *ptr_work = &work.get()[0];
-		memmove(&work.get()[0], &state.get()[0], size * sizeof(uint32_t));
+		uint32_t *ptr_work = &work[0];
+		memmove(&work[0], &state[0], size * sizeof(uint32_t));
 
 		Converters::be32_copy(a_data, a_index, ptr_work + size, 0, BlockSize);
 
@@ -97,45 +127,45 @@ protected:
 			j = 0;
 			while (j < 4)
 			{
-				work.get()[15] = work.get()[15] ^ (sbox0)[uint8_t(work.get()[0])];
-				work.get()[1] = work.get()[1] ^ (sbox0)[uint8_t(work.get()[0])];
-				work.get()[0] = work.get()[0] ^ (sbox0)[uint8_t(work.get()[1])];
-				work.get()[2] = work.get()[2] ^ (sbox0)[uint8_t(work.get()[1])];
-				work.get()[1] = work.get()[1] ^ (sbox1)[uint8_t(work.get()[2])];
-				work.get()[3] = work.get()[3] ^ (sbox1)[uint8_t(work.get()[2])];
-				work.get()[2] = work.get()[2] ^ (sbox1)[uint8_t(work.get()[3])];
-				work.get()[4] = work.get()[4] ^ (sbox1)[uint8_t(work.get()[3])];
-				work.get()[3] = work.get()[3] ^ (sbox0)[uint8_t(work.get()[4])];
-				work.get()[5] = work.get()[5] ^ (sbox0)[uint8_t(work.get()[4])];
-				work.get()[4] = work.get()[4] ^ (sbox0)[uint8_t(work.get()[5])];
-				work.get()[6] = work.get()[6] ^ (sbox0)[uint8_t(work.get()[5])];
-				work.get()[5] = work.get()[5] ^ (sbox1)[uint8_t(work.get()[6])];
-				work.get()[7] = work.get()[7] ^ (sbox1)[uint8_t(work.get()[6])];
-				work.get()[6] = work.get()[6] ^ (sbox1)[uint8_t(work.get()[7])];
-				work.get()[8] = work.get()[8] ^ (sbox1)[uint8_t(work.get()[7])];
-				work.get()[7] = work.get()[7] ^ (sbox0)[uint8_t(work.get()[8])];
-				work.get()[9] = work.get()[9] ^ (sbox0)[uint8_t(work.get()[8])];
-				work.get()[8] = work.get()[8] ^ (sbox0)[uint8_t(work.get()[9])];
-				work.get()[10] = work.get()[10] ^ (sbox0)[uint8_t(work.get()[9])];
-				work.get()[9] = work.get()[9] ^ (sbox1)[uint8_t(work.get()[10])];
-				work.get()[11] = work.get()[11] ^ (sbox1)[uint8_t(work.get()[10])];
-				work.get()[10] = work.get()[10] ^ (sbox1)[uint8_t(work.get()[11])];
-				work.get()[12] = work.get()[12] ^ (sbox1)[uint8_t(work.get()[11])];
-				work.get()[11] = work.get()[11] ^ (sbox0)[uint8_t(work.get()[12])];
-				work.get()[13] = work.get()[13] ^ (sbox0)[uint8_t(work.get()[12])];
-				work.get()[12] = work.get()[12] ^ (sbox0)[uint8_t(work.get()[13])];
-				work.get()[14] = work.get()[14] ^ (sbox0)[uint8_t(work.get()[13])];
-				work.get()[13] = work.get()[13] ^ (sbox1)[uint8_t(work.get()[14])];
-				work.get()[15] = work.get()[15] ^ (sbox1)[uint8_t(work.get()[14])];
-				work.get()[14] = work.get()[14] ^ (sbox1)[uint8_t(work.get()[15])];
-				work.get()[0] = work.get()[0] ^ (sbox1)[uint8_t(work.get()[15])];
+				work[15] = work[15] ^ (sbox0)[uint8_t(work[0])];
+				work[1] = work[1] ^ (sbox0)[uint8_t(work[0])];
+				work[0] = work[0] ^ (sbox0)[uint8_t(work[1])];
+				work[2] = work[2] ^ (sbox0)[uint8_t(work[1])];
+				work[1] = work[1] ^ (sbox1)[uint8_t(work[2])];
+				work[3] = work[3] ^ (sbox1)[uint8_t(work[2])];
+				work[2] = work[2] ^ (sbox1)[uint8_t(work[3])];
+				work[4] = work[4] ^ (sbox1)[uint8_t(work[3])];
+				work[3] = work[3] ^ (sbox0)[uint8_t(work[4])];
+				work[5] = work[5] ^ (sbox0)[uint8_t(work[4])];
+				work[4] = work[4] ^ (sbox0)[uint8_t(work[5])];
+				work[6] = work[6] ^ (sbox0)[uint8_t(work[5])];
+				work[5] = work[5] ^ (sbox1)[uint8_t(work[6])];
+				work[7] = work[7] ^ (sbox1)[uint8_t(work[6])];
+				work[6] = work[6] ^ (sbox1)[uint8_t(work[7])];
+				work[8] = work[8] ^ (sbox1)[uint8_t(work[7])];
+				work[7] = work[7] ^ (sbox0)[uint8_t(work[8])];
+				work[9] = work[9] ^ (sbox0)[uint8_t(work[8])];
+				work[8] = work[8] ^ (sbox0)[uint8_t(work[9])];
+				work[10] = work[10] ^ (sbox0)[uint8_t(work[9])];
+				work[9] = work[9] ^ (sbox1)[uint8_t(work[10])];
+				work[11] = work[11] ^ (sbox1)[uint8_t(work[10])];
+				work[10] = work[10] ^ (sbox1)[uint8_t(work[11])];
+				work[12] = work[12] ^ (sbox1)[uint8_t(work[11])];
+				work[11] = work[11] ^ (sbox0)[uint8_t(work[12])];
+				work[13] = work[13] ^ (sbox0)[uint8_t(work[12])];
+				work[12] = work[12] ^ (sbox0)[uint8_t(work[13])];
+				work[14] = work[14] ^ (sbox0)[uint8_t(work[13])];
+				work[13] = work[13] ^ (sbox1)[uint8_t(work[14])];
+				work[15] = work[15] ^ (sbox1)[uint8_t(work[14])];
+				work[14] = work[14] ^ (sbox1)[uint8_t(work[15])];
+				work[0] = work[0] ^ (sbox1)[uint8_t(work[15])];
 
 				shift = shifts[j];
 
 				k = 0;
 				while (k < 16)
 				{
-					work.get()[k] = Bits::RotateRight32(work.get()[k], shift);
+					work[k] = Bits::RotateRight32(work[k], shift);
 					k++;
 				} // end while
 
@@ -145,31 +175,32 @@ protected:
 			i++;
 		} // end while
 
-		state.get()[0] = state.get()[0] ^ work.get()[15];
-		state.get()[1] = state.get()[1] ^ work.get()[14];
-		state.get()[2] = state.get()[2] ^ work.get()[13];
-		state.get()[3] = state.get()[3] ^ work.get()[12];
+		state[0] = state[0] ^ work[15];
+		state[1] = state[1] ^ work[14];
+		state[2] = state[2] ^ work[13];
+		state[3] = state[3] ^ work[12];
 
 		if (HashSize == 32)
 		{
-			state.get()[4] = state.get()[4] ^ work.get()[11];
-			state.get()[5] = state.get()[5] ^ work.get()[10];
-			state.get()[6] = state.get()[6] ^ work.get()[9];
-			state.get()[7] = state.get()[7] ^ work.get()[8];
+			state[4] = state[4] ^ work[11];
+			state[5] = state[5] ^ work[10];
+			state[6] = state[6] ^ work[9];
+			state[7] = state[7] ^ work[8];
 		} // end if
 
-		memset(work.get(), 0, 16 * sizeof(uint32_t));
+		memset(&work[0], 0, 16 * sizeof(uint32_t));
 	} // end function TransformBlock
 
 public:
 	static const char* InvalidSnefruLevel;
 	static const char* InvalidSnefruHashSize;
+	static const char* InvalidHashSize;
 
 private:
-	shared_ptr<uint32_t> state;
+	HashLibUInt32Array state;
 	uint32_t size;
 	int32_t security_level, HashSize, BlockSize;
-	shared_ptr<uint32_t> work;
+	HashLibUInt32Array work;
 	static const HashLibMatrixUInt32Array boxes;
 	static const uint32_t shifts[4];
 
@@ -177,6 +208,7 @@ private:
 
 const char* Snefru::InvalidSnefruLevel = "Snefru Security Level Cannot be Less than 1. Standard Level is 8";
 const char* Snefru::InvalidSnefruHashSize = "Snefru HashSize Must be Either 128 bit(16 byte) or 256 bit(32 byte)";
+const char* Snefru::InvalidHashSize = "Specified HashSize Is Invalid or UnSupported \"%d\"";
 
 const uint32_t Snefru::shifts[4] = { 16, 8, 16, 24 };
 

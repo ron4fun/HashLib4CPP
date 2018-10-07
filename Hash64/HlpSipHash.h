@@ -21,7 +21,6 @@
 #include "../Interfaces/HlpIHashInfo.h"
 
 
-
 class SipHash : public Hash, public IIHash64, public IIHashWithKey, public IITransformBlock
 {
 public:
@@ -34,11 +33,8 @@ public:
 		key1 = KEY1;
 		cr = a_compression_rounds;
 		fr = a_finalization_rounds;
-		buf = make_shared<HashLibByteArray>(8);
+		buf.resize(8);
 	} // end constructor
-
-	~SipHash()
-	{} // end destructor
 
 	virtual void Initialize()
 	{
@@ -78,14 +74,14 @@ public:
 
 			while ((idx < 8) && (Length != 0))
 			{
-				(*buf)[idx] = *(ptr_a_data + a_index);
+				buf[idx] = *(ptr_a_data + a_index);
 				idx++;
 				a_index++;
 				Length--;
 			}
 			if (idx == 8)
 			{
-				uint8_t *ptr_Fm_buf = &(*buf)[0];
+				uint8_t *ptr_Fm_buf = &buf[0];
 				m = Converters::ReadBytesAsUInt64LE(ptr_Fm_buf, 0);
 				ProcessBlock(m);
 				idx = 0;
@@ -163,11 +159,11 @@ private:
 
 	inline void ByteUpdate(const uint8_t a_b)
 	{
-		(*buf)[idx] = a_b;
+		buf[idx] = a_b;
 		idx++;
 		if (idx >= 8)
 		{
-			uint8_t *ptr_Fm_buf = &(*buf)[0];
+			uint8_t *ptr_Fm_buf = &buf[0];
 			uint64_t m = Converters::ReadBytesAsUInt64LE(ptr_Fm_buf, 0);
 			ProcessBlock(m);
 			idx = 0;
@@ -183,52 +179,52 @@ private:
 			switch (idx)
 			{
 			case 7:
-				b = b | (uint64_t((*buf)[6]) << 48);
-				b = b | (uint64_t((*buf)[5]) << 40);
-				b = b | (uint64_t((*buf)[4]) << 32);
-				b = b | (uint64_t((*buf)[3]) << 24);
-				b = b | (uint64_t((*buf)[2]) << 16);
-				b = b | (uint64_t((*buf)[1]) << 8);
-				b = b | (uint64_t((*buf)[0]));
+				b = b | (uint64_t(buf[6]) << 48);
+				b = b | (uint64_t(buf[5]) << 40);
+				b = b | (uint64_t(buf[4]) << 32);
+				b = b | (uint64_t(buf[3]) << 24);
+				b = b | (uint64_t(buf[2]) << 16);
+				b = b | (uint64_t(buf[1]) << 8);
+				b = b | (uint64_t(buf[0]));
 				break;
 
 			case 6:
-				b = b | (uint64_t((*buf)[5]) << 40);
-				b = b | (uint64_t((*buf)[4]) << 32);
-				b = b | (uint64_t((*buf)[3]) << 24);
-				b = b | (uint64_t((*buf)[2]) << 16);
-				b = b | (uint64_t((*buf)[1]) << 8);
-				b = b | (uint64_t((*buf)[0]));
+				b = b | (uint64_t(buf[5]) << 40);
+				b = b | (uint64_t(buf[4]) << 32);
+				b = b | (uint64_t(buf[3]) << 24);
+				b = b | (uint64_t(buf[2]) << 16);
+				b = b | (uint64_t(buf[1]) << 8);
+				b = b | (uint64_t(buf[0]));
 				break;
 
 			case 5:
-				b = b | (uint64_t((*buf)[4]) << 32);
-				b = b | (uint64_t((*buf)[3]) << 24);
-				b = b | (uint64_t((*buf)[2]) << 16);
-				b = b | (uint64_t((*buf)[1]) << 8);
-				b = b | (uint64_t((*buf)[0]));
+				b = b | (uint64_t(buf[4]) << 32);
+				b = b | (uint64_t(buf[3]) << 24);
+				b = b | (uint64_t(buf[2]) << 16);
+				b = b | (uint64_t(buf[1]) << 8);
+				b = b | (uint64_t(buf[0]));
 				break;
 
 			case 4:
-				b = b | (uint64_t((*buf)[3]) << 24);
-				b = b | (uint64_t((*buf)[2]) << 16);
-				b = b | (uint64_t((*buf)[1]) << 8);
-				b = b | (uint64_t((*buf)[0]));
+				b = b | (uint64_t(buf[3]) << 24);
+				b = b | (uint64_t(buf[2]) << 16);
+				b = b | (uint64_t(buf[1]) << 8);
+				b = b | (uint64_t(buf[0]));
 				break;
 
 			case 3:
-				b = b | (uint64_t((*buf)[2]) << 16);
-				b = b | (uint64_t((*buf)[1]) << 8);
-				b = b | (uint64_t((*buf)[0]));
+				b = b | (uint64_t(buf[2]) << 16);
+				b = b | (uint64_t(buf[1]) << 8);
+				b = b | (uint64_t(buf[0]));
 				break;
 
 			case 2:
-				b = b | (uint64_t((*buf)[1]) << 8);
-				b = b | (uint64_t((*buf)[0]));
+				b = b | (uint64_t(buf[1]) << 8);
+				b = b | (uint64_t(buf[0]));
 				break;
 
 			case 1:
-				b = b | (uint64_t((*buf)[0]));
+				b = b | (uint64_t(buf[0]));
 			} // end switch
 		} // end if
 
@@ -270,11 +266,12 @@ private:
 		} // end else
 	} // end function SetKey
 
-private:
+protected:
 	uint64_t v0, v1, v2, v3, key0, key1, total_length, m;
 	int32_t cr, fr, idx;
-	shared_ptr<HashLibByteArray> buf;
+	HashLibByteArray buf;
 
+private:
 	static const uint64_t V0 = uint64_t(0x736F6D6570736575);
 	static const uint64_t V1 = uint64_t(0x646F72616E646F6D);
 	static const uint64_t V2 = uint64_t(0x6C7967656E657261);
@@ -298,6 +295,30 @@ public:
 	SipHash2_4()
 		: SipHash(2, 4)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		SipHash2_4 HashInstance;
+
+		HashInstance = SipHash2_4();
+		HashInstance.v0 = v0;
+		HashInstance.v1 = v1;
+		HashInstance.v2 = v2;
+		HashInstance.v3 = v3;
+		HashInstance.key0 = key0;
+		HashInstance.key1 = key1;
+		HashInstance.total_length = total_length;
+		HashInstance.cr = cr;
+		HashInstance.fr = fr;
+		HashInstance.idx = idx;
+		HashInstance.buf = buf;
+
+		IHash hash = make_shared<SipHash2_4>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class SipHash2_4
 
 

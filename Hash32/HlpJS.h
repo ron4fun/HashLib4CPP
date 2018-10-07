@@ -29,6 +29,19 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		JS HashInstance;
+
+		HashInstance = JS();
+		HashInstance.hash = hash;
+
+		IHash hash = make_shared<JS>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		hash = 1315423911;

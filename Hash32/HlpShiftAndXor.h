@@ -29,6 +29,19 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		ShiftAndXor HashInstance;
+
+		HashInstance = ShiftAndXor();
+		HashInstance.hash = hash;
+
+		IHash hash = make_shared<ShiftAndXor>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		hash = 0;

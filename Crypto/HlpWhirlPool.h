@@ -27,69 +27,31 @@ public:
 	{
 		name = __func__;
 
-		hash = shared_ptr<uint64_t>(new uint64_t[8], default_delete<uint64_t[]>());
-		data = shared_ptr<uint64_t>(new uint64_t[8], default_delete<uint64_t[]>());
-		k = shared_ptr<uint64_t>(new uint64_t[8], default_delete<uint64_t[]>());
-		m = shared_ptr<uint64_t>(new uint64_t[8], default_delete<uint64_t[]>());
-		temp = shared_ptr<uint64_t>(new uint64_t[8], default_delete<uint64_t[]>());
-
-		rc = shared_ptr<uint64_t>(new uint64_t[ROUNDS + 1], default_delete<uint64_t[]>());
-
-		C0 = shared_ptr<uint64_t>(new uint64_t[256], default_delete<uint64_t[]>());
-		C1 = shared_ptr<uint64_t>(new uint64_t[256], default_delete<uint64_t[]>());
-		C2 = shared_ptr<uint64_t>(new uint64_t[256], default_delete<uint64_t[]>());
-		C3 = shared_ptr<uint64_t>(new uint64_t[256], default_delete<uint64_t[]>());
-		C4 = shared_ptr<uint64_t>(new uint64_t[256], default_delete<uint64_t[]>());
-		C5 = shared_ptr<uint64_t>(new uint64_t[256], default_delete<uint64_t[]>());
-		C6 = shared_ptr<uint64_t>(new uint64_t[256], default_delete<uint64_t[]>());
-		C7 = shared_ptr<uint64_t>(new uint64_t[256], default_delete<uint64_t[]>());
-
-		register uint32_t v1, v2, v4, v5, v8, v9;
-
-		for (register uint32_t i = 0; i < 256; i++)
-		{
-			v1= SBOX[i];
-			v2= maskWithReductionPolynomial(v1 << 1);
-			v4= maskWithReductionPolynomial(v2 << 1);
-			v5= v4 ^ v1;
-			v8= maskWithReductionPolynomial(v4 << 1);
-			v9= v8 ^ v1;
-
-			C0.get()[i] = packIntoUInt64(v1, v1, v4, v1, v8, v5, v2, v9);
-			C1.get()[i] = packIntoUInt64(v9, v1, v1, v4, v1, v8, v5, v2);
-			C2.get()[i] = packIntoUInt64(v2, v9, v1, v1, v4, v1, v8, v5);
-			C3.get()[i] = packIntoUInt64(v5, v2, v9, v1, v1, v4, v1, v8);
-			C4.get()[i] = packIntoUInt64(v8, v5, v2, v9, v1, v1, v4, v1);
-			C5.get()[i] = packIntoUInt64(v1, v8, v5, v2, v9, v1, v1, v4);
-			C6.get()[i] = packIntoUInt64(v4, v1, v8, v5, v2, v9, v1, v1);
-			C7.get()[i] = packIntoUInt64(v1, v4, v1, v8, v5, v2, v9, v1);
-
-		} // end for
-
-		rc.get()[0] = 0;
-
-		for (register uint32_t r = 1, i; r < ROUNDS + 1; r++)
-		{
-
-			i = 8 * (r - 1);
-			rc.get()[r] = (C0.get()[i] & 0xFF00000000000000)
-				^ (C1.get()[i + 1] & 0x00FF000000000000)
-				^ (C2.get()[i + 2] & 0x0000FF0000000000)
-				^ (C3.get()[i + 3] & 0x000000FF00000000)
-				^ (C4.get()[i + 4] & 0x00000000FF000000)
-				^ (C5.get()[i + 5] & 0x0000000000FF0000)
-				^ (C6.get()[i + 6] & 0x000000000000FF00)
-				^ (C7.get()[i + 7] & 0x00000000000000FF);
-		} // end for
-
+		hash.resize(8);
+		data.resize(8);
+		k.resize(8);
+		m.resize(8);
+		temp.resize(8);
 	} // end constructor
 
-	~WhirlPool()
-	{} // end destructor
+	virtual IHash Clone() const
+	{
+		WhirlPool HashInstance;
+
+		HashInstance = WhirlPool();
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<WhirlPool>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
-		memset(hash.get(), 0, 8 * sizeof(uint64_t));
+		memset(&hash[0], 0, 8 * sizeof(uint64_t));
 
 		BlockHash::Initialize();
 	} // end function Initialize
@@ -123,7 +85,7 @@ protected:
 	{
 		HashLibByteArray result = HashLibByteArray( 8 * sizeof(uint64_t));
 		
-		Converters::be64_copy(hash.get(), 0, &result[0], 0, (int32_t)result.size());
+		Converters::be64_copy(&hash[0], 0, &result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult
@@ -131,59 +93,59 @@ protected:
 	virtual void TransformBlock(const uint8_t *a_data,
 		const int32_t a_data_length, const int32_t a_index)
 	{
-		Converters::be64_copy(a_data, a_index, data.get(), 0, 64);
+		Converters::be64_copy(a_data, a_index, &data[0], 0, 64);
 
 		for (register uint32_t i = 0; i < 8; i++)
 		{
-			k.get()[i] = hash.get()[i];
-			temp.get()[i] = data.get()[i] ^ k.get()[i];
+			k[i] = hash[i];
+			temp[i] = data[i] ^ k[i];
 		} // end for
 		
 		for (register uint32_t round = 1; round < ROUNDS + 1; round++)
 		{
 			for (register uint32_t i = 0; i < 8; i++)
 			{
-				m.get()[i] = 0;
-				m.get()[i] = m.get()[i] ^ (C0.get()[uint8_t(k.get()[(i - 0) & 7] >> 56)]);
-				m.get()[i] = m.get()[i] ^ (C1.get()[uint8_t(k.get()[(i - 1) & 7] >> 48)]);
-				m.get()[i] = m.get()[i] ^ (C2.get()[uint8_t(k.get()[(i - 2) & 7] >> 40)]);
-				m.get()[i] = m.get()[i] ^ (C3.get()[uint8_t(k.get()[(i - 3) & 7] >> 32)]);
-				m.get()[i] = m.get()[i] ^ (C4.get()[uint8_t(k.get()[(i - 4) & 7] >> 24)]);
-				m.get()[i] = m.get()[i] ^ (C5.get()[uint8_t(k.get()[(i - 5) & 7] >> 16)]);
-				m.get()[i] = m.get()[i] ^ (C6.get()[uint8_t(k.get()[(i - 6) & 7] >> 8)]);
-				m.get()[i] = m.get()[i] ^ (C7.get()[uint8_t(k.get()[(i - 7) & 7])]);
+				m[i] = 0;
+				m[i] = m[i] ^ (C0[uint8_t(k[(i - 0) & 7] >> 56)]);
+				m[i] = m[i] ^ (C1[uint8_t(k[(i - 1) & 7] >> 48)]);
+				m[i] = m[i] ^ (C2[uint8_t(k[(i - 2) & 7] >> 40)]);
+				m[i] = m[i] ^ (C3[uint8_t(k[(i - 3) & 7] >> 32)]);
+				m[i] = m[i] ^ (C4[uint8_t(k[(i - 4) & 7] >> 24)]);
+				m[i] = m[i] ^ (C5[uint8_t(k[(i - 5) & 7] >> 16)]);
+				m[i] = m[i] ^ (C6[uint8_t(k[(i - 6) & 7] >> 8)]);
+				m[i] = m[i] ^ (C7[uint8_t(k[(i - 7) & 7])]);
 
 			} // end for
 		
-			memmove(k.get(), m.get(), 8 * sizeof(uint64_t));
+			memmove(&k[0], &m[0], 8 * sizeof(uint64_t));
 
-			k.get()[0] = k.get()[0] ^ rc.get()[round];
+			k[0] = k[0] ^ rc[round];
 
 			for (register uint32_t i = 0; i < 8; i++)
 			{
-				m.get()[i] = k.get()[i];
-				m.get()[i] = m.get()[i] ^ (C0.get()[uint8_t(temp.get()[(i - 0) & 7] >> 56)]);
-				m.get()[i] = m.get()[i] ^ (C1.get()[uint8_t(temp.get()[(i - 1) & 7] >> 48)]);
-				m.get()[i] = m.get()[i] ^ (C2.get()[uint8_t(temp.get()[(i - 2) & 7] >> 40)]);
-				m.get()[i] = m.get()[i] ^ (C3.get()[uint8_t(temp.get()[(i - 3) & 7] >> 32)]);
-				m.get()[i] = m.get()[i] ^ (C4.get()[uint8_t(temp.get()[(i - 4) & 7] >> 24)]);
-				m.get()[i] = m.get()[i] ^ (C5.get()[uint8_t(temp.get()[(i - 5) & 7] >> 16)]);
-				m.get()[i] = m.get()[i] ^ (C6.get()[uint8_t(temp.get()[(i - 6) & 7] >> 8)]);
-				m.get()[i] = m.get()[i] ^ (C7.get()[uint8_t(temp.get()[(i - 7) & 7])]);
+				m[i] = k[i];
+				m[i] = m[i] ^ (C0[uint8_t(temp[(i - 0) & 7] >> 56)]);
+				m[i] = m[i] ^ (C1[uint8_t(temp[(i - 1) & 7] >> 48)]);
+				m[i] = m[i] ^ (C2[uint8_t(temp[(i - 2) & 7] >> 40)]);
+				m[i] = m[i] ^ (C3[uint8_t(temp[(i - 3) & 7] >> 32)]);
+				m[i] = m[i] ^ (C4[uint8_t(temp[(i - 4) & 7] >> 24)]);
+				m[i] = m[i] ^ (C5[uint8_t(temp[(i - 5) & 7] >> 16)]);
+				m[i] = m[i] ^ (C6[uint8_t(temp[(i - 6) & 7] >> 8)]);
+				m[i] = m[i] ^ (C7[uint8_t(temp[(i - 7) & 7])]);
 
 			} // end for
 
-			memmove(temp.get(), m.get(), 8 * sizeof(uint64_t));
+			memmove(&temp[0], &m[0], 8 * sizeof(uint64_t));
 
 		} // end for
 	
 
 		for (register uint32_t i = 0; i < 8; i++)
 		{
-			hash.get()[i] = hash.get()[i] ^ (temp.get()[i] ^ data.get()[i]);
+			hash[i] = hash[i] ^ (temp[i] ^ data[i]);
 		} // end for
 
-		memset(data.get(), 0, 8 * sizeof(uint64_t));
+		memset(&data[0], 0, 8 * sizeof(uint64_t));
 	} // end function TransformBlock
 
 private:
@@ -205,12 +167,56 @@ private:
 		return result;
 	} // end function maskWithReductionPolynomial
 
-private:
-	shared_ptr<uint64_t> hash;
-	
-	shared_ptr<uint64_t> data, k, m, temp;
+	static char initializedStaticLoader()
+	{
+		register uint32_t v1, v2, v4, v5, v8, v9;
 
-	shared_ptr<uint64_t> C0, C1, C2, C3, C4, C5, C6, C7, rc;
+		for (register uint32_t i = 0; i < 256; i++)
+		{
+			v1 = SBOX[i];
+			v2 = maskWithReductionPolynomial(v1 << 1);
+			v4 = maskWithReductionPolynomial(v2 << 1);
+			v5 = v4 ^ v1;
+			v8 = maskWithReductionPolynomial(v4 << 1);
+			v9 = v8 ^ v1;
+
+			C0[i] = packIntoUInt64(v1, v1, v4, v1, v8, v5, v2, v9);
+			C1[i] = packIntoUInt64(v9, v1, v1, v4, v1, v8, v5, v2);
+			C2[i] = packIntoUInt64(v2, v9, v1, v1, v4, v1, v8, v5);
+			C3[i] = packIntoUInt64(v5, v2, v9, v1, v1, v4, v1, v8);
+			C4[i] = packIntoUInt64(v8, v5, v2, v9, v1, v1, v4, v1);
+			C5[i] = packIntoUInt64(v1, v8, v5, v2, v9, v1, v1, v4);
+			C6[i] = packIntoUInt64(v4, v1, v8, v5, v2, v9, v1, v1);
+			C7[i] = packIntoUInt64(v1, v4, v1, v8, v5, v2, v9, v1);
+
+		} // end for
+
+		rc[0] = 0;
+
+		for (register uint32_t r = 1, i; r < ROUNDS + 1; r++)
+		{
+
+			i = 8 * (r - 1);
+			rc[r] = (C0[i] & 0xFF00000000000000)
+				^ (C1[i + 1] & 0x00FF000000000000)
+				^ (C2[i + 2] & 0x0000FF0000000000)
+				^ (C3[i + 3] & 0x000000FF00000000)
+				^ (C4[i + 4] & 0x00000000FF000000)
+				^ (C5[i + 5] & 0x0000000000FF0000)
+				^ (C6[i + 6] & 0x000000000000FF00)
+				^ (C7[i + 7] & 0x00000000000000FF);
+		} // end for
+
+		return 'I';
+	}
+
+private:
+	HashLibUInt64Array hash;
+	
+	HashLibUInt64Array data, k, m, temp;
+
+	static char initialized;
+	static HashLibUInt64Array C0, C1, C2, C3, C4, C5, C6, C7, rc;
 
 	static const uint32_t ROUNDS = 10;
 
@@ -219,6 +225,19 @@ private:
 	static const uint32_t SBOX[256];
 
 }; // end class WhirlPool
+
+
+HashLibUInt64Array WhirlPool::C0 = HashLibUInt64Array(256);
+HashLibUInt64Array WhirlPool::C1 = HashLibUInt64Array(256);
+HashLibUInt64Array WhirlPool::C2 = HashLibUInt64Array(256);
+HashLibUInt64Array WhirlPool::C3 = HashLibUInt64Array(256);
+HashLibUInt64Array WhirlPool::C4 = HashLibUInt64Array(256);
+HashLibUInt64Array WhirlPool::C5 = HashLibUInt64Array(256);
+HashLibUInt64Array WhirlPool::C6 = HashLibUInt64Array(256);
+HashLibUInt64Array WhirlPool::C7 = HashLibUInt64Array(256);
+HashLibUInt64Array WhirlPool::rc = HashLibUInt64Array(WhirlPool::ROUNDS + 1);
+
+char WhirlPool::initialized = WhirlPool::initializedStaticLoader();
 
 const uint32_t WhirlPool::SBOX[256] = { 0x18, 0x23, 0xC6, 0xE8, 0x87, 0xB8, 0x01,
 	0x4F, 0x36, 0xA6, 0xD2, 0xF5, 0x79, 0x6F, 0x91, 0x52, 0x60, 0xBC, 0x9B, 0x8E, 0xA3, 0x0C,

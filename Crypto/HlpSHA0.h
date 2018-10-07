@@ -27,20 +27,32 @@ public:
 	{
 		name = __func__;
 
-		state = shared_ptr<uint32_t>(new uint32_t[5], default_delete<uint32_t[]>());
-		data = shared_ptr<uint32_t>(new uint32_t[80], default_delete<uint32_t[]>());
+		state.resize(5);
+		data.resize(80);
 	} // end constructor
 
-	~SHA0()
-	{} // end destructor
+	virtual IHash Clone() const
+	{
+		SHA0 HashInstance;
+
+		HashInstance = SHA0();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<SHA0>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
-		state.get()[0] = 0x67452301;
-		state.get()[1] = 0xEFCDAB89;
-		state.get()[2] = 0x98BADCFE;
-		state.get()[3] = 0x10325476;
-		state.get()[4] = 0xC3D2E1F0;
+		state[0] = 0x67452301;
+		state[1] = 0xEFCDAB89;
+		state[2] = 0x98BADCFE;
+		state[3] = 0x10325476;
+		state[4] = 0xC3D2E1F0;
 
 		BlockHash::Initialize();
 	} // end function Initialize
@@ -142,7 +154,7 @@ protected:
 	virtual HashLibByteArray GetResult()
 	{
 		HashLibByteArray result = HashLibByteArray(5 * sizeof(uint32_t));
-		Converters::be32_copy(&state.get()[0], 0, &result[0], 0, (int32_t)result.size());
+		Converters::be32_copy(&state[0], 0, &result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult
@@ -152,310 +164,310 @@ protected:
 	{
 		uint32_t A, B, C, D, E;
 
-		Converters::be32_copy(a_data, a_index, &data.get()[0], 0, 64);
+		Converters::be32_copy(a_data, a_index, &data[0], 0, 64);
 
-		Expand(&data.get()[0]);
+		Expand(&data[0]);
 
-		A = state.get()[0];
-		B = state.get()[1];
-		C = state.get()[2];
-		D = state.get()[3];
-		E = state.get()[4];
+		A = state[0];
+		B = state[1];
+		C = state[2];
+		D = state[3];
+		E = state[4];
 
-		E = (data.get()[0] + C1 + Bits::RotateLeft32(A, 5) +
+		E = (data[0] + C1 + Bits::RotateLeft32(A, 5) +
 			(D ^ (B & (C ^ D)))) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[1] + C1 + Bits::RotateLeft32(E, 5) +
+		D = (data[1] + C1 + Bits::RotateLeft32(E, 5) +
 			(C ^ (A & (B ^ C)))) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[2] + C1 + Bits::RotateLeft32(D, 5) +
+		C = (data[2] + C1 + Bits::RotateLeft32(D, 5) +
 			(B ^ (E & (A ^ B)))) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[3] + C1 + Bits::RotateLeft32(C, 5) +
+		B = (data[3] + C1 + Bits::RotateLeft32(C, 5) +
 			(A ^ (D & (E ^ A)))) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[4] + C1 + Bits::RotateLeft32(B, 5) +
+		A = (data[4] + C1 + Bits::RotateLeft32(B, 5) +
 			(E ^ (C & (D ^ E)))) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[5] + C1 + Bits::RotateLeft32(A, 5) +
+		E = (data[5] + C1 + Bits::RotateLeft32(A, 5) +
 			(D ^ (B & (C ^ D)))) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[6] + C1 + Bits::RotateLeft32(E, 5) +
+		D = (data[6] + C1 + Bits::RotateLeft32(E, 5) +
 			(C ^ (A & (B ^ C)))) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[7] + C1 + Bits::RotateLeft32(D, 5) +
+		C = (data[7] + C1 + Bits::RotateLeft32(D, 5) +
 			(B ^ (E & (A ^ B)))) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[8] + C1 + Bits::RotateLeft32(C, 5) +
+		B = (data[8] + C1 + Bits::RotateLeft32(C, 5) +
 			(A ^ (D & (E ^ A)))) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[9] + C1 + Bits::RotateLeft32(B, 5) +
+		A = (data[9] + C1 + Bits::RotateLeft32(B, 5) +
 			(E ^ (C & (D ^ E)))) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[10] + C1 + Bits::RotateLeft32(A, 5) +
+		E = (data[10] + C1 + Bits::RotateLeft32(A, 5) +
 			(D ^ (B & (C ^ D)))) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[11] + C1 + Bits::RotateLeft32(E, 5) +
+		D = (data[11] + C1 + Bits::RotateLeft32(E, 5) +
 			(C ^ (A & (B ^ C)))) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[12] + C1 + Bits::RotateLeft32(D, 5) +
+		C = (data[12] + C1 + Bits::RotateLeft32(D, 5) +
 			(B ^ (E & (A ^ B)))) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[13] + C1 + Bits::RotateLeft32(C, 5) +
+		B = (data[13] + C1 + Bits::RotateLeft32(C, 5) +
 			(A ^ (D & (E ^ A)))) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[14] + C1 + Bits::RotateLeft32(B, 5) +
+		A = (data[14] + C1 + Bits::RotateLeft32(B, 5) +
 			(E ^ (C & (D ^ E)))) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[15] + C1 + Bits::RotateLeft32(A, 5) +
+		E = (data[15] + C1 + Bits::RotateLeft32(A, 5) +
 			(D ^ (B & (C ^ D)))) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[16] + C1 + Bits::RotateLeft32(E, 5) +
+		D = (data[16] + C1 + Bits::RotateLeft32(E, 5) +
 			(C ^ (A & (B ^ C)))) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[17] + C1 + Bits::RotateLeft32(D, 5) +
+		C = (data[17] + C1 + Bits::RotateLeft32(D, 5) +
 			(B ^ (E & (A ^ B)))) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[18] + C1 + Bits::RotateLeft32(C, 5) +
+		B = (data[18] + C1 + Bits::RotateLeft32(C, 5) +
 			(A ^ (D & (E ^ A)))) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[19] + C1 + Bits::RotateLeft32(B, 5) +
+		A = (data[19] + C1 + Bits::RotateLeft32(B, 5) +
 			(E ^ (C & (D ^ E)))) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[20] + C2 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
+		E = (data[20] + C2 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[21] + C2 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
+		D = (data[21] + C2 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[22] + C2 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
+		C = (data[22] + C2 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[23] + C2 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
+		B = (data[23] + C2 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[24] + C2 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
+		A = (data[24] + C2 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[25] + C2 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
+		E = (data[25] + C2 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[26] + C2 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
+		D = (data[26] + C2 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[27] + C2 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
+		C = (data[27] + C2 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[28] + C2 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
+		B = (data[28] + C2 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[29] + C2 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
+		A = (data[29] + C2 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[30] + C2 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
+		E = (data[30] + C2 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[31] + C2 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
+		D = (data[31] + C2 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[32] + C2 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
+		C = (data[32] + C2 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[33] + C2 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
+		B = (data[33] + C2 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[34] + C2 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
+		A = (data[34] + C2 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[35] + C2 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
+		E = (data[35] + C2 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[36] + C2 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
+		D = (data[36] + C2 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[37] + C2 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
+		C = (data[37] + C2 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[38] + C2 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
+		B = (data[38] + C2 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[39] + C2 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
+		A = (data[39] + C2 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[40] + C3 + Bits::RotateLeft32(A, 5) +
+		E = (data[40] + C3 + Bits::RotateLeft32(A, 5) +
 			((B & C) | (D & (B | C)))) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[41] + C3 + Bits::RotateLeft32(E, 5) +
+		D = (data[41] + C3 + Bits::RotateLeft32(E, 5) +
 			((A & B) | (C & (A | B)))) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[42] + C3 + Bits::RotateLeft32(D, 5) +
+		C = (data[42] + C3 + Bits::RotateLeft32(D, 5) +
 			((E & A) | (B & (E | A)))) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[43] + C3 + Bits::RotateLeft32(C, 5) +
+		B = (data[43] + C3 + Bits::RotateLeft32(C, 5) +
 			((D & E) | (A & (D | E)))) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[44] + C3 + Bits::RotateLeft32(B, 5) +
+		A = (data[44] + C3 + Bits::RotateLeft32(B, 5) +
 			((C & D) | (E & (C | D)))) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[45] + C3 + Bits::RotateLeft32(A, 5) +
+		E = (data[45] + C3 + Bits::RotateLeft32(A, 5) +
 			((B & C) | (D & (B | C)))) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[46] + C3 + Bits::RotateLeft32(E, 5) +
+		D = (data[46] + C3 + Bits::RotateLeft32(E, 5) +
 			((A & B) | (C & (A | B)))) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[47] + C3 + Bits::RotateLeft32(D, 5) +
+		C = (data[47] + C3 + Bits::RotateLeft32(D, 5) +
 			((E & A) | (B & (E | A)))) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[48] + C3 + Bits::RotateLeft32(C, 5) +
+		B = (data[48] + C3 + Bits::RotateLeft32(C, 5) +
 			((D & E) | (A & (D | E)))) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[49] + C3 + Bits::RotateLeft32(B, 5) +
+		A = (data[49] + C3 + Bits::RotateLeft32(B, 5) +
 			((C & D) | (E & (C | D)))) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[50] + C3 + Bits::RotateLeft32(A, 5) +
+		E = (data[50] + C3 + Bits::RotateLeft32(A, 5) +
 			((B & C) | (D & (B | C)))) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[51] + C3 + Bits::RotateLeft32(E, 5) +
+		D = (data[51] + C3 + Bits::RotateLeft32(E, 5) +
 			((A & B) | (C & (A | B)))) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[52] + C3 + Bits::RotateLeft32(D, 5) +
+		C = (data[52] + C3 + Bits::RotateLeft32(D, 5) +
 			((E & A) | (B & (E | A)))) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[53] + C3 + Bits::RotateLeft32(C, 5) +
+		B = (data[53] + C3 + Bits::RotateLeft32(C, 5) +
 			((D & E) | (A & (D | E)))) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[54] + C3 + Bits::RotateLeft32(B, 5) +
+		A = (data[54] + C3 + Bits::RotateLeft32(B, 5) +
 			((C & D) | (E & (C | D)))) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[55] + C3 + Bits::RotateLeft32(A, 5) +
+		E = (data[55] + C3 + Bits::RotateLeft32(A, 5) +
 			((B & C) | (D & (B | C)))) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[56] + C3 + Bits::RotateLeft32(E, 5) +
+		D = (data[56] + C3 + Bits::RotateLeft32(E, 5) +
 			((A & B) | (C & (A | B)))) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[57] + C3 + Bits::RotateLeft32(D, 5) +
+		C = (data[57] + C3 + Bits::RotateLeft32(D, 5) +
 			((E & A) | (B & (E | A)))) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[58] + C3 + Bits::RotateLeft32(C, 5) +
+		B = (data[58] + C3 + Bits::RotateLeft32(C, 5) +
 			((D & E) | (A & (D | E)))) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[59] + C3 + Bits::RotateLeft32(B, 5) +
+		A = (data[59] + C3 + Bits::RotateLeft32(B, 5) +
 			((C & D) | (E & (C | D)))) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[60] + C4 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
+		E = (data[60] + C4 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[61] + C4 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
+		D = (data[61] + C4 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[62] + C4 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
+		C = (data[62] + C4 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[63] + C4 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
+		B = (data[63] + C4 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[64] + C4 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
+		A = (data[64] + C4 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[65] + C4 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
+		E = (data[65] + C4 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[66] + C4 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
+		D = (data[66] + C4 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[67] + C4 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
+		C = (data[67] + C4 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[68] + C4 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
+		B = (data[68] + C4 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[69] + C4 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
+		A = (data[69] + C4 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[70] + C4 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
+		E = (data[70] + C4 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[71] + C4 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
+		D = (data[71] + C4 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[72] + C4 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
+		C = (data[72] + C4 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[73] + C4 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
+		B = (data[73] + C4 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[74] + C4 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
+		A = (data[74] + C4 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
 
 		C = Bits::RotateLeft32(C, 30);
-		E = (data.get()[75] + C4 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
+		E = (data[75] + C4 + Bits::RotateLeft32(A, 5) + (B ^ C ^ D)) + E;
 
 		B = Bits::RotateLeft32(B, 30);
-		D = (data.get()[76] + C4 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
+		D = (data[76] + C4 + Bits::RotateLeft32(E, 5) + (A ^ B ^ C)) + D;
 
 		A = Bits::RotateLeft32(A, 30);
-		C = (data.get()[77] + C4 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
+		C = (data[77] + C4 + Bits::RotateLeft32(D, 5) + (E ^ A ^ B)) + C;
 
 		E = Bits::RotateLeft32(E, 30);
-		B = (data.get()[78] + C4 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
+		B = (data[78] + C4 + Bits::RotateLeft32(C, 5) + (D ^ E ^ A)) + B;
 
 		D = Bits::RotateLeft32(D, 30);
-		A = (data.get()[79] + C4 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
+		A = (data[79] + C4 + Bits::RotateLeft32(B, 5) + (C ^ D ^ E)) + A;
 
 		C = Bits::RotateLeft32(C, 30);
 
-		state.get()[0] = state.get()[0] + A;
-		state.get()[1] = state.get()[1] + B;
-		state.get()[2] = state.get()[2] + C;
-		state.get()[3] = state.get()[3] + D;
-		state.get()[4] = state.get()[4] + E;
+		state[0] = state[0] + A;
+		state[1] = state[1] + B;
+		state[2] = state[2] + C;
+		state[3] = state[3] + D;
+		state[4] = state[4] + E;
 
-		memset(data.get(), 0, sizeof(data.get()));
+		memset(&data[0], 0, sizeof(data));
 	} // end function TransformBlock
 
 
 protected:
-	shared_ptr<uint32_t> state;
-	shared_ptr<uint32_t> data;
+	HashLibUInt32Array state;
+	HashLibUInt32Array data;
 
 	static const uint32_t C1 = 0x5A827999;
 	static const uint32_t C2 = 0x6ED9EBA1;

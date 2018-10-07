@@ -19,6 +19,7 @@
 #include "../Base/HlpHash.h"
 #include "../Nullable/HlpNullable.h"
 #include "../Interfaces/HlpIHashInfo.h"
+#include "../Utils/HlpUtils.h"
 
 
 class MurmurHash3_x86_128 : public Hash, public IIHash128, public IIHashWithKey, public IITransformBlock
@@ -30,11 +31,28 @@ public:
 		name = __func__;
 
 		key = CKEY;
-		buf = make_shared<HashLibByteArray>(16);
+		buf.resize(16); 
 	} // end constructor
 
-	~MurmurHash3_x86_128()
-	{} // end destructor
+	virtual IHash Clone() const
+	{
+		MurmurHash3_x86_128 HashInstance;
+
+		HashInstance = MurmurHash3_x86_128();
+		HashInstance.key = key;
+		HashInstance.h1 = h1;
+		HashInstance.h2 = h2;
+		HashInstance.h3 = h3;
+		HashInstance.h4 = h4;
+		HashInstance.total_length = total_length;
+		HashInstance.idx = idx;
+		HashInstance.buf = buf;
+
+		IHash hash = make_shared<MurmurHash3_x86_128>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual void Initialize()
 	{
@@ -78,21 +96,22 @@ public:
         //consume last pending bytes
         if (idx && len)
         {
-            assert(a_index == 0); //nothing would work anyways if a_index is !=0
+            //assert(a_index == 0); //nothing would work anyways if a_index is !=0
 
             while (idx < 16 && len)
             {
-                (*buf)[idx++] = *(ptr_a_data + a_index);
+                buf[idx++] = *(ptr_a_data + a_index);
                 a_index++;
                 len--;
             }
             
             if (idx == 16)
-                ProcessPenginds();
+                ProcessPendings();
         }
+		else
+			i = 0;
 
 		nBlocks = len >> 4;
-        offset = 0;
 
 		// body
 		while (i < nBlocks)
@@ -160,19 +179,19 @@ public:
 private:
 	void ByteUpdate(const uint8_t a_b)
 	{
-		(*buf)[idx] = a_b;
+		buf[idx] = a_b;
 		idx++;
-        ProcessPenginds();
+        ProcessPendings();
     }
 
-    void ProcessPenginds()
+    void ProcessPendings()
     {
 		register uint32_t k1, k2, k3, k4;
 		uint8_t *ptr_Fm_buf = 0;
 		
 		if (idx >= 16)
 		{
-			ptr_Fm_buf = &(*buf)[0];
+			ptr_Fm_buf = &buf[0];
 			k1 = Converters::ReadBytesAsUInt32LE(ptr_Fm_buf, 0);
 			k2 = Converters::ReadBytesAsUInt32LE(ptr_Fm_buf, 4);
 			k3 = Converters::ReadBytesAsUInt32LE(ptr_Fm_buf, 8);
@@ -240,9 +259,9 @@ private:
 			switch (Length)
 			{
 			case 15:
-				k4 = k4 ^ ((*buf)[14] << 16);
-				k4 = k4 ^ ((*buf)[13] << 8);
-				k4 = k4 ^ ((*buf)[12] << 0);
+				k4 = k4 ^ (buf[14] << 16);
+				k4 = k4 ^ (buf[13] << 8);
+				k4 = k4 ^ (buf[12] << 0);
 
 				k4 = k4 * C4;
 				k4 = Bits::RotateLeft32(k4, 18);
@@ -251,8 +270,8 @@ private:
 				break;
 
 			case 14:
-				k4 = k4 ^ ((*buf)[13] << 8);
-				k4 = k4 ^ ((*buf)[12] << 0);
+				k4 = k4 ^ (buf[13] << 8);
+				k4 = k4 ^ (buf[12] << 0);
 				k4 = k4 * C4;
 				k4 = Bits::RotateLeft32(k4, 18);
 				k4 = k4 * C1;
@@ -260,7 +279,7 @@ private:
 				break;
 
 			case 13:
-				k4 = k4 ^ ((*buf)[12] << 0);
+				k4 = k4 ^ (buf[12] << 0);
 				k4 = k4 * C4;
 				k4 = Bits::RotateLeft32(k4, 18);
 				k4 = k4 * C1;
@@ -274,10 +293,10 @@ private:
 			switch (Length)
 			{
 			case 12:
-				k3 = k3 ^ ((*buf)[11] << 24);
-				k3 = k3 ^ ((*buf)[10] << 16);
-				k3 = k3 ^ ((*buf)[9] << 8);
-				k3 = k3 ^ ((*buf)[8] << 0);
+				k3 = k3 ^ (buf[11] << 24);
+				k3 = k3 ^ (buf[10] << 16);
+				k3 = k3 ^ (buf[9] << 8);
+				k3 = k3 ^ (buf[8] << 0);
 
 				k3 = k3 * C3;
 				k3 = Bits::RotateLeft32(k3, 17);
@@ -286,9 +305,9 @@ private:
 				break;
 
 			case 11:
-				k3 = k3 ^ ((*buf)[10] << 16);
-				k3 = k3 ^ ((*buf)[9] << 8);
-				k3 = k3 ^ ((*buf)[8] << 0);
+				k3 = k3 ^ (buf[10] << 16);
+				k3 = k3 ^ (buf[9] << 8);
+				k3 = k3 ^ (buf[8] << 0);
 
 				k3 = k3 * C3;
 				k3 = Bits::RotateLeft32(k3, 17);
@@ -297,8 +316,8 @@ private:
 				break;
 
 			case 10:
-				k3 = k3 ^ ((*buf)[9] << 8);
-				k3 = k3 ^ ((*buf)[8] << 0);
+				k3 = k3 ^ (buf[9] << 8);
+				k3 = k3 ^ (buf[8] << 0);
 
 				k3 = k3 * C3;
 				k3 = Bits::RotateLeft32(k3, 17);
@@ -307,7 +326,7 @@ private:
 				break;
 
 			case 9:
-				k3 = k3 ^ ((*buf)[8] << 0);
+				k3 = k3 ^ (buf[8] << 0);
 
 				k3 = k3 * C3;
 				k3 = Bits::RotateLeft32(k3, 17);
@@ -321,10 +340,10 @@ private:
 			switch (Length)
 			{
 			case 8:
-				k2 = k2 ^ ((*buf)[7] << 24);
-				k2 = k2 ^ ((*buf)[6] << 16);
-				k2 = k2 ^ ((*buf)[5] << 8);
-				k2 = k2 ^ ((*buf)[4] << 0);
+				k2 = k2 ^ (buf[7] << 24);
+				k2 = k2 ^ (buf[6] << 16);
+				k2 = k2 ^ (buf[5] << 8);
+				k2 = k2 ^ (buf[4] << 0);
 
 				k2 = k2 * C2;
 				k2 = Bits::RotateLeft32(k2, 16);
@@ -333,9 +352,9 @@ private:
 				break;
 
 			case 7:
-				k2 = k2 ^ ((*buf)[6] << 16);
-				k2 = k2 ^ ((*buf)[5] << 8);
-				k2 = k2 ^ ((*buf)[4] << 0);
+				k2 = k2 ^ (buf[6] << 16);
+				k2 = k2 ^ (buf[5] << 8);
+				k2 = k2 ^ (buf[4] << 0);
 
 				k2 = k2 * C2;
 				k2 = Bits::RotateLeft32(k2, 16);
@@ -344,8 +363,8 @@ private:
 				break;
 
 			case 6:
-				k2 = k2 ^ ((*buf)[5] << 8);
-				k2 = k2 ^ ((*buf)[4] << 0);
+				k2 = k2 ^ (buf[5] << 8);
+				k2 = k2 ^ (buf[4] << 0);
 
 				k2 = k2 * C2;
 				k2 = Bits::RotateLeft32(k2, 16);
@@ -354,7 +373,7 @@ private:
 				break;
 
 			case 5:
-				k2 = k2 ^ ((*buf)[4] << 0);
+				k2 = k2 ^ (buf[4] << 0);
 
 				k2 = k2 * C2;
 				k2 = Bits::RotateLeft32(k2, 16);
@@ -369,10 +388,10 @@ private:
 			switch (Length)
 			{
 			case 4:
-				k1 = k1 ^ ((*buf)[3] << 24);
-				k1 = k1 ^ ((*buf)[2] << 16);
-				k1 = k1 ^ ((*buf)[1] << 8);
-				k1 = k1 ^ ((*buf)[0] << 0);
+				k1 = k1 ^ (buf[3] << 24);
+				k1 = k1 ^ (buf[2] << 16);
+				k1 = k1 ^ (buf[1] << 8);
+				k1 = k1 ^ (buf[0] << 0);
 
 				k1 = k1 * C1;
 				k1 = Bits::RotateLeft32(k1, 15);
@@ -381,9 +400,9 @@ private:
 				break;
 
 			case 3:
-				k1 = k1 ^ ((*buf)[2] << 16);
-				k1 = k1 ^ ((*buf)[1] << 8);
-				k1 = k1 ^ ((*buf)[0] << 0);
+				k1 = k1 ^ (buf[2] << 16);
+				k1 = k1 ^ (buf[1] << 8);
+				k1 = k1 ^ (buf[0] << 0);
 
 				k1 = k1 * C1;
 				k1 = Bits::RotateLeft32(k1, 15);
@@ -392,8 +411,8 @@ private:
 				break;
 
 			case 2:
-				k1 = k1 ^ ((*buf)[1] << 8);
-				k1 = k1 ^ ((*buf)[0] << 0);
+				k1 = k1 ^ (buf[1] << 8);
+				k1 = k1 ^ (buf[0] << 0);
 
 				k1 = k1 * C1;
 				k1 = Bits::RotateLeft32(k1, 15);
@@ -402,7 +421,7 @@ private:
 				break;
 
 			case 1:
-				k1 = k1 ^ ((*buf)[0] << 0);
+				k1 = k1 ^ (buf[0] << 0);
 
 				k1 = k1 * C1;
 				k1 = Bits::RotateLeft32(k1, 15);
@@ -474,7 +493,7 @@ private:
 		else
 		{
 			if (value.size() != GetKeyLength().GetValue())
-				throw ArgumentHashLibException(InvalidKeyLength + GetKeyLength().GetValue());
+				throw ArgumentHashLibException(Utils::string_format(InvalidKeyLength, GetKeyLength().GetValue()));
 			key = Converters::ReadBytesAsUInt32LE(&value[0], 0);
 		} // end else
 	} // end function SetKey
@@ -482,7 +501,7 @@ private:
 private:
 	uint32_t key, h1, h2, h3, h4, total_length;
 	int32_t idx;
-	shared_ptr<HashLibByteArray> buf;
+	HashLibByteArray buf;
 
 	static const uint32_t CKEY = uint32_t(0x0);
 

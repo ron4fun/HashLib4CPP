@@ -29,6 +29,20 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		RS HashInstance;
+
+		HashInstance = RS();
+		HashInstance.hash = hash;
+		HashInstance.a = a;
+
+		IHash hash = make_shared<RS>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		hash = 0;

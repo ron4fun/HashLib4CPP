@@ -29,6 +29,19 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		BKDR HashInstance;
+
+		HashInstance = BKDR();
+		HashInstance.hash = hash;
+
+		IHash hash = make_shared<BKDR>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		hash = 0;

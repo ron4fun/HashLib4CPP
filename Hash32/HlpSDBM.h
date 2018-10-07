@@ -29,6 +29,19 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		SDBM HashInstance;
+
+		HashInstance = SDBM();
+		HashInstance.hash = hash;
+
+		IHash hash = make_shared<SDBM>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual void Initialize()
 	{
 		hash = 0;

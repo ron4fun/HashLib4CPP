@@ -28,6 +28,20 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		Jenkins3 HashInstance;
+
+		HashInstance = Jenkins3();
+
+		HashInstance._list = _list;
+
+		IHash hash = make_shared<Jenkins3>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 protected:
 	virtual IHashResult ComputeAggregatedBytes(const HashLibByteArray &a_data)
 	{

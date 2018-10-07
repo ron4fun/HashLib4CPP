@@ -18,19 +18,39 @@
 
 #include "../Base/HlpHashCryptoNotBuildIn.h"
 #include "../Base/HlpHashRounds.h"
+#include "../Utils/HlpUtils.h"
 
 
 class Tiger2 : public BlockHash, public IICryptoNotBuildIn, public IITransformBlock
 {
 public:
+	virtual IHash Clone() const
+	{
+		Tiger2 HashInstance = Tiger2(hash_size, GetHashRound(rounds));
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Tiger2>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+	
 	virtual void Initialize()
 	{
-		hash.get()[0] = 0x0123456789ABCDEF;
-		hash.get()[1] = 0xFEDCBA9876543210;
-		hash.get()[2] = 0xF096A5B4C3B2E187;
+		hash[0] = 0x0123456789ABCDEF;
+		hash[1] = 0xFEDCBA9876543210;
+		hash[2] = 0xF096A5B4C3B2E187;
 
 		BlockHash::Initialize();
 	} // end function Initialize
+
+	virtual string GetName() const
+	{
+		return Utils::string_format("%s_%u_%u",
+			name, rounds, hash_size * 8);
+	}
 
 protected:
 	Tiger2(const int32_t a_hash_size, const HashRounds &a_rounds)
@@ -39,12 +59,27 @@ protected:
 		name = __func__;
 
 		rounds = int32_t(a_rounds);
-		hash = shared_ptr<uint64_t>(new uint64_t[3], default_delete<uint64_t[]>());
-		data = shared_ptr<uint64_t>(new uint64_t[8], default_delete<uint64_t[]>());
+		hash.resize(3);
+		data.resize(8);
 	} // end constructor
-
-	~Tiger2()
-	{} // end destructor
+	
+	static inline HashRounds GetHashRound(const int32_t HashRound)
+	{
+		switch (HashRound)
+		{
+		case 3:
+			return HashRounds::Rounds3;
+		case 4:
+			return HashRounds::Rounds4;
+		case 5:
+			return HashRounds::Rounds5;
+		case 8:
+			return HashRounds::Rounds8;
+		default:
+			throw ArgumentInvalidHashLibException(
+				Utils::string_format(InvalidHashRound, HashRound));
+		}
+	}
 
 	virtual void Finish()
 	{
@@ -74,7 +109,7 @@ protected:
 	{
 		HashLibByteArray result = HashLibByteArray(GetHashSize());
 		
-		Converters::le64_copy(hash.get(), 0, &result[0], 0, (int32_t)result.size());
+		Converters::le64_copy(&hash[0], 0, &result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult
@@ -85,208 +120,208 @@ protected:
 		register uint64_t a, b, c, temp_a;
 		register uint32_t _rounds;
 
-		Converters::le64_copy(a_data, a_index, data.get(), 0, 64);
+		Converters::le64_copy(a_data, a_index, &data[0], 0, 64);
 
-		a = hash.get()[0];
-		b = hash.get()[1];
-		c = hash.get()[2];
+		a = hash[0];
+		b = hash[1];
+		c = hash[2];
 
-		c = c ^ data.get()[0];
+		c = c ^ data[0];
 		a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 		] ^ T4[uint8_t(c >> 48)]);
 		b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 		] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 		b = b * 5;
 
-		a = a ^ data.get()[1];
+		a = a ^ data[1];
 		b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 		] ^ T4[uint8_t(a >> 48)]);
 		c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2[uint8_t(a >> 40)
 		] ^ T1[uint8_t(a >> 56)]);
 		c = c * 5;
 
-		b = b ^ data.get()[2];
+		b = b ^ data[2];
 		c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 		] ^ T4[uint8_t(b >> 48)]);
 		a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2[uint8_t(b >> 40)
 		] ^ T1[uint8_t(b >> 56)]);
 		a = a * 5;
 
-		c = c ^ data.get()[3];
+		c = c ^ data[3];
 		a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 		] ^ T4[uint8_t(c >> 48)]);
 		b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 		] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 		b = b * 5;
 
-		a = a ^ data.get()[4];
+		a = a ^ data[4];
 		b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 		] ^ T4[uint8_t(a >> 48)]);
 		c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2[uint8_t(a >> 40)
 		] ^ T1[uint8_t(a >> 56)]);
 		c = c * 5;
 
-		b = b ^ data.get()[5];
+		b = b ^ data[5];
 		c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 		] ^ T4[uint8_t(b >> 48)]);
 		a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2[uint8_t(b >> 40)
 		] ^ T1[uint8_t(b >> 56)]);
 		a = a * 5;
 
-		c = c ^ data.get()[6];
+		c = c ^ data[6];
 		a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 		] ^ T4[uint8_t(c >> 48)]);
 		b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 		] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 		b = b * 5;
 
-		a = a ^ data.get()[7];
+		a = a ^ data[7];
 		b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 		] ^ T4[uint8_t(a >> 48)]);
 		c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2[uint8_t(a >> 40)
 		] ^ T1[uint8_t(a >> 56)]);
 		c = c * 5;
 
-		data.get()[0]  = data.get()[0] - (data.get()[7] ^ C1);
-		data.get()[1]  = data.get()[1] ^ data.get()[0];
-		data.get()[2]  = data.get()[2] + data.get()[1];
-		data.get()[3]  = data.get()[3] - (data.get()[2] ^ (~data.get()[1] << 19));
-		data.get()[4]  = data.get()[4] ^ data.get()[3];
-		data.get()[5]  = data.get()[5] + data.get()[4];
-		data.get()[6]  = data.get()[6] - (data.get()[5] ^ (~data.get()[4] >> 23));
-		data.get()[7]  = data.get()[7] ^ data.get()[6];
-		data.get()[0]  = data.get()[0] + data.get()[7];
-		data.get()[1]  = data.get()[1] - (data.get()[0] ^ (~data.get()[7] << 19));
-		data.get()[2]  = data.get()[2] ^ data.get()[1];
-		data.get()[3]  = data.get()[3] + data.get()[2];
-		data.get()[4]  = data.get()[4] - (data.get()[3] ^ (~data.get()[2] >> 23));
-		data.get()[5]  = data.get()[5] ^ data.get()[4];
-		data.get()[6]  = data.get()[6] + data.get()[5];
-		data.get()[7]  = data.get()[7] - (data.get()[6] ^ C2);
+		data[0]  = data[0] - (data[7] ^ C1);
+		data[1]  = data[1] ^ data[0];
+		data[2]  = data[2] + data[1];
+		data[3]  = data[3] - (data[2] ^ (~data[1] << 19));
+		data[4]  = data[4] ^ data[3];
+		data[5]  = data[5] + data[4];
+		data[6]  = data[6] - (data[5] ^ (~data[4] >> 23));
+		data[7]  = data[7] ^ data[6];
+		data[0]  = data[0] + data[7];
+		data[1]  = data[1] - (data[0] ^ (~data[7] << 19));
+		data[2]  = data[2] ^ data[1];
+		data[3]  = data[3] + data[2];
+		data[4]  = data[4] - (data[3] ^ (~data[2] >> 23));
+		data[5]  = data[5] ^ data[4];
+		data[6]  = data[6] + data[5];
+		data[7]  = data[7] - (data[6] ^ C2);
 
-		b = b ^ data.get()[0];
+		b = b ^ data[0];
 		c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 		] ^ T4[uint8_t(b >> 48)]);
 		a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2[uint8_t(b >> 40)
 		] ^ T1[uint8_t(b >> 56)]);
 		a = a * 7;
 
-		c = c ^ data.get()[1];
+		c = c ^ data[1];
 		a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 		] ^ T4[uint8_t(c >> 48)]);
 		b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 		] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 		b = b * 7;
 
-		a = a ^ data.get()[2];
+		a = a ^ data[2];
 		b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 		] ^ T4[uint8_t(a >> 48)]);
 		c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2[uint8_t(a >> 40)
 		] ^ T1[uint8_t(a >> 56)]);
 		c = c * 7;
 
-		b = b ^ data.get()[3];
+		b = b ^ data[3];
 		c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 		] ^ T4[uint8_t(b >> 48)]);
 		a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2[uint8_t(b >> 40)
 		] ^ T1[uint8_t(b >> 56)]);
 		a = a * 7;
 
-		c = c ^ data.get()[4];
+		c = c ^ data[4];
 		a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 		] ^ T4[uint8_t(c >> 48)]);
 		b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 		] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 		b = b * 7;
 
-		a = a ^ data.get()[5];
+		a = a ^ data[5];
 		b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 		] ^ T4[uint8_t(a >> 48)]);
 		c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2[uint8_t(a >> 40)
 		] ^ T1[uint8_t(a >> 56)]);
 		c = c * 7;
 
-		b = b ^ data.get()[6];
+		b = b ^ data[6];
 		c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 		] ^ T4[uint8_t(b >> 48)]);
 		a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2[uint8_t(b >> 40)
 		] ^ T1[uint8_t(b >> 56)]);
 		a = a * 7;
 
-		c = c ^ data.get()[7];
+		c = c ^ data[7];
 		a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 		] ^ T4[uint8_t(c >> 48)]);
 		b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 		] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 		b = b * 7;
 
-		data.get()[0]  = data.get()[0] - (data.get()[7] ^ C1);
-		data.get()[1]  = data.get()[1] ^ data.get()[0];
-		data.get()[2]  = data.get()[2] + data.get()[1];
-		data.get()[3]  = data.get()[3] - (data.get()[2] ^ (~data.get()[1] << 19));
-		data.get()[4]  = data.get()[4] ^ data.get()[3];
-		data.get()[5]  = data.get()[5] + data.get()[4];
-		data.get()[6]  = data.get()[6] - (data.get()[5] ^ (~data.get()[4] >> 23));
-		data.get()[7]  = data.get()[7] ^ data.get()[6];
-		data.get()[0]  = data.get()[0] + data.get()[7];
-		data.get()[1]  = data.get()[1] - (data.get()[0] ^ (~data.get()[7] << 19));
-		data.get()[2]  = data.get()[2] ^ data.get()[1];
-		data.get()[3]  = data.get()[3] + data.get()[2];
-		data.get()[4]  = data.get()[4] - (data.get()[3] ^ (~data.get()[2] >> 23));
-		data.get()[5]  = data.get()[5] ^ data.get()[4];
-		data.get()[6]  = data.get()[6] + data.get()[5];
-		data.get()[7]  = data.get()[7] - (data.get()[6] ^ C2);
+		data[0]  = data[0] - (data[7] ^ C1);
+		data[1]  = data[1] ^ data[0];
+		data[2]  = data[2] + data[1];
+		data[3]  = data[3] - (data[2] ^ (~data[1] << 19));
+		data[4]  = data[4] ^ data[3];
+		data[5]  = data[5] + data[4];
+		data[6]  = data[6] - (data[5] ^ (~data[4] >> 23));
+		data[7]  = data[7] ^ data[6];
+		data[0]  = data[0] + data[7];
+		data[1]  = data[1] - (data[0] ^ (~data[7] << 19));
+		data[2]  = data[2] ^ data[1];
+		data[3]  = data[3] + data[2];
+		data[4]  = data[4] - (data[3] ^ (~data[2] >> 23));
+		data[5]  = data[5] ^ data[4];
+		data[6]  = data[6] + data[5];
+		data[7]  = data[7] - (data[6] ^ C2);
 
-		a = a ^ data.get()[0];
+		a = a ^ data[0];
 		b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 		] ^ T4[uint8_t(a >> 48)]);
 		c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2[uint8_t(a >> 40)
 		] ^ T1[uint8_t(a >> 56)]);
 		c = c * 9;
 
-		b = b ^ data.get()[1];
+		b = b ^ data[1];
 		c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 		] ^ T4[uint8_t(b >> 48)]);
 		a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2[uint8_t(b >> 40)
 		] ^ T1[uint8_t(b >> 56)]);
 		a = a * 9;
 
-		c = c ^ data.get()[2];
+		c = c ^ data[2];
 		a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 		] ^ T4[uint8_t(c >> 48)]);
 		b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 		] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 		b = b * 9;
 
-		a = a ^ data.get()[3];
+		a = a ^ data[3];
 		b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 		] ^ T4[uint8_t(a >> 48)]);
 		c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2[uint8_t(a >> 40)
 		] ^ T1[uint8_t(a >> 56)]);
 		c = c * 9;
 
-		b = b ^ data.get()[4];
+		b = b ^ data[4];
 		c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 		] ^ T4[uint8_t(b >> 48)]);
 		a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2[uint8_t(b >> 40)
 		] ^ T1[uint8_t(b >> 56)]);
 		a = a * 9;
 
-		c = c ^ data.get()[5];
+		c = c ^ data[5];
 		a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 		] ^ T4[uint8_t(c >> 48)]);
 		b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 		] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 		b = b * 9;
 
-		a = a ^ data.get()[6];
+		a = a ^ data[6];
 		b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 		] ^ T4[uint8_t(a >> 48)]);
 		c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2[uint8_t(a >> 40)
 		] ^ T1[uint8_t(a >> 56)]);
 		c = c * 9;
 
-		b = b ^ data.get()[7];
+		b = b ^ data[7];
 		c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 		] ^ T4[uint8_t(b >> 48)]);
 		a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2[uint8_t(b >> 40)
@@ -296,73 +331,73 @@ protected:
 		_rounds = 3;
 		while (_rounds < rounds)
 		{
-			data.get()[0] = data.get()[0] - (data.get()[7] ^ C1);
-			data.get()[1] = data.get()[1] ^ data.get()[0];
-			data.get()[2] = data.get()[2] + data.get()[1];
-			data.get()[3] = data.get()[3] - (data.get()[2] ^ (~data.get()[1] << 19));
-			data.get()[4] = data.get()[4] ^ data.get()[3];
-			data.get()[5] = data.get()[5] + data.get()[4];
-			data.get()[6] = data.get()[6] - (data.get()[5] ^ (~data.get()[4] >> 23));
-			data.get()[7] = data.get()[7] ^ data.get()[6];
-			data.get()[0] = data.get()[0] + data.get()[7];
-			data.get()[1] = data.get()[1] - (data.get()[0] ^ (~data.get()[7] << 19));
-			data.get()[2] = data.get()[2] ^ data.get()[1];
-			data.get()[3] = data.get()[3] + data.get()[2];
-			data.get()[4] = data.get()[4] - (data.get()[3] ^ (~data.get()[2] >> 23));
-			data.get()[5] = data.get()[5] ^ data.get()[4];
-			data.get()[6] = data.get()[6] + data.get()[5];
-			data.get()[7] = data.get()[7] - (data.get()[6] ^ C2);
+			data[0] = data[0] - (data[7] ^ C1);
+			data[1] = data[1] ^ data[0];
+			data[2] = data[2] + data[1];
+			data[3] = data[3] - (data[2] ^ (~data[1] << 19));
+			data[4] = data[4] ^ data[3];
+			data[5] = data[5] + data[4];
+			data[6] = data[6] - (data[5] ^ (~data[4] >> 23));
+			data[7] = data[7] ^ data[6];
+			data[0] = data[0] + data[7];
+			data[1] = data[1] - (data[0] ^ (~data[7] << 19));
+			data[2] = data[2] ^ data[1];
+			data[3] = data[3] + data[2];
+			data[4] = data[4] - (data[3] ^ (~data[2] >> 23));
+			data[5] = data[5] ^ data[4];
+			data[6] = data[6] + data[5];
+			data[7] = data[7] - (data[6] ^ C2);
 
-			c = c ^ data.get()[0];
+			c = c ^ data[0];
 			a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 			] ^ T4[uint8_t(c >> 48)]);
 			b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 			] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 			b = b * 9;
 
-			a = a ^ data.get()[1];
+			a = a ^ data[1];
 			b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 			] ^ T4[uint8_t(a >> 48)]);
 			c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2
 				[uint8_t(a >> 40)] ^ T1[uint8_t(a >> 56)]);
 			c = c * 9;
 
-			b = b ^ data.get()[2];
+			b = b ^ data[2];
 			c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 			] ^ T4[uint8_t(b >> 48)]);
 			a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2
 				[uint8_t(b >> 40)] ^ T1[uint8_t(b >> 56)]);
 			a = a * 9;
 
-			c = c ^ data.get()[3];
+			c = c ^ data[3];
 			a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 			] ^ T4[uint8_t(c >> 48)]);
 			b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 			] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 			b = b * 9;
 
-			a = a ^ data.get()[4];
+			a = a ^ data[4];
 			b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 			] ^ T4[uint8_t(a >> 48)]);
 			c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2
 				[uint8_t(a >> 40)] ^ T1[uint8_t(a >> 56)]);
 			c = c * 9;
 
-			b = b ^ data.get()[5];
+			b = b ^ data[5];
 			c = c - (T1[uint8_t(b)] ^ T2[uint8_t(b >> 16)] ^ T3[uint8_t(b >> 32)
 			] ^ T4[uint8_t(b >> 48)]);
 			a = a + (T4[uint8_t(b >> 8)] ^ T3[uint8_t(b >> 24)] ^ T2
 				[uint8_t(b >> 40)] ^ T1[uint8_t(b >> 56)]);
 			a = a * 9;
 
-			c = c ^ data.get()[6];
+			c = c ^ data[6];
 			a = a - (T1[uint8_t(c)] ^ T2[uint8_t(c >> 16)] ^ T3[uint8_t(c >> 32)
 			] ^ T4[uint8_t(c >> 48)]);
 			b = b + (T4[uint8_t(c >> 8) & 0xFF] ^ T3[uint8_t(c >> 24)
 			] ^ T2[uint8_t(c >> 40)] ^ T1[uint8_t(c >> 56)]);
 			b = b * 9;
 
-			a = a ^ data.get()[7];
+			a = a ^ data[7];
 			b = b - (T1[uint8_t(a)] ^ T2[uint8_t(a >> 16)] ^ T3[uint8_t(a >> 32)
 			] ^ T4[uint8_t(a >> 48)]);
 			c = c + (T4[uint8_t(a >> 8)] ^ T3[uint8_t(a >> 24)] ^ T2
@@ -377,19 +412,20 @@ protected:
 			_rounds++;
 		} // end while
 
-	   hash.get()[0]  = hash.get()[0] ^ a;
-	   hash.get()[1]  = b - hash.get()[1];
-	   hash.get()[2]  = hash.get()[2] + c;
+	   hash[0]  = hash[0] ^ a;
+	   hash[1]  = b - hash[1];
+	   hash[2]  = hash[2] + c;
 
-		memset(data.get(), 0, 8 * sizeof(uint64_t));
+		memset(&data[0], 0, 8 * sizeof(uint64_t));
 	} // end function TransformBlock
 
 public:
 	static const char *InvalidTiger2HashSize;
+	static const char *InvalidHashRound;
 
 private:
-	shared_ptr<uint64_t> hash;
-	shared_ptr<uint64_t> data;
+	HashLibUInt64Array hash;
+	HashLibUInt64Array data;
 	int32_t rounds;
 
 	static const uint64_t C1 = 0xA5A5A5A5A5A5A5A5;
@@ -403,6 +439,7 @@ private:
 }; // end class Tiger2
 
 const char *Tiger2::InvalidTiger2HashSize = "Tiger2 HashSize Must be Either 128 bit(16 byte), 160 bit(20 byte) or 192 bit(24 byte)";
+const char *Tiger2::InvalidHashRound = "Specified HashRound Is Invalid or UnSupported \"%d\"";
 
 const uint64_t Tiger2::T1[256] = { uint64_t(0x02AAB17CF7E90C5E),
 	uint64_t(0xAC424B03E243A8EC), uint64_t(0x72CD5BE30DD5FCD3),

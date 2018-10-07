@@ -28,6 +28,21 @@ public:
 		name = __func__;
 	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		SHA1 HashInstance;
+
+		HashInstance = SHA1();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<SHA1>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 protected:
 	virtual void Expand(uint32_t *a_data)
 	{

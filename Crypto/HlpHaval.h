@@ -19,6 +19,7 @@
 #include "../Base/HlpHashCryptoNotBuildIn.h"
 #include "../Base/HlpHashSize.h"
 #include "../Base/HlpHashRounds.h"
+#include "../Utils/HlpUtils.h"
 
 
 class Haval : public BlockHash, public IICryptoNotBuildIn, public IITransformBlock
@@ -38,10 +39,18 @@ public:
 		BlockHash::Initialize();
 	} // end function Initialize
 
+	virtual string GetName() const
+	{
+		return Utils::string_format("%s_%u_%u",
+			name, rounds, _HashSize * 8);
+	}
+
 protected:
 	Haval(const HashRounds &a_rounds, const HashSize &a_hash_size)
 		: BlockHash(int32_t(a_hash_size), 128)
 	{
+		name = __func__;
+
 		_HashSize = GetHashSize();
 
 		rounds = int32_t(a_rounds);
@@ -185,6 +194,19 @@ public:
 	Haval3(const HashSize &a_hash_size)
 		: Haval(Rounds3, a_hash_size)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval3 HashInstance = Haval3(HashSize(_HashSize));
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval3>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 protected:
 	virtual void TransformBlock(const uint8_t *a_data,
@@ -608,6 +630,19 @@ public:
 	Haval4(const HashSize &a_hash_size)
 		: Haval(Rounds4, a_hash_size)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval4 HashInstance = Haval4(HashSize(_HashSize));
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval4>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 protected:
 	virtual void TransformBlock(const uint8_t *a_data,
@@ -1191,6 +1226,19 @@ public:
 	Haval5(const HashSize &a_hash_size)
 		: Haval(Rounds5, a_hash_size)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval5 HashInstance = Haval5(HashSize(_HashSize));
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval5>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 protected:
 	virtual void TransformBlock(const uint8_t *a_data,
@@ -1901,6 +1949,24 @@ public:
 	Haval_3_128()
 		: Haval3(HashSize128)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_3_128 HashInstance;
+
+		HashInstance = Haval_3_128();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_3_128>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_3_128
 
 
@@ -1910,6 +1976,24 @@ public:
 	Haval_4_128()
 		: Haval4(HashSize128)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_4_128 HashInstance;
+
+		HashInstance = Haval_4_128();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_4_128>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_4_128
 
 
@@ -1919,6 +2003,24 @@ public:
 	Haval_5_128()
 		: Haval5(HashSize128)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_5_128 HashInstance;
+
+		HashInstance = Haval_5_128();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_5_128>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_5_128
 
 
@@ -1928,6 +2030,24 @@ public:
 	Haval_3_160()
 		: Haval3(HashSize160)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_3_160 HashInstance;
+
+		HashInstance = Haval_3_160();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_3_160>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_3_160
 
 
@@ -1937,6 +2057,24 @@ public:
 	Haval_4_160()
 		: Haval4(HashSize160)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_4_160 HashInstance;
+
+		HashInstance = Haval_4_160();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_4_160>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_4_160
 
 
@@ -1946,6 +2084,24 @@ public:
 	Haval_5_160()
 		: Haval5(HashSize160)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_5_160 HashInstance;
+
+		HashInstance = Haval_5_160();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_5_160>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_5_160
 
 
@@ -1955,6 +2111,24 @@ public:
 	Haval_3_192()
 		: Haval3(HashSize192)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_3_192 HashInstance;
+
+		HashInstance = Haval_3_192();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_3_192>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_3_192
 
 
@@ -1964,6 +2138,24 @@ public:
 	Haval_4_192()
 		: Haval4(HashSize192)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_4_192 HashInstance;
+
+		HashInstance = Haval_4_192();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_4_192>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_4_192
 
 
@@ -1973,6 +2165,24 @@ public:
 	Haval_5_192()
 		: Haval5(HashSize192)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_5_192 HashInstance;
+
+		HashInstance = Haval_5_192();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_5_192>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_5_192
 
 
@@ -1982,6 +2192,24 @@ public:
 	Haval_3_224()
 		: Haval3(HashSize224)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_3_224 HashInstance;
+
+		HashInstance = Haval_3_224();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_3_224>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_3_224
 
 
@@ -1991,6 +2219,24 @@ public:
 	Haval_4_224()
 		: Haval4(HashSize224)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_4_224 HashInstance;
+
+		HashInstance = Haval_4_224();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_4_224>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_4_224
 
 
@@ -2000,6 +2246,24 @@ public:
 	Haval_5_224()
 		: Haval5(HashSize224)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_5_224 HashInstance;
+
+		HashInstance = Haval_5_224();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_5_224>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_5_224
 
 
@@ -2009,6 +2273,24 @@ public:
 	Haval_3_256()
 		: Haval3(HashSize256)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_3_256 HashInstance;
+
+		HashInstance = Haval_3_256();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_3_256>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_3_256
 
 
@@ -2018,6 +2300,24 @@ public:
 	Haval_4_256()
 		: Haval4(HashSize256)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_4_256 HashInstance;
+
+		HashInstance = Haval_4_256();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_4_256>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_4_256
 
 
@@ -2027,6 +2327,24 @@ public:
 	Haval_5_256()
 		: Haval5(HashSize256)
 	{} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Haval_5_256 HashInstance;
+
+		HashInstance = Haval_5_256();
+		HashInstance.rounds = rounds;
+		HashInstance._HashSize = _HashSize;
+		HashInstance.hash = hash;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Haval_5_256>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class Haval_5_256
 
 

@@ -20,6 +20,10 @@
 #include "HlpIHashResult.h"
 #include "../Utils/HlpHashLibTypes.h"
 
+class IIHash;
+
+typedef shared_ptr<IIHash> IHash;
+
 
 class IIHash
 {
@@ -29,6 +33,8 @@ public:
 	virtual int32_t GetHashSize() const = 0;
 	virtual int32_t GetBufferSize() const = 0;
 	virtual void SetBufferSize(const int32_t value) = 0;
+
+	virtual IHash Clone() const = 0;
 
 	virtual IHashResult ComputeString(const string &a_data) = 0;
 	virtual IHashResult ComputeBytes(const HashLibByteArray &a_data) = 0;
@@ -53,7 +59,5 @@ public:
 		const int64_t a_from = 0, const int64_t a_length = -1) = 0;
 
 }; // end class IHash
-
-typedef shared_ptr<IIHash> IHash;
 
 #endif // !HLPIHASH
