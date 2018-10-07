@@ -18,6 +18,14 @@
 
 #include "../Base/HlpHashCryptoNotBuildIn.h"
 #include "../Base/HlpHashSize.h"
+#include "../Utils/HlpUtils.h"
+
+
+enum HashMode
+{
+	hmKeccak = 0x1,
+	hmSHA3 = 0x6
+}; // end enum HashMode
 
 
 class SHA3 : public BlockHash, public IICryptoNotBuildIn, public IITransformBlock
@@ -25,7 +33,7 @@ class SHA3 : public BlockHash, public IICryptoNotBuildIn, public IITransformBloc
 public:
 	virtual void Initialize()
 	{
-		memset(state, 0, 25 * sizeof(uint64_t));
+		memset(&state[0], 0, 25 * sizeof(uint64_t));
 
 		state[1] = uint64_t(-1);
 		state[2] = uint64_t(-1);
@@ -41,28 +49,37 @@ protected:
 	SHA3(const HashSize &a_hash_size)
 		: BlockHash(int32_t(a_hash_size), 200 - (int32_t(a_hash_size) * 2))
 	{
-		name = __func__;
-
 		HashSize = GetHashSize();
 		BlockSize = GetBlockSize();
-	} // end constructor
 
-	~SHA3()
+		state.resize(25);
+	} // end constructor
+	
+	virtual string GetName() const
 	{
-		delete[] state;		
-		delete[] data;
-	} // end destructor
+		switch (hash_mode)
+		{
+		case hmKeccak:
+			return Utils::string_format("%s_%u",
+				"Keccak", hash_size * 8);
+		case hmSHA3:
+			return name;
+		default:
+			throw ArgumentInvalidHashLibException(
+				Utils::string_format(InvalidHashMode, "hmKeccak, hmSHA3"));
+		}
+	}
 
 	virtual void Finish()
 	{
 		int32_t buffer_pos = buffer->GetPos();
 		
-		uint8_t *block = buffer->GetBytesZeroPadded();
+		HashLibByteArray block = buffer->GetBytesZeroPadded();
 
-		block[buffer_pos] = 0x6;
+		block[buffer_pos] = int32_t(hash_mode);
 		block[BlockSize - 1] = block[BlockSize - 1] ^ 0x80;
 
-		TransformBlock(block, buffer->GetLength(), 0);
+		TransformBlock(&block[0], buffer->GetLength(), 0);
 
 		state[1] = ~state[1];
 		state[2] = ~state[2];
@@ -76,7 +93,7 @@ protected:
 	{
 		HashLibByteArray result = HashLibByteArray(HashSize);
 
-		Converters::le64_copy(state, 0, &result[0], 0, (int32_t)result.size());
+		Converters::le64_copy(&state[0], 0, &result[0], 0, (int32_t)result.size());
 
 		return result;
 	} // end function GetResult
@@ -93,6 +110,8 @@ protected:
 
 		register uint32_t j;
 		
+		uint64_t *data = new uint64_t[18];
+
 		Converters::le64_copy(a_data, a_index, data, 0, BlockSize);
 
 		j = 0;
@@ -2704,17 +2723,20 @@ protected:
 		state[24]  = Asu;
 
 		memset(data, 0, 18 * sizeof(uint64_t));
+		delete [] data;
 	} // end function TransformBlock
 
-private:
-	static uint64_t *state;
-	static uint64_t *data;
+protected:
+	HashLibUInt64Array state;
 	int32_t HashSize, BlockSize;
+	HashMode hash_mode;
+
+	static const char *InvalidHashMode;
 
 }; // end class SHA3
 
-uint64_t *SHA3::state = new uint64_t[25];
-uint64_t *SHA3::data = new uint64_t[18];
+
+const char *SHA3::InvalidHashMode = "Only \"[%s]\" HashModes are Supported";
 
 
 class SHA3_224 : public SHA3
@@ -2722,35 +2744,197 @@ class SHA3_224 : public SHA3
 public:
 	SHA3_224()
 		: SHA3(HashSize224)
-	{} // end constructor
-}; // end class SHA3_224
+	{
+		name = __func__;
+		hash_mode = HashMode::hmSHA3;
+	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		SHA3_224 HashInstance = SHA3_224();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<SHA3_224>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+}; // end class SHA3_224
 
 class SHA3_256 : public SHA3
 {
 public:
 	SHA3_256()
 		: SHA3(HashSize256)
-	{} // end constructor
-}; // end class SHA3_256
+	{
+		name = __func__;
+		hash_mode = HashMode::hmSHA3;
+	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		SHA3_256 HashInstance = SHA3_256();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<SHA3_256>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+}; // end class SHA3_256
 
 class SHA3_384 : public SHA3
 {
 public:
 	SHA3_384()
 		: SHA3(HashSize384)
-	{} // end constructor
-}; // end class SHA3_384
+	{
+		name = __func__;
+		hash_mode = HashMode::hmSHA3;
+	} // end constructor
 
+	virtual IHash Clone() const
+	{
+		SHA3_384 HashInstance = SHA3_384();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<SHA3_384>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+}; // end class SHA3_384
 
 class SHA3_512 : public SHA3
 {
 public:
 	SHA3_512()
 		: SHA3(HashSize512)
-	{} // end constructor
+	{
+		name = __func__;
+		hash_mode = HashMode::hmSHA3;
+	} // end constructor
+
+	virtual IHash Clone() const
+	{
+		SHA3_512 HashInstance = SHA3_512();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<SHA3_512>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 }; // end class SHA3_512
+
+
+class Keccak_224 : public SHA3
+{
+public:
+	Keccak_224()
+		: SHA3(HashSize224)
+	{
+		hash_mode = HashMode::hmKeccak;
+	} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Keccak_224 HashInstance = Keccak_224();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Keccak_224>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+}; // end class Keccak_224
+
+class Keccak_256 : public SHA3
+{
+public:
+	Keccak_256()
+		: SHA3(HashSize256)
+	{
+		hash_mode = HashMode::hmKeccak;
+	} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Keccak_256 HashInstance = Keccak_256();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Keccak_256>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+}; // end class Keccak_256
+
+class Keccak_384 : public SHA3
+{
+public:
+	Keccak_384()
+		: SHA3(HashSize384)
+	{
+		hash_mode = HashMode::hmKeccak;
+	} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Keccak_384 HashInstance = Keccak_384();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Keccak_384>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+}; // end class Keccak_384
+
+class Keccak_512 : public SHA3
+{
+public:
+	Keccak_512()
+		: SHA3(HashSize512)
+	{
+		hash_mode = HashMode::hmKeccak;
+	} // end constructor
+
+	virtual IHash Clone() const
+	{
+		Keccak_512 HashInstance = Keccak_512();
+		HashInstance.state = state;
+		HashInstance.buffer = make_shared<HashBuffer>(buffer->Clone());
+		HashInstance.processed_bytes = processed_bytes;
+
+		IHash hash = make_shared<Keccak_512>(HashInstance);
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+}; // end class Keccak_512
 
 
 #endif // !HLPSHA3_H
