@@ -19,23 +19,19 @@
 #include <typeinfo>
 #include "HlpHashResult.h"
 #include "../Interfaces/HlpIHash.h"
-
+#include "../Utils/HlpUtils.h"
 
 class Hash : public virtual IIHash
 {
 protected:
 	const char * name;
 
-	virtual string GetName() const
-	{
-		return name;
-	} // end function GetName
-
 private:
 	static const char *IndexOutOfRange;
 	static const char *InvalidBufferSize;
 	static const char *UnAssignedStream;
 	static const char *FileNotExist;
+	static const char *CloneNotYetImplemented;
 
 protected:
 	virtual inline int32_t GetBufferSize() const
@@ -70,6 +66,16 @@ public:
 		: block_size(a_block_size), hash_size(a_hash_size), buffer_size(BUFFER_SIZE)
 	{} // end constructor
 	
+	virtual string GetName() const
+	{
+		return name;
+	} // end function GetName
+
+	virtual IHash Clone() const
+	{
+		throw NotImplementedHashLibException(Utils::string_format(Hash::CloneNotYetImplemented, GetName()));
+	}
+
 	virtual IHashResult ComputeString(const string &a_data)
 	{
 		return ComputeBytes(Converters::ConvertStringToBytes(a_data));
@@ -275,7 +281,7 @@ private:
 	} // end function GetStreamSize
 	
 
-private:
+protected:
 	int32_t buffer_size;
 	int32_t block_size;
 	int32_t hash_size;
@@ -289,5 +295,6 @@ const char *Hash::IndexOutOfRange = "Current Index Is Out Of Range";
 const char *Hash::InvalidBufferSize = "\"BufferSize\" Must Be Greater Than Zero";
 const char *Hash::UnAssignedStream = "Input Stream Is Unassigned";
 const char *Hash::FileNotExist = "Specified File Not Found";
+const char *Hash::CloneNotYetImplemented = "Clone Not Yet Implemented For \"%s\"";
 
 #endif // !HLPHASH_H
