@@ -40,6 +40,17 @@ public:
 	~HMACNotBuildInAdapter()
 	{} // end destructor
 
+	virtual IHMAC CloneHMAC() const
+	{
+		HMACNotBuildInAdapter hmac = HMACNotBuildInAdapter(hash->Clone());
+		hmac.blocksize = blocksize;
+		hmac.opad = opad;
+		hmac.ipad = ipad;
+		hmac.key = key;
+
+		return make_shared<HMACNotBuildInAdapter>(hmac);
+	}
+
 	virtual void Initialize()
 	{
 		hash->Initialize();
