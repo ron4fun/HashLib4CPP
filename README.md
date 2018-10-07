@@ -1,4 +1,4 @@
-# HashLib4CPP [![License](http://img.shields.io/badge/license-MIT-green.svg)](https://github.com/ron4fun/HashLib4CPP/LICENSE)
+# HashLib4CPP [![License](http://img.shields.io/badge/license-MIT-green.svg)](https://github.com/ron4fun/HashLib4CPP/blob/master/LICENSE)
 HashLib4CPP is a C++11 library that provides an easy to use interface for computing hashes and checksums of strings, files, streams, bytearrays and untyped data to mention but a few.
 It also supports **Incremental Hashing**, **Cloning** and **NullDigest**.
 
@@ -38,7 +38,7 @@ It also supports **Incremental Hashing**, **Cloning** and **NullDigest**.
     {
         IHash hash = HashFactory::Crypto::CreateMD5();
 			
-		IHash clone = hash->Clone();
+        IHash clone = hash->Clone();
 
         IHMAC hmac = HashFactory::HMAC::CreateHMAC(hash);
         hmac->SetKey(Converters::ConvertStringToBytes("password"));
