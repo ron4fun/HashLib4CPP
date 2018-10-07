@@ -1,6 +1,6 @@
-# HashLib4CPP
+# HashLib4CPP [![License](http://img.shields.io/badge/license-MIT-green.svg)](https://github.com/ron4fun/HashLib4CPP/LICENSE)
 HashLib4CPP is a C++11 library that provides an easy to use interface for computing hashes and checksums of strings, files, streams, bytearrays and untyped data to mention but a few.
-It also supports Incremental Hashing.
+It also supports **Incremental Hashing**, **Cloning** and **NullDigest**.
 
 **Supported Algorithms:**
 
@@ -17,7 +17,8 @@ It also supports Incremental Hashing.
     Cryptographic Algorithms: GOST, Grindahl, HAS160, Haval, MD2, MD4, MD5, Panama, 
     RadioGatun, RIPEMD, RIPEMD128, RIPEMD160, RIPEMD256, RIPEMD320, SHA0, SHA1, SHA2-224,
     SHA2-256, SHA2-384, SHA2-512, SHA2-512-224, SHA2-512-256, SHA3-224, SHA3-256, SHA3-384, 
-    SHA3-512,Snefru128, Snefru256, Tiger, Tiger2, WhirlPool.
+    SHA3-512, Keccak-224, Keccak-256, Keccak-384, Keccak-512, Snefru128, Snefru256, Tiger,
+	Tiger2, WhirlPool, Blake2B, Blake2S, Streebog (GOST3411_2012_256, GOST3411_2012_512).
 
     HMAC for any of the above.
     
@@ -36,6 +37,8 @@ It also supports Incremental Hashing.
     int main()
     {
         IHash hash = HashFactory::Crypto::CreateMD5();
+		IHash clone = hash->Clone();
+
         IHMAC hmac = HashFactory::HMAC::CreateHMAC(hash);
         hmac->SetKey(Converters::ConvertStringToBytes("password"));
 
