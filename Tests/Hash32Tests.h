@@ -16,6 +16,7 @@
 #define BOOST_TEST_MODULE Hash32TestCase
 
 #include "TestConstants.h"
+#include "../Utils/HlpUtils.h"
 
 // ====================== APTestCase ======================
 ////////////////////
@@ -75,6 +76,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = ap->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+	
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin,mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateAP();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+	
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	
+	Original->TransformBytes(ChunkTwo);
+	string ExpectedString = Original->TransformFinal()->ToString();
+	
+	Copy->TransformBytes(ChunkTwo);
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format('Expected %s but got %s.', ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+	
+	Original = HashFactory::Hash32::CreateAP();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										 // Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(), 
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -140,6 +189,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+	
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateBernstein();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+	
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateBernstein();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -201,6 +298,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = bernstein1->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateBernstein1();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateBernstein1();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -266,6 +411,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateBKDR();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateBKDR();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -327,6 +520,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = dek->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateDEK();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateDEK();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -392,6 +633,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateDJB();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateDJB();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -453,6 +742,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = elf->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateELF();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateELF();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -518,6 +855,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateFNV();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateFNV();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -579,6 +964,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = fnv1a->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateFNV1a();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateFNV1a();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -644,6 +1077,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateJenkins3();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateJenkins3();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -705,6 +1186,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = js->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateJS();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateJS();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -780,6 +1309,54 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKey)
 	BOOST_CHECK(ExpectedHashOfDefaultDataWithMaxUInt32AsKey == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateMurmur2();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateMurmur2();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -847,7 +1424,6 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
     }
 }
 
-
 BOOST_AUTO_TEST_CASE(TestRandomString)
 {
 	string ActualString = murmurhash3_x86_32->ComputeString(RandomStringRecord)->ToString();
@@ -876,6 +1452,54 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyMaxUInt32DefaultData)
 
 	string ActualString = HashWithKey->ComputeString(DefaultData)->ToString();
 	BOOST_CHECK(ExpectedHashOfDefaultDataWithMaxUInt32AsKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateMurmurHash3_x86_32();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateMurmurHash3_x86_32();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -941,6 +1565,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateOneAtTime();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateOneAtTime();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1002,6 +1674,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = pjw->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreatePJW();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreatePJW();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1067,6 +1787,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateRotating();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateRotating();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1128,6 +1896,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = rs->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateRS();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateRS();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1193,6 +2009,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateSDBM();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateSDBM();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1256,6 +2120,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateShiftAndXor();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateShiftAndXor();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1317,6 +2229,54 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = superfast->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateSuperFast();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateSuperFast();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1400,6 +2360,54 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyMaxUInt32DefaultData)
 
 	string ActualString = HashWithKey->ComputeString(DefaultData)->ToString();
 	BOOST_CHECK(ExpectedHashOfDefaultDataWithMaxUInt32AsKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash Original, Copy;
+	HashLibByteArray MainData, ChunkOne, ChunkTwo;
+	int32_t Count;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	Count = MainData.size() - 3;
+
+	HashLibByteArray::const_iterator begin = MainData.begin();
+	HashLibByteArray::const_iterator mid = MainData.begin() + Count;
+	HashLibByteArray::const_iterator last = MainData.end();
+
+	ChunkOne = HashLibByteArray(begin, mid);
+	ChunkTwo = HashLibByteArray(mid, last);
+
+	Original = HashFactory::Hash32::CreateXXHash32();
+	Original->Initialize();
+
+	Original->TransformBytes(ChunkOne);
+
+	// Make Copy Of Current State
+	Copy = Original->Clone();
+	Original->TransformBytes(ChunkTwo);
+
+	string ExpectedString = Original->TransformFinal()->ToString();
+	Copy->TransformBytes(ChunkTwo);
+
+	string ActualString = Copy->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash Original, Copy;
+
+	Original = HashFactory::Hash32::CreateXXHash32();
+	Original->Initialize();
+	Original->SetBufferSize(64 * 1024); // 64Kb
+										// Make Copy Of Current State
+	Copy = Original->Clone();
+	Copy->SetBufferSize(128 * 1024); // 128Kb
+
+	BOOST_CHECK(Original->GetBufferSize() != Copy->GetBufferSize(),
+		Utils::string_format("Expected %d but got %d.", Original->GetBufferSize(), Copy->GetBufferSize()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

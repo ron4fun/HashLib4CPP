@@ -16,6 +16,9 @@
 #define BOOST_TEST_MODULE CryptoTestCase
 
 #include "TestConstants.h"
+#include "Blake2BTestVectors.h"
+#include "Blake2STestVectors.h"
+
 
 // ====================== GostTestCase ======================
 ////////////////////
@@ -97,8 +100,212 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGost();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateGost();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGost();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
+// ====================== GOST3411_2012_256TestCase ======================
+////////////////////
+// GOST3411_2012_256
+///////////////////
+BOOST_AUTO_TEST_SUITE(GOST3411_2012_256TestCase)
+
+string ExpectedHashOfEmptyData = "3F539A213E97C802CC229D474C6AA32A825A360B2A933A949FD925208D9CE1BB";
+string ExpectedHashOfQuickBrownFox = "3E7DEA7F2384B6C5A3D0E24AAA29C05E89DDD762145030EC22C71A6DB8B2C1F4";
+
+IHash gost = HashFactory::Crypto::CreateGOST3411_2012_256();
+
+BOOST_AUTO_TEST_CASE(TestEmptyString)
+{
+	string ActualString = gost->ComputeString(EmptyData)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString, 
+		Utils::string_format("Expected %s but got %s.", ExpectedHashOfEmptyData, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_256();
+
+	HMACCloneIsCorrect(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
+{
+	register size_t x, size, i;
+	string temp;
+
+	for (x = 0; x < (sizeof(chunkSize) / sizeof(int32_t)); x++)
+	{
+		size = chunkSize[x];
+		gost->Initialize();
+		i = size;
+		while (i < ChunkedData.size())
+		{
+			temp = ChunkedData.substr((i - size), size);
+			gost->TransformString(temp);
+
+			i += size;
+		}
+
+		temp = ChunkedData.substr((i - size), ChunkedData.size() - ((i - size)));
+		gost->TransformString(temp);
+
+		string ActualString = gost->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Crypto::CreateGOST3411_2012_256()
+									->ComputeString(ChunkedData)->ToString();
+		
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestIncrementalHash)
+{
+	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_256();
+
+	hash->Initialize();
+	hash->TransformString(QuickBrownDog.substr(0, 16));
+	hash->TransformString(QuickBrownDog.substr(16, 16));
+	hash->TransformString(QuickBrownDog.substr(32));
+
+	string ActualString = hash->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfQuickBrownFox == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestQuickBrownFox)
+{
+	string ActualString = gost->ComputeString(QuickBrownDog)->ToString();
+	BOOST_CHECK(ExpectedHashOfQuickBrownFox == ActualString,
+		Utils::string_format("Expected %s but got %s.", ExpectedHashOfQuickBrownFox, ActualString));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+// ====================== GOST3411_2012_512TestCase ======================
+////////////////////
+// GOST3411_2012_512
+///////////////////
+BOOST_AUTO_TEST_SUITE(GOST3411_2012_512TestCase)
+
+string ExpectedHashOfEmptyData = "8E945DA209AA869F0455928529BCAE4679E9873AB707B55315F56CEB98BEF0A7362F715528356EE83CDA5F2AAC4C6AD2BA3A715C1BCD81CB8E9F90BF4C1C1A8A";
+string ExpectedHashOfQuickBrownFox = "D2B793A0BB6CB5904828B5B6DCFB443BB8F33EFC06AD09368878AE4CDC8245B97E60802469BED1E7C21A64FF0B179A6A1E0BB74D92965450A0ADAB69162C00FE";
+
+IHash gost = HashFactory::Crypto::CreateGOST3411_2012_512();
+
+BOOST_AUTO_TEST_CASE(TestEmptyString)
+{
+	string ActualString = gost->ComputeString(EmptyData)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString,
+		Utils::string_format("Expected %s but got %s.", ExpectedHashOfEmptyData, ActualString));
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_512();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_512();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_512();
+
+	HMACCloneIsCorrect(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
+{
+	register size_t x, size, i;
+	string temp;
+
+	for (x = 0; x < (sizeof(chunkSize) / sizeof(int32_t)); x++)
+	{
+		size = chunkSize[x];
+		gost->Initialize();
+		i = size;
+		while (i < ChunkedData.size())
+		{
+			temp = ChunkedData.substr((i - size), size);
+			gost->TransformString(temp);
+
+			i += size;
+		}
+
+		temp = ChunkedData.substr((i - size), ChunkedData.size() - ((i - size)));
+		gost->TransformString(temp);
+
+		string ActualString = gost->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Crypto::CreateGOST3411_2012_512()
+			->ComputeString(ChunkedData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestIncrementalHash)
+{
+	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_512();
+
+	hash->Initialize();
+	hash->TransformString(QuickBrownDog.substr(0, 16));
+	hash->TransformString(QuickBrownDog.substr(16, 16));
+	hash->TransformString(QuickBrownDog.substr(32));
+
+	string ActualString = hash->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfQuickBrownFox == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestQuickBrownFox)
+{
+	string ActualString = gost->ComputeString(QuickBrownDog)->ToString();
+	BOOST_CHECK(ExpectedHashOfQuickBrownFox == ActualString,
+		Utils::string_format("Expected %s but got %s.", ExpectedHashOfQuickBrownFox, ActualString));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 // ====================== Grindahl256TestCase ======================
 ////////////////////
@@ -178,6 +385,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = grindahl256->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGrindahl256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateGrindahl256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGrindahl256();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -263,6 +491,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGrindahl512();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateGrindahl512();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateGrindahl512();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -344,6 +593,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = has160->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHAS160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHAS160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHAS160();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -429,6 +699,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_128();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -510,6 +801,28 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = haval_4_128->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_128();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -595,6 +908,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_128();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -676,6 +1010,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = haval_3_160->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_160();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -761,6 +1116,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_160();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -842,6 +1218,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = haval_5_160->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_160();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -927,6 +1324,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_192();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1008,6 +1426,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = haval_4_192->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_192();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1093,6 +1532,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_192();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1174,6 +1634,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = haval_3_224->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_224();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_224();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_224();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1259,6 +1740,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_224();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_224();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_224();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1340,6 +1842,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = haval_5_224->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_224();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_224();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_224();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1425,6 +1948,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_3_256();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1506,6 +2050,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = haval_4_256->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_4_256();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1591,6 +2156,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateHaval_5_256();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1672,6 +2258,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = md2->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateMD2();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateMD2();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateMD2();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1757,6 +2364,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateMD4();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateMD4();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateMD4();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -1838,6 +2466,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = md5->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateMD5();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateMD5();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateMD5();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -1923,6 +2572,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreatePanama();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreatePanama();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreatePanama();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -2004,6 +2674,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = radioGatun32->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRadioGatun32();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateRadioGatun32();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRadioGatun32();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -2089,6 +2780,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRadioGatun64();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateRadioGatun64();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRadioGatun64();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -2170,6 +2882,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = ripemd->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -2255,6 +2988,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD128();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -2338,6 +3092,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD160();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 // ====================== RIPEMD256TestCase ======================
@@ -2418,6 +3193,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = ripemd256->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD256();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -2503,6 +3299,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD320();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD320();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateRIPEMD320();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -2584,6 +3401,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = sha0->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA0();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA0();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA0();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -2669,6 +3507,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA1();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA1();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA1();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -2752,6 +3611,27 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_224();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_224();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_224();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -2827,6 +3707,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_256();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -2906,6 +3807,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_384();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_384();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_384();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -2981,6 +3903,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -3060,6 +4003,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512_224();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512_224();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512_224();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -3135,6 +4099,419 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512_256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512_256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSHA2_512_256();
+
+	HMACCloneIsCorrect(hash);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+// ====================== Keccak_224TestCase ======================
+////////////////////
+// Keccak_224
+///////////////////
+BOOST_AUTO_TEST_SUITE(Keccak_224TestCase)
+
+string ExpectedHashOfEmptyData = "F71837502BA8E10837BDD8D365ADB85591895602FC552B48B7390ABD";
+string ExpectedHashOfDefaultData = "1BA678212F840E95F076B4E3E75310D4DA4308E04396E07EF1683ACE";
+string ExpectedHashOfDefaultDataWithHMACWithLongKey = "8C500F95CB013CBC16DEB6CB742D470E20404E0A1776647EAAB6E869";
+string ExpectedHashOfDefaultDataWithHMACWithShortKey = "D6CE783743A36717F893DFF82DE89633F21089AFBE4F26431E269650";
+string ExpectedHashOfOnetoNine = "06471DE6C635A88E7470284B2C2EBF9BD7E5E888CBBD128C21CB8308";
+string ExpectedHashOfabcde = "16F91F7E036DF526340440C34C231862D8F6319772B670EEFD4703FF";
+
+IHash keccak_224 = HashFactory::Crypto::CreateKeccak_224();
+
+BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
+{
+	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_224());
+	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
+	string ActualString = hmac->ComputeString(DefaultData)->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultDataWithHMACWithLongKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
+{
+	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_224());
+	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
+	string ActualString = hmac->ComputeString(DefaultData)->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultDataWithHMACWithShortKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestBytesabcde)
+{
+	string ActualString = keccak_224->ComputeBytes(Bytesabcde)->ToString();
+	BOOST_CHECK(ExpectedHashOfabcde == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestDefaultData)
+{
+	string ActualString = keccak_224->ComputeString(DefaultData)->ToString();
+	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestEmptyStream)
+{
+	ifstream stream("EmptyFile.txt", ios::in | ios::binary);
+	string ActualString = keccak_224->ComputeStream(stream)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestEmptyString)
+{
+	string ActualString = keccak_224->ComputeString(EmptyData)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestIncrementalHash)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_224();
+
+	hash->Initialize();
+	hash->TransformString(DefaultData.substr(0, 3));
+	hash->TransformString(DefaultData.substr(3, 3));
+	hash->TransformString(DefaultData.substr(6, 3));
+	hash->TransformString(DefaultData.substr(9, 3));
+	hash->TransformString(DefaultData.substr(12));
+
+	string ActualString = hash->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_224();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_224();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_224();
+
+	HMACCloneIsCorrect(hash);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+// ====================== Keccak_256TestCase ======================
+////////////////////
+// Keccak_256
+///////////////////
+BOOST_AUTO_TEST_SUITE(Keccak_256TestCase)
+
+string ExpectedHashOfEmptyData = "C5D2460186F7233C927E7DB2DCC703C0E500B653CA82273B7BFAD8045D85A470";
+string ExpectedHashOfDefaultData = "3FE42FE8CD6DAEF5ED7891846577F56AB35DC806424FC84A494C81E73BB06B5F";
+string ExpectedHashOfDefaultDataWithHMACWithLongKey = "925FE69CEF38AA0D2CCBF6741ADD808F204CAA64EFA7E301A0A3EC332E40075E";
+string ExpectedHashOfDefaultDataWithHMACWithShortKey = "1660234E7CCC29CFC8DEC8C6508AAF54EE48004EA9B56A15AC5742C89AAADA08";
+string ExpectedHashOfOnetoNine = "2A359FEEB8E488A1AF2C03B908B3ED7990400555DB73E1421181D97CAC004D48";
+string ExpectedHashOfabcde = "6377C7E66081CB65E473C1B95DB5195A27D04A7108B468890224BEDBE1A8A6EB";
+
+IHash keccak_256 = HashFactory::Crypto::CreateKeccak_256();
+
+BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
+{
+	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_256());
+	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
+	string ActualString = hmac->ComputeString(DefaultData)->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultDataWithHMACWithLongKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
+{
+	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_256());
+	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
+	string ActualString = hmac->ComputeString(DefaultData)->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultDataWithHMACWithShortKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestBytesabcde)
+{
+	string ActualString = keccak_256->ComputeBytes(Bytesabcde)->ToString();
+	BOOST_CHECK(ExpectedHashOfabcde == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestDefaultData)
+{
+	string ActualString = keccak_256->ComputeString(DefaultData)->ToString();
+	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestEmptyStream)
+{
+	ifstream stream("EmptyFile.txt", ios::in | ios::binary);
+	string ActualString = keccak_256->ComputeStream(stream)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestEmptyString)
+{
+	string ActualString = keccak_256->ComputeString(EmptyData)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestIncrementalHash)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_256();
+
+	hash->Initialize();
+	hash->TransformString(DefaultData.substr(0, 3));
+	hash->TransformString(DefaultData.substr(3, 3));
+	hash->TransformString(DefaultData.substr(6, 3));
+	hash->TransformString(DefaultData.substr(9, 3));
+	hash->TransformString(DefaultData.substr(12));
+
+	string ActualString = hash->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_256();
+
+	HMACCloneIsCorrect(hash);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+// ====================== Keccak_384TestCase ======================
+////////////////////
+// Keccak_384
+///////////////////
+BOOST_AUTO_TEST_SUITE(Keccak_384TestCase)
+
+string ExpectedHashOfEmptyData = "2C23146A63A29ACF99E73B88F8C24EAA7DC60AA771780CCC006AFBFA8FE2479B2DD2B21362337441AC12B515911957FF";
+string ExpectedHashOfDefaultData = "6A53977DFA0BCDCF069635CF541AB64C7E41923FCB3A5B049AB98878411D0E71DF95FCAB0072F1AE8B931BF4490B823E";
+string ExpectedHashOfDefaultDataWithHMACWithLongKey = "A7740E29EEF80306DA09D7AF0868E925D6144996F99A01F973F03C4BD85D1EC20567936CA34A443B62A890AD8D263D2A";
+string ExpectedHashOfDefaultDataWithHMACWithShortKey = "044628643016E3EA30DE6CA3A8A1276F6BF1A5443CEF96BAA73199CF64FFC52D7F38254C671DB2933FFC8DD3E5B77223";
+string ExpectedHashOfOnetoNine = "EFCCAE72CE14656C434751CF737E70A57AB8DD2C76F5ABE01E52770AFFD77B66D2B80977724A00A6D971B702906F8032";
+string ExpectedHashOfabcde = "6E577A02A783232ACF34841399883F5F69D9AC78F48C7F4431CBC4F669C2A0F1CA3B1BECB7701B8315588D64D6C3746A";
+
+IHash keccak_384 = HashFactory::Crypto::CreateKeccak_384();
+
+BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
+{
+	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_384());
+	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
+	string ActualString = hmac->ComputeString(DefaultData)->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultDataWithHMACWithLongKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
+{
+	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_384());
+	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
+	string ActualString = hmac->ComputeString(DefaultData)->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultDataWithHMACWithShortKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestBytesabcde)
+{
+	string ActualString = keccak_384->ComputeBytes(Bytesabcde)->ToString();
+	BOOST_CHECK(ExpectedHashOfabcde == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestDefaultData)
+{
+	string ActualString = keccak_384->ComputeString(DefaultData)->ToString();
+	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestEmptyStream)
+{
+	ifstream stream("EmptyFile.txt", ios::in | ios::binary);
+	string ActualString = keccak_384->ComputeStream(stream)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestEmptyString)
+{
+	string ActualString = keccak_384->ComputeString(EmptyData)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestIncrementalHash)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_384();
+
+	hash->Initialize();
+	hash->TransformString(DefaultData.substr(0, 3));
+	hash->TransformString(DefaultData.substr(3, 3));
+	hash->TransformString(DefaultData.substr(6, 3));
+	hash->TransformString(DefaultData.substr(9, 3));
+	hash->TransformString(DefaultData.substr(12));
+
+	string ActualString = hash->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_384();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_384();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_384();
+
+	HMACCloneIsCorrect(hash);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+// ====================== Keccak_512TestCase ======================
+////////////////////
+// Keccak_512
+///////////////////
+BOOST_AUTO_TEST_SUITE(Keccak_512TestCase)
+
+string ExpectedHashOfEmptyData = "0EAB42DE4C3CEB9235FC91ACFFE746B29C29A8C366B7C60E4E67C466F36A4304C00FA9CAF9D87976BA469BCBE06713B435F091EF2769FB160CDAB33D3670680E";
+string ExpectedHashOfDefaultData = "27E67744299C2229F5008141E410B650BB7D70366B8A60BEAE52F8D6F4A8889D1BAEF53191FF53277FD6CFFE76937CDFAC40EB8EE6F32E3B146C05F961E970A8";
+string ExpectedHashOfDefaultDataWithHMACWithLongKey = "53D5520C2E31F7EAAE1D95CF04663B18C2144AAF141F2630D6454162B3A890D75D59A9D99096411870FBF7A92A563AEA35AFED836DF652C6DF2AB4D373A754E3";
+string ExpectedHashOfDefaultDataWithHMACWithShortKey = "6FA826F0AFFE589DFD1665264F5516D076F9FEC585FD4227095B467A50E963D45C1730232549E8DDB590C1518BA310612839BBCCDF34F6A0AD6AC8B91D393BE6";
+string ExpectedHashOfOnetoNine = "40B787E94778266FB196A73B7A77EDF9DE2EF172451A2B87531324812250DF8F26FCC11E69B35AFDDBE639956C96153E71363F97010BC99405DD2D77B8C41986";
+string ExpectedHashOfabcde = "37491BD4BF2A4629D4E35602E09812FA94BFC63BAEE4487075E2B6D73F36D01A7392A1719EDBBB5D1D6FA3BA0D144F18229ABC13B7933A4736D6AAB4A3177F18";
+
+IHash keccak_512 = HashFactory::Crypto::CreateKeccak_512();
+
+BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
+{
+	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_512());
+	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
+	string ActualString = hmac->ComputeString(DefaultData)->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultDataWithHMACWithLongKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
+{
+	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_512());
+	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
+	string ActualString = hmac->ComputeString(DefaultData)->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultDataWithHMACWithShortKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestBytesabcde)
+{
+	string ActualString = keccak_512->ComputeBytes(Bytesabcde)->ToString();
+	BOOST_CHECK(ExpectedHashOfabcde == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestDefaultData)
+{
+	string ActualString = keccak_512->ComputeString(DefaultData)->ToString();
+	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestEmptyStream)
+{
+	ifstream stream("EmptyFile.txt", ios::in | ios::binary);
+	string ActualString = keccak_512->ComputeStream(stream)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestEmptyString)
+{
+	string ActualString = keccak_512->ComputeString(EmptyData)->ToString();
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestIncrementalHash)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_512();
+
+	hash->Initialize();
+	hash->TransformString(DefaultData.substr(0, 3));
+	hash->TransformString(DefaultData.substr(3, 3));
+	hash->TransformString(DefaultData.substr(6, 3));
+	hash->TransformString(DefaultData.substr(9, 3));
+	hash->TransformString(DefaultData.substr(12));
+
+	string ActualString = hash->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_512();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_512();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateKeccak_512();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -3214,6 +4591,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSnefru_8_256();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSnefru_8_256();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSnefru_8_256();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -3289,6 +4687,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSnefru_8_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateSnefru_8_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateSnefru_8_128();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -3368,6 +4787,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_128();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -3443,6 +4883,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_128();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -3522,6 +4983,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_128();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -3597,6 +5079,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_160();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -3676,6 +5179,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_160();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -3751,6 +5275,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_160();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -3830,6 +5375,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_3_192();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -3905,6 +5471,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_4_192();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -3984,6 +5571,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger_5_192();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -4061,6 +5669,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_128();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -4120,6 +5749,27 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 {
 	string ActualString = tiger2_4_128->ComputeString(EmptyData)->ToString();
 	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_128();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
@@ -4215,6 +5865,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_128();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_128();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -4290,6 +5961,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_160();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -4369,6 +6061,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_160();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -4444,6 +6157,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_160();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_160();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_160();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -4523,6 +6257,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_3_192();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -4598,6 +6353,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_4_192();
+
+	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -4677,6 +6453,27 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_192();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_192();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateTiger2_5_192();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -4754,6 +6551,439 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateWhirlPool();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateWhirlPool();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateWhirlPool();
+
+	HMACCloneIsCorrect(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
+// ====================== Blake2BTestCase ======================
+////////////////////
+// Blake2B
+///////////////////
+BOOST_AUTO_TEST_SUITE(Blake2BTestCase)
+
+string ExpectedHashOfEmptyData = "786A02F742015903C6C6FD852552D272912F4740E15847618A86E217F71F5419D25E1031AFEE585313896444934EB04B903A685B1448B755D56F701AFE9BE2CE";
+string ExpectedHashOfQuickBrownDog = "A8ADD4BDDDFD93E4877D2746E62817B116364A1FA7BC148D95090BC7333B3673F82401CF7AA2E4CB1ECD90296E3F14CB5413F8ED77BE73045B13914CDCD6A918";
+
+IHash blake = HashFactory::Crypto::CreateBlake2B();
+
+BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
+{
+	register size_t x, size, i;
+	string temp;
+
+	for (x = 0; x < (sizeof(chunkSize) / sizeof(int32_t)); x++)
+	{
+		size = chunkSize[x];
+		blake->Initialize();
+		i = size;
+		while (i < ChunkedData.size())
+		{
+			temp = ChunkedData.substr((i - size), size);
+			blake->TransformString(temp);
+
+			i += size;
+		}
+
+		temp = ChunkedData.substr((i - size), ChunkedData.size() - ((i - size)));
+		blake->TransformString(temp);
+
+		string ActualString = blake->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Crypto::CreateBlake2B()
+			->ComputeString(ChunkedData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestCheckKeyedTestVectors)
+{
+	register size_t len, i;
+	HashLibByteArray Key, Input;
+	IHash blake2BWithKey;
+	
+	//Input.resize(20);
+	//for (i = 0; i < 20; i++)
+	//	Input[i] = i;
+
+	Key.resize(64);
+	for (i = 0; i < 64; i++)
+		Key[i] = i;
+
+	IBlake2BConfig config = make_shared<Blake2BConfig>();
+	config->SetKey(Key);
+	blake2BWithKey = HashFactory::Crypto::CreateBlake2B(config);
+
+	for (len = 0; len < KeyedBlake2B.size(); len++)
+	{
+		if (len == 0)
+			Input = HashLibByteArray();
+		else
+		{
+			Input.resize(len);
+			for (i = 0; i < len; i++) 
+				Input[i] = i;
+		}
+
+		string ActualString = blake2BWithKey->ComputeBytes(Input)->ToString();
+		string ExpectedString = KeyedBlake2B[len];
+
+		BOOST_CHECK(ExpectedString == ActualString, 
+			Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestCheckTestVectors)
+{
+	register size_t len, i;
+	HashLibByteArray Input;
+
+	for (len = 0; len < UnkeyedBlake2B.size(); len++)
+	{
+		if (len == 0)
+			Input = HashLibByteArray();
+		else
+		{
+			Input.resize(len);
+			for (i = 0; i < len; i++)
+				Input[i] = i;
+		}
+
+		string ActualString = blake->ComputeBytes(Input)->ToString();
+		string ExpectedString = UnkeyedBlake2B[len];
+
+		BOOST_CHECK(ExpectedString == ActualString,
+			Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+}
+
+BOOST_AUTO_TEST_CASE(TestSplits)
+{
+	register size_t i, len, split1, split2;
+	string hash0, hash1;
+	HashLibByteArray Input;
+
+	Input.resize(20);
+	for (i = 0; i < 20; i++)
+		Input[i] = i;
+	
+	for (len = 0; len <= 20; len++)
+	{
+		blake->Initialize();
+		blake->TransformBytes(Input, 0, len);
+		hash0 = blake->TransformFinal()->ToString();
+
+		for (split1 = 0; split1 <= len; split1++)
+		{
+			for (split2 = split1; split2 <= len; split2++)
+			{
+				blake->Initialize();
+				blake->TransformBytes(Input, 0, split1);
+				blake->TransformBytes(Input, split1, split2 - split1);
+				blake->TransformBytes(Input, split2, len - split2);
+				hash1 = blake->TransformFinal()->ToString();
+				BOOST_CHECK(hash0 == hash1,
+					Utils::string_format("Expected %s but got %s.", hash0, hash1));
+			}
+
+		}
+
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestEmpty)
+{
+	// Note: results taken from https://en.wikipedia.org/wiki/BLAKE_(hash_function)
+	blake->Initialize();
+	blake->TransformString(EmptyData);
+	string ActualString = blake->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestQuickBrownDog)
+{
+	// Note: results taken from https://en.wikipedia.org/wiki/BLAKE_(hash_function)
+	blake->Initialize();
+	blake->TransformString(QuickBrownDog);
+	string ActualString = blake->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfQuickBrownDog == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestNullKeyVsUnKeyed)
+{
+	IBlake2BConfig configNoKeyed, configNullKeyed;
+	HashLibByteArray MainData;
+	register size_t Idx;
+	
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	for (Idx = 1; Idx <= 64; Idx++)
+	{
+		configNoKeyed = make_shared<Blake2BConfig>(Idx);
+		configNullKeyed = make_shared<Blake2BConfig>(Idx);
+		configNullKeyed->SetKey(HashLibByteArray());
+
+		string ExpectedString = HashFactory::Crypto::CreateBlake2B(configNoKeyed)
+												->ComputeBytes(MainData)->ToString();
+
+		string ActualString = HashFactory::Crypto::CreateBlake2B(configNullKeyed)
+												->ComputeBytes(MainData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString,
+			Utils::string_format("Expected %s but got %s at Index %d", ExpectedString, ActualString, Idx));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateBlake2B();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateBlake2B();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateBlake2B();
+
+	HMACCloneIsCorrect(hash);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+// ====================== Blake2STestCase ======================
+////////////////////
+// Blake2S
+///////////////////
+BOOST_AUTO_TEST_SUITE(Blake2STestCase)
+
+string ExpectedHashOfEmptyData = "69217A3079908094E11121D042354A7C1F55B6482CA1A51E1B250DFD1ED0EEF9";
+string ExpectedHashOfQuickBrownDog = "606BEEEC743CCBEFF6CBCDF5D5302AA855C256C29B88C8ED331EA1A6BF3C8812";
+
+IHash blake = HashFactory::Crypto::CreateBlake2S();
+
+BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
+{
+	register size_t x, size, i;
+	string temp;
+
+	for (x = 0; x < (sizeof(chunkSize) / sizeof(int32_t)); x++)
+	{
+		size = chunkSize[x];
+		blake->Initialize();
+		i = size;
+		while (i < ChunkedData.size())
+		{
+			temp = ChunkedData.substr((i - size), size);
+			blake->TransformString(temp);
+
+			i += size;
+		}
+
+		temp = ChunkedData.substr((i - size), ChunkedData.size() - ((i - size)));
+		blake->TransformString(temp);
+
+		string ActualString = blake->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Crypto::CreateBlake2S()
+			->ComputeString(ChunkedData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestCheckKeyedTestVectors)
+{
+	register size_t len, i;
+	HashLibByteArray Key, Input;
+	IHash blake2SWithKey;
+
+	//Input.resize(20);
+	//for (i = 0; i < 20; i++)
+	//	Input[i] = i;
+
+	Key.resize(32);
+	for (i = 0; i < 32; i++)
+		Key[i] = i;
+
+	IBlake2SConfig config = make_shared<Blake2SConfig>();
+	config->SetKey(Key);
+	blake2SWithKey = HashFactory::Crypto::CreateBlake2S(config);
+
+	for (len = 0; len < KeyedBlake2S.size(); len++)
+	{
+		if (len == 0)
+			Input = HashLibByteArray();
+		else
+		{
+			Input.resize(len);
+			for (i = 0; i < len; i++)
+				Input[i] = i;
+		}
+
+		string ActualString = blake2SWithKey->ComputeBytes(Input)->ToString();
+		string ExpectedString = KeyedBlake2S[len];
+
+		BOOST_CHECK(ExpectedString == ActualString,
+			Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestCheckTestVectors)
+{
+	register size_t len, i;
+	HashLibByteArray Input;
+
+	for (len = 0; len < UnkeyedBlake2S.size(); len++)
+	{
+		if (len == 0)
+			Input = HashLibByteArray();
+		else
+		{
+			Input.resize(len);
+			for (i = 0; i < len; i++)
+				Input[i] = i;
+		}
+
+		string ActualString = blake->ComputeBytes(Input)->ToString();
+		string ExpectedString = UnkeyedBlake2S[len];
+
+		BOOST_CHECK(ExpectedString == ActualString,
+			Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+}
+
+BOOST_AUTO_TEST_CASE(TestSplits)
+{
+	register size_t i, len, split1, split2;
+	string hash0, hash1;
+	HashLibByteArray Input;
+
+	Input.resize(20);
+	for (i = 0; i < 20; i++)
+		Input[i] = i;
+
+	for (len = 0; len <= 20; len++)
+	{
+		blake->Initialize();
+		blake->TransformBytes(Input, 0, len);
+		hash0 = blake->TransformFinal()->ToString();
+
+		for (split1 = 0; split1 <= len; split1++)
+		{
+			for (split2 = split1; split2 <= len; split2++)
+			{
+				blake->Initialize();
+				blake->TransformBytes(Input, 0, split1);
+				blake->TransformBytes(Input, split1, split2 - split1);
+				blake->TransformBytes(Input, split2, len - split2);
+				hash1 = blake->TransformFinal()->ToString();
+				BOOST_CHECK(hash0 == hash1,
+					Utils::string_format("Expected %s but got %s.", hash0, hash1));
+			}
+
+		}
+
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestEmpty)
+{
+	// Note: results taken from https://en.wikipedia.org/wiki/BLAKE_(hash_function)
+	blake->Initialize();
+	blake->TransformString(EmptyData);
+	string ActualString = blake->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfEmptyData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestQuickBrownDog)
+{
+	// Note: results taken from https://en.wikipedia.org/wiki/BLAKE_(hash_function)
+	blake->Initialize();
+	blake->TransformString(QuickBrownDog);
+	string ActualString = blake->TransformFinal()->ToString();
+
+	BOOST_CHECK(ExpectedHashOfQuickBrownDog == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestNullKeyVsUnKeyed)
+{
+	IBlake2SConfig configNoKeyed, configNullKeyed;
+	HashLibByteArray MainData;
+	register size_t Idx;
+
+	MainData = Converters::ConvertStringToBytes(DefaultData);
+	for (Idx = 1; Idx <= 32; Idx++)
+	{
+		configNoKeyed = make_shared<Blake2SConfig>(Idx);
+		configNullKeyed = make_shared<Blake2SConfig>(Idx);
+		configNullKeyed->SetKey(HashLibByteArray());
+
+		string ExpectedString = HashFactory::Crypto::CreateBlake2S(configNoKeyed)
+			->ComputeBytes(MainData)->ToString();
+
+		string ActualString = HashFactory::Crypto::CreateBlake2S(configNullKeyed)
+			->ComputeBytes(MainData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString,
+			Utils::string_format("Expected %s but got %s at Index %d", ExpectedString, ActualString, Idx));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateBlake2S();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Crypto::CreateBlake2S();
+
+	HashCloneIsUnique(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
+{
+	IHash hash = HashFactory::Crypto::CreateBlake2S();
+
+	HMACCloneIsCorrect(hash);
+}
+
+BOOST_AUTO_TEST_SUITE_END()

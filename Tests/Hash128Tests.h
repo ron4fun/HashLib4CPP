@@ -119,6 +119,77 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyOneEmptyString)
 	BOOST_CHECK(ExpectedHashOfEmptyDataWithOneAsKey == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
+{
+	register size_t x, size, i;
+	string temp;
+
+	for (x = 0; x < (sizeof(chunkSize) / sizeof(int32_t)); x++)
+	{
+		size = chunkSize[x];
+		murmurhash3_x64_128->Initialize();
+		i = size;
+		while (i < ChunkedData.size())
+		{
+			temp = ChunkedData.substr((i - size), size);
+			murmurhash3_x64_128->TransformString(temp);
+
+			i += size;
+		}
+
+		temp = ChunkedData.substr((i - size), ChunkedData.size() - ((i - size)));
+		murmurhash3_x64_128->TransformString(temp);
+
+		string ActualString = murmurhash3_x64_128->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Hash128::CreateMurmurHash3_x64_128()
+			->ComputeString(ChunkedData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
+{
+	register size_t Count, i;
+	HashLibByteArray temp, ChunkedDataBytes;
+
+	ChunkedDataBytes = Converters::ConvertStringToBytes(ChunkedData);
+	for (i = 0; i < ChunkedDataBytes.size(); i++)
+	{
+		Count = ChunkedDataBytes.size() - i;
+
+		const HashLibByteArray::const_iterator start = ChunkedDataBytes.begin() + i;
+		const HashLibByteArray::const_iterator end = ChunkedDataBytes.end();
+
+		temp = HashLibByteArray(start, end);
+		murmurhash3_x64_128->Initialize();
+
+		murmurhash3_x64_128->TransformBytes(ChunkedDataBytes, i, Count);
+
+		string ActualString = murmurhash3_x64_128->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Hash128::CreateMurmurHash3_x64_128()
+												->ComputeBytes(temp)->ToString();
+		
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x64_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x64_128();
+
+	HashCloneIsUnique(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -220,6 +291,77 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyOneEmptyString)
 
 	string ActualString = HashWithKey->ComputeString(EmptyData)->ToString();
 	BOOST_CHECK(ExpectedHashOfEmptyDataWithOneAsKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
+{
+	register size_t x, size, i;
+	string temp;
+
+	for (x = 0; x < (sizeof(chunkSize) / sizeof(int32_t)); x++)
+	{
+		size = chunkSize[x];
+		murmurhash3_x86_128->Initialize();
+		i = size;
+		while (i < ChunkedData.size())
+		{
+			temp = ChunkedData.substr((i - size), size);
+			murmurhash3_x86_128->TransformString(temp);
+
+			i += size;
+		}
+
+		temp = ChunkedData.substr((i - size), ChunkedData.size() - ((i - size)));
+		murmurhash3_x86_128->TransformString(temp);
+
+		string ActualString = murmurhash3_x86_128->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Hash128::CreateMurmurHash3_x86_128()
+			->ComputeString(ChunkedData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
+{
+	register size_t Count, i;
+	HashLibByteArray temp, ChunkedDataBytes;
+
+	ChunkedDataBytes = Converters::ConvertStringToBytes(ChunkedData);
+	for (i = 0; i < ChunkedDataBytes.size(); i++)
+	{
+		Count = ChunkedDataBytes.size() - i;
+
+		const HashLibByteArray::const_iterator start = ChunkedDataBytes.begin() + i;
+		const HashLibByteArray::const_iterator end = ChunkedDataBytes.end();
+
+		temp = HashLibByteArray(start, end);
+		murmurhash3_x86_128->Initialize();
+
+		murmurhash3_x86_128->TransformBytes(ChunkedDataBytes, i, Count);
+
+		string ActualString = murmurhash3_x86_128->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Hash128::CreateMurmurHash3_x86_128()
+			->ComputeBytes(temp)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x86_128();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x86_128();
+
+	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

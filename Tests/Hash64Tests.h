@@ -78,6 +78,20 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Hash64::CreateFNV();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Hash64::CreateFNV();
+
+	HashCloneIsUnique(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -139,6 +153,20 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = fnv1a->ComputeString(OnetoNine)->ToString();
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Hash64::CreateFNV1a();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Hash64::CreateFNV1a();
+
+	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -212,6 +240,20 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKey)
 
 	string ActualString = HashWithKey->ComputeString(DefaultData)->ToString();
 	BOOST_CHECK(ExpectedHashOfDefaultDataWithMaxUInt32AsKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Hash64::CreateMurmur2();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Hash64::CreateMurmur2();
+
+	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -323,6 +365,50 @@ BOOST_AUTO_TEST_CASE(TestWithOutsideKey)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
+{
+	register size_t x, size, i;
+	string temp;
+
+	for (x = 0; x < (sizeof(chunkSize) / sizeof(int32_t)); x++)
+	{
+		size = chunkSize[x];
+		siphash2_4->Initialize();
+		i = size;
+		while (i < ChunkedData.size())
+		{
+			temp = ChunkedData.substr((i - size), size);
+			siphash2_4->TransformString(temp);
+
+			i += size;
+		}
+
+		temp = ChunkedData.substr((i - size), ChunkedData.size() - ((i - size)));
+		siphash2_4->TransformString(temp);
+
+		string ActualString = siphash2_4->TransformFinal()->ToString();
+		string ExpectedString = HashFactory::Hash64::CreateSipHash2_4()
+			->ComputeString(ChunkedData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Hash64::CreateSipHash2_4();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Hash64::CreateSipHash2_4();
+
+	HashCloneIsUnique(hash);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
@@ -404,6 +490,20 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyOneEmptyString)
 
 	string ActualString = HashWithKey->ComputeString(EmptyData)->ToString();
 	BOOST_CHECK(ExpectedHashOfEmptyDataWithOneAsKey == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
+{
+	IHash hash = HashFactory::Hash64::CreateXXHash64();
+
+	HashCloneIsCorrectTestHelper(hash);
+}
+
+BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
+{
+	IHash hash = HashFactory::Hash64::CreateXXHash64();
+
+	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
