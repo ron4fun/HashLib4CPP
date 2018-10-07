@@ -80,7 +80,7 @@ public:
 private:
 	inline void TransformBuffer()
 	{
-		TransformBlock(buffer->GetBytes(), buffer->GetLength(), 0);
+		TransformBlock(&buffer->GetBytes()[0], buffer->GetLength(), 0);
 	} // end function TransformBuffer
 
 	virtual void Finish() = 0;
