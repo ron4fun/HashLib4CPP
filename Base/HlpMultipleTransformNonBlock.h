@@ -25,21 +25,19 @@ class MultipleTransformNonBlock : public Hash, public IINonBlockHash
 public:
 	MultipleTransformNonBlock(const int32_t a_hash_size, const int32_t a_block_size)
 		: Hash(a_hash_size, a_block_size)
-	{
-		_list = make_shared<vector<HashLibByteArray>>();
-	} // end constructor
+	{} // end constructor
 
 	~MultipleTransformNonBlock()
 	{} // end destructor
 
 	virtual void Initialize()
 	{
-		_list->clear();
+		_list.clear();
 	} // end fucntion Initialize
 
 	virtual void TransformBytes(const HashLibByteArray &a_data, int32_t a_index, int32_t a_length)
 	{
-		_list->push_back(a_data);
+		_list.push_back(a_data);
 	} // end function TransformBytes
 
 	virtual IHashResult TransformFinal()
@@ -66,24 +64,24 @@ private:
 	{
 		register uint32_t sum = 0, index = 0;
 		
-		for (register uint32_t i = 0; i < _list->size(); i++)
+		for (register uint32_t i = 0; i < _list.size(); i++)
 		{
-			sum = sum + (uint32_t)(*_list)[i].size();
+			sum = sum + (uint32_t)(_list)[i].size();
 		} // end for
 		
 		HashLibByteArray result = HashLibByteArray(sum);
 		
-		for (register uint32_t i = 0; i < _list->size(); i++) 
+		for (register uint32_t i = 0; i < _list.size(); i++) 
 		{
-			memmove(&result[index], &(*_list)[i][0], (*_list)[i].size() * sizeof(uint8_t));
-			index = index + (uint32_t)(*_list)[i].size();
+			memmove(&result[index], &(_list)[i][0], (_list)[i].size() * sizeof(uint8_t));
+			index = index + (uint32_t)(_list)[i].size();
 		} // end for
 
 		return result;
 	} // end function Aggregate
 
-private:
-	shared_ptr<vector<HashLibByteArray>> _list;
+protected:
+	HashLibMatrixByteArray _list;
 
 }; // end class MultipleTransformNonBlock
 

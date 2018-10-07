@@ -60,6 +60,8 @@
 #include "../Hash128/HlpMurmurHash3_x86_128.h"
 #include "../Hash128/HlpMurmurHash3_x64_128.h"
 // Crypto Units
+#include "../Crypto/HlpBlake2B.h"
+#include "../Crypto/HlpBlake2S.h"
 #include "../Crypto/HlpTiger.h"
 #include "../Crypto/HlpTiger2.h"
 #include "../Crypto/HlpMD2.h"
@@ -82,6 +84,7 @@
 #include "../Crypto/HlpSnefru.h"
 #include "../Crypto/HlpHaval.h"
 #include "../Crypto/HlpGost.h"
+#include "../Crypto/HlpGOST3411_2012.h"
 #include "../Crypto/HlpHAS160.h"
 #include "../Crypto/HlpRIPEMD.h"
 #include "../Crypto/HlpRIPEMD128.h"
@@ -93,6 +96,8 @@
 #include "HlpHMACNotBuildInAdapter.h"
 // PBKDF2_HMAC Unit
 #include "../KDF/HlpPBKDF2_HMACNotBuildInAdapter.h"
+// NullDigest
+#include "../NullDigest/HlpNullDigest.h"
 
 
 namespace HashFactory
@@ -711,6 +716,16 @@ namespace HashFactory
 			return  make_shared<Gost>();
 		} // end function CreateGost
 
+		static IHash CreateGOST3411_2012_256()
+		{
+			return  make_shared<GOST3411_2012_256>();
+		} // end function CreateGOST3411_2012_256
+
+		static IHash CreateGOST3411_2012_512()
+		{
+			return  make_shared<GOST3411_2012_512>();
+		} // end function CreateGOST3411_2012_512
+		
 		static IHash CreateHAS160()
 		{
 			return  make_shared<HAS160>();
@@ -761,6 +776,86 @@ namespace HashFactory
 			return  make_shared<SHA3_512>();
 		} // end function CreateSHA3_512
 
+		static IHash CreateKeccak_224()
+		{
+			return  make_shared<Keccak_224>();
+		} // end function CreateKeccak_224
+
+		static IHash CreateKeccak_256()
+		{
+			return  make_shared<Keccak_256>();
+		} // end function CreateKeccak_256
+
+		static IHash CreateKeccak_384()
+		{
+			return  make_shared<Keccak_384>();
+		} // end function CreateKeccak_384
+
+		static IHash CreateKeccak_512()
+		{
+			return  make_shared<Keccak_512>();
+		} // end function CreateKeccak_512
+
+		static IHash CreateBlake2B(const IBlake2BConfig config = nullptr)
+		{
+			if (config == nullptr) return make_shared<Blake2B>();
+			return make_shared<Blake2B>(config);
+		}
+
+		static IHash CreateBlake2B_160()
+		{
+			IBlake2BConfig config = make_shared<Blake2BConfig>(HashSize::HashSize160);
+			return HashFactory::Crypto::CreateBlake2B(config);
+		}
+
+		static IHash CreateBlake2B_256()
+		{
+			IBlake2BConfig config = make_shared<Blake2BConfig>(HashSize::HashSize256);
+			return HashFactory::Crypto::CreateBlake2B(config);
+		}
+
+		static IHash CreateBlake2B_384()
+		{
+			IBlake2BConfig config = make_shared<Blake2BConfig>(HashSize::HashSize384);
+			return HashFactory::Crypto::CreateBlake2B(config);
+		}
+
+		static IHash CreateBlake2B_512()
+		{
+			IBlake2BConfig config = make_shared<Blake2BConfig>(HashSize::HashSize512);
+			return HashFactory::Crypto::CreateBlake2B(config);
+		}
+
+		static IHash CreateBlake2S(const IBlake2SConfig config = nullptr)
+		{
+			if (config == nullptr) return make_shared<Blake2S>();
+			return make_shared<Blake2S>(config);
+		}
+
+		static IHash CreateBlake2S_128()
+		{
+			IBlake2SConfig config = make_shared<Blake2SConfig>(HashSize::HashSize128);
+			return HashFactory::Crypto::CreateBlake2S(config);
+		}
+
+		static IHash CreateBlake2S_160()
+		{
+			IBlake2SConfig config = make_shared<Blake2SConfig>(HashSize::HashSize160);
+			return HashFactory::Crypto::CreateBlake2S(config);
+		}
+
+		static IHash CreateBlake2S_224()
+		{
+			IBlake2SConfig config = make_shared<Blake2SConfig>(HashSize::HashSize224);
+			return HashFactory::Crypto::CreateBlake2S(config);
+		}
+
+		static IHash CreateBlake2S_256()
+		{
+			IBlake2SConfig config = make_shared<Blake2SConfig>(HashSize::HashSize256);
+			return HashFactory::Crypto::CreateBlake2S(config);
+		}
+
 	} // end namespace Crypto
 
 	// ====================== HMAC ======================
@@ -772,7 +867,7 @@ namespace HashFactory
 		} // end function CreateHMAC
 	} // end namespace HMAC
 
-	   // ====================== PBKDF2_HMAC ======================
+	// ====================== PBKDF2_HMAC ======================
 	namespace PBKDF2_HMAC
 	{
 		/// <summary>
@@ -802,6 +897,16 @@ namespace HashFactory
 			return make_shared<PBKDF2_HMACNotBuildInAdapter>(a_hash, a_password, a_salt, a_iterations);
 		} // end function CreatePBKDF2_HMAC
 	} // end namespace PBKDF2_HMAC
+
+	// ====================== NullDigest ======================
+	namespace NullDigestFactory
+	{
+		IHash CreateNullDigest()
+		{
+			return make_shared<NullDigest>();
+		}
+
+	}
 
 } // end namespace HashFactory
 

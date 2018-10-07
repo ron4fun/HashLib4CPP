@@ -38,6 +38,21 @@
     <Filter Include="Hash128">
       <UniqueIdentifier>{693be6f2-3997-44ea-ad15-72c689bb5b1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces\IBlake2SConfigurations">
+      <UniqueIdentifier>{9a5e9ee2-8e90-48dd-a977-b6423760baf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\IBlake2BConfigurations">
+      <UniqueIdentifier>{f01553b4-c283-4780-ae2e-05e0bf66bd6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Crypto\Blake2SConfigurations">
+      <UniqueIdentifier>{e95cdf6e-481b-416b-babd-ea6b4ca0ebec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Crypto\Blake2BConfigurations">
+      <UniqueIdentifier>{c5df94f2-c9a9-4061-957b-ac9ff73e0942}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NullDigest">
+      <UniqueIdentifier>{a0d98111-8dd9-4ad3-bb9d-180f2f337ce8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils\HlpHashLibTypes.h">
@@ -317,6 +332,60 @@
       <Filter>Tests</Filter>
     </ClInclude>
     <ClInclude Include="Tests\PBKDF2_HMACTests.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\HlpUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\HlpGOST3411_2012.h">
+      <Filter>Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\IBlake2SConfigurations\HlpIBlake2STreeConfig.h">
+      <Filter>Interfaces\IBlake2BConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\IBlake2SConfigurations\HlpIBlake2SConfig.h">
+      <Filter>Interfaces\IBlake2BConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\Blake2SConfigurations\HlpBlake2SConfig.h">
+      <Filter>Crypto\Blake2SConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\Blake2SConfigurations\HlpBlake2STreeConfig.h">
+      <Filter>Crypto\Blake2SConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\Blake2SConfigurations\HlpBlake2SIvBuilder.h">
+      <Filter>Crypto\Blake2SConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\HlpBlake2S.h">
+      <Filter>Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\IBlake2BConfigurations\HlpIBlake2BConfig.h">
+      <Filter>Interfaces\IBlake2SConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\IBlake2BConfigurations\HlpIBlake2BTreeConfig.h">
+      <Filter>Interfaces\IBlake2SConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\Blake2BConfigurations\HlpBlake2BConfig.h">
+      <Filter>Crypto\Blake2BConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\Blake2BConfigurations\HlpBlake2BTreeConfig.h">
+      <Filter>Crypto\Blake2BConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\Blake2BConfigurations\HlpBlake2BIvBuilder.h">
+      <Filter>Crypto\Blake2BConfigurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Crypto\HlpBlake2B.h">
+      <Filter>Crypto</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\Blake2STestVectors.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\Blake2BTestVectors.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="NullDigest\HlpNullDigest.h">
+      <Filter>NullDigest</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\NullDigestTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
   </ItemGroup>

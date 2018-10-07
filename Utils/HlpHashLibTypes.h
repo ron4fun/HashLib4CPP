@@ -21,21 +21,18 @@
 #include <stdexcept>
 #include <vector>
 #include <string>
-
 using namespace std;
 
 class HashLibException //: public runtime_error
 {
 public:
-	HashLibException(const char * text)
-	: msg_(text)
-	{
-	    //msg_ = string(text);
-	}  // end constructor
+	HashLibException(const string &text)
+		:msg_(text)
+	{}  // end constructor
 
-	const char* what() const throw ()
+	const char * what() const throw ()
 	{
-	    return msg_.c_str();
+		return msg_.c_str();
 	} // end function what
 
 private:
@@ -46,7 +43,7 @@ private:
 class InvalidOperationHashLibException : public HashLibException
 {
 public:
-	InvalidOperationHashLibException(const char * text)
+	InvalidOperationHashLibException(const string &text)
 		: HashLibException(text)
 	{}
 }; // end class InvalidOperationHashLibException
@@ -54,15 +51,23 @@ public:
 class IndexOutOfRangeHashLibException : public HashLibException
 {
 public:
-	IndexOutOfRangeHashLibException(const char * text)
+	IndexOutOfRangeHashLibException(const string &text)
 		: HashLibException(text)
 	{}
 }; // end class IndexOutOfRangeHashLibException
 
+class ArgumentInvalidHashLibException : public HashLibException
+{
+public:
+	ArgumentInvalidHashLibException(const string &text)
+		: HashLibException(text)
+	{}
+}; // end class ArgumentInvalidHashLibException
+
 class ArgumentHashLibException : public HashLibException
 {
 public:
-	ArgumentHashLibException(const char * text)
+	ArgumentHashLibException(const string &text)
 		: HashLibException(text)
 	{}
 }; // end class ArgumentHashLibException
@@ -70,7 +75,7 @@ public:
 class ArgumentNilHashLibException : HashLibException
 {
 public:
-	ArgumentNilHashLibException(const char * text)
+	ArgumentNilHashLibException(const string &text)
 		: HashLibException(text)
 	{}
 }; // end class ArgumentNilHashLibException
@@ -78,7 +83,7 @@ public:
 class ArgumentOutOfRangeHashLibException : public HashLibException
 {
 public:
-	ArgumentOutOfRangeHashLibException(const char * text)
+	ArgumentOutOfRangeHashLibException(const string &text)
 		: HashLibException(text)
 	{}
 }; // end class ArgumentOutOfRangeHashLibException
@@ -86,7 +91,7 @@ public:
 class NullReferenceHashLibException : public HashLibException
 {
 public:
-	NullReferenceHashLibException(const char * text)
+	NullReferenceHashLibException(const string &text)
 		: HashLibException(text)
 	{}
 }; // end class NullReferenceHashLibException
@@ -94,11 +99,18 @@ public:
 class UnsupportedTypeHashLibException : public HashLibException
 {
 public:
-	UnsupportedTypeHashLibException(const char * text)
+	UnsupportedTypeHashLibException(const string &text)
 		: HashLibException(text)
 	{}
 }; // end class UnsupportedTypeHashLibException
 
+class NotImplementedHashLibException : public HashLibException
+{
+public:
+	NotImplementedHashLibException(const string &text)
+		: HashLibException(text)
+	{}
+}; // end class NotImplementedHashLibException
 
 /// <summary>
 /// Represents a dynamic array of Byte.
@@ -124,6 +136,11 @@ typedef vector<string> HashLibStringArray;
 /// Represents a dynamic array of Char.
 /// </summary>
 typedef vector<char> HashLibCharArray;
+
+/// <summary>
+/// Represents a dynamic array of array of UInt8.
+/// </summary>
+typedef vector<HashLibByteArray> HashLibMatrixByteArray;
 
 /// <summary>
 /// Represents a dynamic array of array of UInt32.

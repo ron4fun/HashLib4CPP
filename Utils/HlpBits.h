@@ -79,26 +79,32 @@ public:
 
 	inline static int32_t Asr32(const int32_t value, const int32_t ShiftBits)
 	{
-		int32_t result = value >> ShiftBits;
-		if ((value & 0x80000000) > 0)
-		{
+		return int32_t(uint32_t(uint32_t(uint32_t(value) >> (ShiftBits & 31)) |
+			(uint32_t(int32_t(uint32_t(0 - uint32_t(uint32_t(value) >> 31)) &
+				uint32_t(int32_t(0 - (bool((ShiftBits & 31) != 0)))))) << (32 - (ShiftBits & 31)))));
+		//int32_t result = value >> ShiftBits;
+		//if ((value & 0x80000000) > 0)
+		//{
 			// if you don't want to cast (0xFFFFFFFF) to an Int32,
 			// simply replace it with (-1) to avoid range check error.
-			result = result | (int32_t(0xFFFFFFFF) << (32 - ShiftBits));
-		} // end if
+		//	result = result | (int32_t(0xFFFFFFFF) << (32 - ShiftBits));
+		//} // end if
 
-		return result;			
+		//return result;			
 	} // end function Asr32
 
 	inline static int64_t Asr64(const int64_t value, const int32_t ShiftBits)
 	{
-		int64_t result = value >> ShiftBits;
-		if ((value & 0x8000000000000000) > 0)
-		{
-			result = result | (0xFFFFFFFFFFFFFFFF << (64 - ShiftBits));
-		} // end if
+		return int64_t(uint64_t(uint64_t(uint64_t(value) >> (ShiftBits & 63)) |
+			(uint64_t(int64_t(uint64_t(0 - uint64_t(uint64_t(value) >> 63)) &
+				uint64_t(int64_t(0 - (bool((ShiftBits & 63) != 0)))))) << (64 - (ShiftBits & 63)))));
+		//int64_t result = value >> ShiftBits;
+		//if ((value & 0x8000000000000000) > 0)
+		//{
+			//result = result | (0xFFFFFFFFFFFFFFFF << (64 - ShiftBits));
+		//} // end if
 	
-		return result;
+		//return result;
 	} // end function Asr64
 
 	inline static uint32_t RotateLeft32(const uint32_t a_value, int32_t a_n)

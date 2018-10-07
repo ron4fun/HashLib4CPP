@@ -169,7 +169,16 @@
     <ClInclude Include="Checksum\HlpCRC16.h" />
     <ClInclude Include="Checksum\HlpCRC32.h" />
     <ClInclude Include="Checksum\HlpCRC64.h" />
+    <ClInclude Include="Crypto\Blake2BConfigurations\HlpBlake2BConfig.h" />
+    <ClInclude Include="Crypto\Blake2BConfigurations\HlpBlake2BIvBuilder.h" />
+    <ClInclude Include="Crypto\Blake2BConfigurations\HlpBlake2BTreeConfig.h" />
+    <ClInclude Include="Crypto\Blake2SConfigurations\HlpBlake2SConfig.h" />
+    <ClInclude Include="Crypto\Blake2SConfigurations\HlpBlake2SIvBuilder.h" />
+    <ClInclude Include="Crypto\Blake2SConfigurations\HlpBlake2STreeConfig.h" />
+    <ClInclude Include="Crypto\HlpBlake2B.h" />
+    <ClInclude Include="Crypto\HlpBlake2S.h" />
     <ClInclude Include="Crypto\HlpGost.h" />
+    <ClInclude Include="Crypto\HlpGOST3411_2012.h" />
     <ClInclude Include="Crypto\HlpGrindahl256.h" />
     <ClInclude Include="Crypto\HlpGrindahl512.h" />
     <ClInclude Include="Crypto\HlpHAS160.h" />
@@ -234,18 +243,27 @@
     <ClInclude Include="Interfaces\HlpIHashInfo.h" />
     <ClInclude Include="Interfaces\HlpIHashResult.h" />
     <ClInclude Include="Interfaces\HlpIKDF.h" />
+    <ClInclude Include="Interfaces\IBlake2BConfigurations\HlpIBlake2BConfig.h" />
+    <ClInclude Include="Interfaces\IBlake2BConfigurations\HlpIBlake2BTreeConfig.h" />
+    <ClInclude Include="Interfaces\IBlake2SConfigurations\HlpIBlake2SConfig.h" />
+    <ClInclude Include="Interfaces\IBlake2SConfigurations\HlpIBlake2STreeConfig.h" />
     <ClInclude Include="KDF\HlpPBKDF2_HMACNotBuildInAdapter.h" />
     <ClInclude Include="Nullable\HlpNullable.h" />
+    <ClInclude Include="NullDigest\HlpNullDigest.h" />
+    <ClInclude Include="Tests\Blake2BTestVectors.h" />
+    <ClInclude Include="Tests\Blake2STestVectors.h" />
     <ClInclude Include="Tests\ChecksumTests.h" />
     <ClInclude Include="Tests\CryptoTests.h" />
     <ClInclude Include="Tests\Hash128Tests.h" />
     <ClInclude Include="Tests\Hash32Tests.h" />
     <ClInclude Include="Tests\Hash64Tests.h" />
+    <ClInclude Include="Tests\NullDigestTest.h" />
     <ClInclude Include="Tests\PBKDF2_HMACTests.h" />
     <ClInclude Include="Tests\TestConstants.h" />
     <ClInclude Include="Utils\HlpBitConverter.h" />
     <ClInclude Include="Utils\HlpBits.h" />
     <ClInclude Include="Utils\HlpHashLibTypes.h" />
+    <ClInclude Include="Utils\HlpUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HashFactoryApp.cpp" />
