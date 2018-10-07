@@ -327,8 +327,10 @@ public:
 		return result;
 	} // end function ConvertBytesToHexString
 
-	static inline HashLibByteArray ConvertHexStringToBytes(string &a_in)
+	static inline HashLibByteArray ConvertHexStringToBytes(const string &_a_in)
 	{
+		string a_in = _a_in;
+
 		remove(a_in.begin(), a_in.end(), '-');
 		//replace(a_in.begin(), a_in.end(), '-', (char)0);
 		HashLibByteArray result(a_in.size() >> 1);
