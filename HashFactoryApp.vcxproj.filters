@@ -388,6 +388,9 @@
     <ClInclude Include="Tests\NullDigestTest.h">
       <Filter>Tests</Filter>
     </ClInclude>
+    <ClInclude Include="HashLib4CPP.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HashFactoryApp.cpp">

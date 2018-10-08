@@ -238,6 +238,7 @@
     <ClInclude Include="Hash64\HlpMurmur2_64.h" />
     <ClInclude Include="Hash64\HlpSipHash.h" />
     <ClInclude Include="Hash64\HlpXXHash64.h" />
+    <ClInclude Include="HashLib4CPP.h" />
     <ClInclude Include="Interfaces\HlpICRC.h" />
     <ClInclude Include="Interfaces\HlpIHash.h" />
     <ClInclude Include="Interfaces\HlpIHashInfo.h" />
