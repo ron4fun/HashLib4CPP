@@ -19,7 +19,7 @@
 #include <boost/test/included/unit_test.hpp>
 #include "../Utils/HlpHashLibTypes.h"
 #include "../Base/HlpConverters.h"
-#include "../Base/HlpHashFactory.h"
+#include "../HashLib4CPP.h"
 #include "../Utils/HlpUtils.h"
 
 

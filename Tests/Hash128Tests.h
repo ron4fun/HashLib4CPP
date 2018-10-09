@@ -1,5 +1,5 @@
 // ///////////////////////////////////////////////////////////////// //
-// *C++ 11 HashFactory Library                                 
+// *C++ 11 HashLib4CPP Library                                 
 // *Copyright(c) 2018  Mbadiwe Nnaemeka Ronald                 
 // *Github Repository <https://github.com/ron4fun>             
 
@@ -31,7 +31,7 @@ string ExpectedHashOfZerotoFour = "0F04E459497F3FC1ECCC6223A28DD613";
 string ExpectedHashOfEmptyDataWithOneAsKey = "4610ABE56EFF5CB551622DAA78F83583";
 string ExpectedHashOfDefaultDataWithMaxUInt32AsKey = "ADFD14988FB1F8582A1B67C1BBACC218";
 
-IHash murmurhash3_x64_128 = HashFactory::Hash128::CreateMurmurHash3_x64_128();
+IHash murmurhash3_x64_128 = HashLib4CPP::Hash128::CreateMurmurHash3_x64_128();
 
 BOOST_AUTO_TEST_CASE(TestRandomString)
 {
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x64_128();
+	IHash hash = HashLib4CPP::Hash128::CreateMurmurHash3_x64_128();
 
     string MurMur3Data = "HashLib4Pascal012345678HashLib4Pascal012345678HashLib4Pascal012345678HashLib4Pascal012345678";
     string MurMur3ExpectedResult = "380BB6EFADE13DFBA82A58BE1BBC60E9";
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(TestZerotoFour)
 
 BOOST_AUTO_TEST_CASE(TestWithDifferentKeyMaxUInt32DefaultData)
 {
-	IHashWithKey HashWithKey = HashFactory::Hash128::CreateMurmurHash3_x64_128();
+	IHashWithKey HashWithKey = HashLib4CPP::Hash128::CreateMurmurHash3_x64_128();
 	HashWithKey->SetKey(Converters::ReadUInt32AsBytesLE(uint32_t(-1)));
 
 	string ActualString = HashWithKey->ComputeString(DefaultData)->ToString();
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyMaxUInt32DefaultData)
 
 BOOST_AUTO_TEST_CASE(TestWithDifferentKeyOneEmptyString)
 {
-	IHashWithKey HashWithKey = HashFactory::Hash128::CreateMurmurHash3_x64_128();
+	IHashWithKey HashWithKey = HashLib4CPP::Hash128::CreateMurmurHash3_x64_128();
 	HashWithKey->SetKey(Converters::ReadUInt32AsBytesLE(uint32_t(1)));
 
 	string ActualString = HashWithKey->ComputeString(EmptyData)->ToString();
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 		murmurhash3_x64_128->TransformString(temp);
 
 		string ActualString = murmurhash3_x64_128->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Hash128::CreateMurmurHash3_x64_128()
+		string ExpectedString = HashLib4CPP::Hash128::CreateMurmurHash3_x64_128()
 			->ComputeString(ChunkedData)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
 		murmurhash3_x64_128->TransformBytes(ChunkedDataBytes, i, Count);
 
 		string ActualString = murmurhash3_x64_128->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Hash128::CreateMurmurHash3_x64_128()
+		string ExpectedString = HashLib4CPP::Hash128::CreateMurmurHash3_x64_128()
 												->ComputeBytes(temp)->ToString();
 		
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -178,14 +178,14 @@ BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x64_128();
+	IHash hash = HashLib4CPP::Hash128::CreateMurmurHash3_x64_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x64_128();
+	IHash hash = HashLib4CPP::Hash128::CreateMurmurHash3_x64_128();
 
 	HashCloneIsUnique(hash);
 }
@@ -206,7 +206,7 @@ string ExpectedHashOfZerotoFour = "35C5B3EE7B3B211600AE108800AE1088";
 string ExpectedHashOfEmptyDataWithOneAsKey = "88C4ADEC54D201B954D201B954D201B9";
 string ExpectedHashOfDefaultDataWithMaxUInt32AsKey = "55315FA9E8129C7390C080B8FDB1C972";
 
-IHash murmurhash3_x86_128 = HashFactory::Hash128::CreateMurmurHash3_x86_128();
+IHash murmurhash3_x86_128 = HashLib4CPP::Hash128::CreateMurmurHash3_x86_128();
 
 BOOST_AUTO_TEST_CASE(TestRandomString)
 {
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x86_128();
+	IHash hash = HashLib4CPP::Hash128::CreateMurmurHash3_x86_128();
 
     string MurMur3Data = "HashLib4Pascal012345678HashLib4Pascal012345678HashLib4Pascal012345678HashLib4Pascal012345678";
     string MurMur3ExpectedResult = "CE383F71F9B801A4C03634DAB47ACC7A";
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE(TestZerotoFour)
 
 BOOST_AUTO_TEST_CASE(TestWithDifferentKeyMaxUInt32DefaultData)
 {
-	IHashWithKey HashWithKey = HashFactory::Hash128::CreateMurmurHash3_x86_128();
+	IHashWithKey HashWithKey = HashLib4CPP::Hash128::CreateMurmurHash3_x86_128();
 	HashWithKey->SetKey(Converters::ReadUInt32AsBytesLE(uint32_t(-1)));
 
 	string ActualString = HashWithKey->ComputeString(DefaultData)->ToString();
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyMaxUInt32DefaultData)
 
 BOOST_AUTO_TEST_CASE(TestWithDifferentKeyOneEmptyString)
 {
-	IHashWithKey HashWithKey = HashFactory::Hash128::CreateMurmurHash3_x86_128();
+	IHashWithKey HashWithKey = HashLib4CPP::Hash128::CreateMurmurHash3_x86_128();
 	HashWithKey->SetKey(Converters::ReadUInt32AsBytesLE(uint32_t(1)));
 
 	string ActualString = HashWithKey->ComputeString(EmptyData)->ToString();
@@ -315,7 +315,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 		murmurhash3_x86_128->TransformString(temp);
 
 		string ActualString = murmurhash3_x86_128->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Hash128::CreateMurmurHash3_x86_128()
+		string ExpectedString = HashLib4CPP::Hash128::CreateMurmurHash3_x86_128()
 			->ComputeString(ChunkedData)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
 		murmurhash3_x86_128->TransformBytes(ChunkedDataBytes, i, Count);
 
 		string ActualString = murmurhash3_x86_128->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Hash128::CreateMurmurHash3_x86_128()
+		string ExpectedString = HashLib4CPP::Hash128::CreateMurmurHash3_x86_128()
 			->ComputeBytes(temp)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -352,14 +352,14 @@ BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x86_128();
+	IHash hash = HashLib4CPP::Hash128::CreateMurmurHash3_x86_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Hash128::CreateMurmurHash3_x86_128();
+	IHash hash = HashLib4CPP::Hash128::CreateMurmurHash3_x86_128();
 
 	HashCloneIsUnique(hash);
 }

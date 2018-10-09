@@ -1,5 +1,5 @@
 // ///////////////////////////////////////////////////////////////// //
-// *C++ 11 HashFactory Library                                 
+// *C++ 11 HashLib4CPP Library                                 
 // *Copyright(c) 2018  Mbadiwe Nnaemeka Ronald                 
 // *Github Repository <https://github.com/ron4fun>             
 
@@ -24,7 +24,7 @@
 ///////////////////
 BOOST_AUTO_TEST_SUITE(NullDigestTestCase)
 
-IHash nullDigest = HashFactory::NullDigestFactory::CreateNullDigest();
+IHash nullDigest = HashLib4CPP::NullDigestFactory::CreateNullDigest();
 
 BOOST_AUTO_TEST_CASE(TestBytesabcde)
 {
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyBytes)
 {
 	HashLibByteArray BytesEmpty, Result;
 	
-	nullDigest = HashFactory::NullDigestFactory::CreateNullDigest();
+	nullDigest = HashLib4CPP::NullDigestFactory::CreateNullDigest();
 
 	BytesEmpty = Converters::ConvertStringToBytes("");
 	BOOST_CHECK(-1 == nullDigest->GetBlockSize());
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	HashLibByteArray BytesZeroToNine, Result;
 	HashLibByteArray::const_iterator start, end;
 
-	nullDigest = HashFactory::NullDigestFactory::CreateNullDigest();
+	nullDigest = HashLib4CPP::NullDigestFactory::CreateNullDigest();
 
 	BytesZeroToNine = Converters::ConvertStringToBytes("0123456789");
 	BOOST_CHECK(-1 == nullDigest->GetBlockSize());
@@ -122,14 +122,14 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	nullDigest = HashFactory::NullDigestFactory::CreateNullDigest();
+	nullDigest = HashLib4CPP::NullDigestFactory::CreateNullDigest();
 
 	HashCloneIsCorrectTestHelper(nullDigest);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	nullDigest = HashFactory::NullDigestFactory::CreateNullDigest();
+	nullDigest = HashLib4CPP::NullDigestFactory::CreateNullDigest();
 
 	HashCloneIsUnique(nullDigest);
 }

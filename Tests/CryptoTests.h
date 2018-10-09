@@ -1,5 +1,5 @@
 // ///////////////////////////////////////////////////////////////// //
-// *C++ 11 HashFactory Library                                 
+// *C++ 11 HashLib4CPP Library                                 
 // *Copyright(c) 2018  Mbadiwe Nnaemeka Ronald                 
 // *Github Repository <https://github.com/ron4fun>             
 
@@ -33,11 +33,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "6E4E2895E194BEB0A083B1DE
 string ExpectedHashOfOnetoNine = "264B4E433DEE474AEC465FA9C725FE963BC4B4ABC4FDAC63B7F73B671663AFC9";
 string ExpectedHashOfabcde = "B18CFD04F92DC1D83325036BC723D36DB25EDE41AE879D2545FC7F377B700899";
 
-IHash gost = HashFactory::Crypto::CreateGost();
+IHash gost = HashLib4CPP::Crypto::CreateGost();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateGost());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateGost());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateGost());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateGost());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateGost();
+	IHash hash = HashLib4CPP::Crypto::CreateGost();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -102,21 +102,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGost();
+	IHash hash = HashLib4CPP::Crypto::CreateGost();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateGost();
+	IHash hash = HashLib4CPP::Crypto::CreateGost();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGost();
+	IHash hash = HashLib4CPP::Crypto::CreateGost();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_SUITE(GOST3411_2012_256TestCase)
 string ExpectedHashOfEmptyData = "3F539A213E97C802CC229D474C6AA32A825A360B2A933A949FD925208D9CE1BB";
 string ExpectedHashOfQuickBrownFox = "3E7DEA7F2384B6C5A3D0E24AAA29C05E89DDD762145030EC22C71A6DB8B2C1F4";
 
-IHash gost = HashFactory::Crypto::CreateGOST3411_2012_256();
+IHash gost = HashLib4CPP::Crypto::CreateGOST3411_2012_256();
 
 BOOST_AUTO_TEST_CASE(TestEmptyString)
 {
@@ -143,21 +143,21 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_256();
+	IHash hash = HashLib4CPP::Crypto::CreateGOST3411_2012_256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_256();
+	IHash hash = HashLib4CPP::Crypto::CreateGOST3411_2012_256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_256();
+	IHash hash = HashLib4CPP::Crypto::CreateGOST3411_2012_256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 		gost->TransformString(temp);
 
 		string ActualString = gost->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Crypto::CreateGOST3411_2012_256()
+		string ExpectedString = HashLib4CPP::Crypto::CreateGOST3411_2012_256()
 									->ComputeString(ChunkedData)->ToString();
 		
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_256();
+	IHash hash = HashLib4CPP::Crypto::CreateGOST3411_2012_256();
 
 	hash->Initialize();
 	hash->TransformString(QuickBrownDog.substr(0, 16));
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_SUITE(GOST3411_2012_512TestCase)
 string ExpectedHashOfEmptyData = "8E945DA209AA869F0455928529BCAE4679E9873AB707B55315F56CEB98BEF0A7362F715528356EE83CDA5F2AAC4C6AD2BA3A715C1BCD81CB8E9F90BF4C1C1A8A";
 string ExpectedHashOfQuickBrownFox = "D2B793A0BB6CB5904828B5B6DCFB443BB8F33EFC06AD09368878AE4CDC8245B97E60802469BED1E7C21A64FF0B179A6A1E0BB74D92965450A0ADAB69162C00FE";
 
-IHash gost = HashFactory::Crypto::CreateGOST3411_2012_512();
+IHash gost = HashLib4CPP::Crypto::CreateGOST3411_2012_512();
 
 BOOST_AUTO_TEST_CASE(TestEmptyString)
 {
@@ -235,21 +235,21 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_512();
+	IHash hash = HashLib4CPP::Crypto::CreateGOST3411_2012_512();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_512();
+	IHash hash = HashLib4CPP::Crypto::CreateGOST3411_2012_512();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_512();
+	IHash hash = HashLib4CPP::Crypto::CreateGOST3411_2012_512();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 		gost->TransformString(temp);
 
 		string ActualString = gost->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Crypto::CreateGOST3411_2012_512()
+		string ExpectedString = HashLib4CPP::Crypto::CreateGOST3411_2012_512()
 			->ComputeString(ChunkedData)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateGOST3411_2012_512();
+	IHash hash = HashLib4CPP::Crypto::CreateGOST3411_2012_512();
 
 	hash->Initialize();
 	hash->TransformString(QuickBrownDog.substr(0, 16));
@@ -320,11 +320,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "65BA6F8EFA5B566D556EC8E3
 string ExpectedHashOfOnetoNine = "D2460846C5FE9E4750985CC9244D2458BEFD884435121FE56528022A3C7605B7";
 string ExpectedHashOfabcde = "5CDA73422F36E41087795BB6C21D577BAAF114E4A6CCF33D919E700EE2489FE2";
 
-IHash grindahl256 = HashFactory::Crypto::CreateGrindahl256();
+IHash grindahl256 = HashLib4CPP::Crypto::CreateGrindahl256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateGrindahl256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateGrindahl256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -333,7 +333,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateGrindahl256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateGrindahl256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -367,7 +367,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateGrindahl256();
+	IHash hash = HashLib4CPP::Crypto::CreateGrindahl256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -389,21 +389,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGrindahl256();
+	IHash hash = HashLib4CPP::Crypto::CreateGrindahl256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateGrindahl256();
+	IHash hash = HashLib4CPP::Crypto::CreateGrindahl256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGrindahl256();
+	IHash hash = HashLib4CPP::Crypto::CreateGrindahl256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -424,11 +424,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "7F067A454A4F6300982CAE37
 string ExpectedHashOfOnetoNine = "6845F20B8A9DB083F307844506D342ED0FEE0D16BAF64B22E6C07552CB8C907E936FEDCD885B72C1B05813F722B5706C112AD59D3421CFD88CAA1CFB40EF1BEF";
 string ExpectedHashOfabcde = "F282C47F31831EAB58B8EE9D1EEE3B9B5A6A86354EEFE84CA3176BED5AB447E6D5AC82316F2D6FAAD350848E2D418336A57772D96311DA8BC51C93087204C6A5";
 
-IHash grindahl512 = HashFactory::Crypto::CreateGrindahl512();
+IHash grindahl512 = HashLib4CPP::Crypto::CreateGrindahl512();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateGrindahl512());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateGrindahl512());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -437,7 +437,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateGrindahl512());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateGrindahl512());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateGrindahl512();
+	IHash hash = HashLib4CPP::Crypto::CreateGrindahl512();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -493,21 +493,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGrindahl512();
+	IHash hash = HashLib4CPP::Crypto::CreateGrindahl512();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateGrindahl512();
+	IHash hash = HashLib4CPP::Crypto::CreateGrindahl512();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateGrindahl512();
+	IHash hash = HashLib4CPP::Crypto::CreateGrindahl512();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -528,11 +528,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "53970A7AC510A85D0E22FF50
 string ExpectedHashOfOnetoNine = "A0DA48CCD36C9D24AA630D4B3673525E9109A83C";
 string ExpectedHashOfabcde = "EEEA94C2F0450B639BC2ACCAF4AEB172A5885313";
 
-IHash has160 = HashFactory::Crypto::CreateHAS160();
+IHash has160 = HashLib4CPP::Crypto::CreateHAS160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHAS160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHAS160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -541,7 +541,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHAS160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHAS160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -575,7 +575,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHAS160();
+	IHash hash = HashLib4CPP::Crypto::CreateHAS160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -597,21 +597,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHAS160();
+	IHash hash = HashLib4CPP::Crypto::CreateHAS160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHAS160();
+	IHash hash = HashLib4CPP::Crypto::CreateHAS160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHAS160();
+	IHash hash = HashLib4CPP::Crypto::CreateHAS160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -632,11 +632,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "9D49ED7B5D42C64F590A164C
 string ExpectedHashOfOnetoNine = "F2F92D4E5CA6B92A5B5FC5AC822C39D2";
 string ExpectedHashOfabcde = "51D4032478AA59182916E6C111FA79A6";
 
-IHash haval_3_128 = HashFactory::Crypto::CreateHaval_3_128();
+IHash haval_3_128 = HashLib4CPP::Crypto::CreateHaval_3_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -645,7 +645,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -679,7 +679,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -701,21 +701,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -736,11 +736,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "9A0B60DEB9F9FBB2A9DAD87A
 string ExpectedHashOfOnetoNine = "52DFE2F3DA02591061B02DBDC1510F1C";
 string ExpectedHashOfabcde = "61634059D9B8336FEB32CA27533ED284";
 
-IHash haval_4_128 = HashFactory::Crypto::CreateHaval_4_128();
+IHash haval_4_128 = HashLib4CPP::Crypto::CreateHaval_4_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -749,7 +749,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -783,7 +783,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -806,21 +806,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -841,11 +841,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "1D5D93E71FF0B324C54ADD1F
 string ExpectedHashOfOnetoNine = "8AA1C1CA3A7E4F983654C4F689DE6F8D";
 string ExpectedHashOfabcde = "11C0532F713332D45D6769376DD6EB3B";
 
-IHash haval_5_128 = HashFactory::Crypto::CreateHaval_5_128();
+IHash haval_5_128 = HashLib4CPP::Crypto::CreateHaval_5_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -854,7 +854,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -888,7 +888,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -910,21 +910,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -945,11 +945,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "E686A2E785EA222FA28911D9
 string ExpectedHashOfOnetoNine = "39A83AF3293CDAC04DE1DF3D0BE7A1F9D8AAB923";
 string ExpectedHashOfabcde = "8D7C2218BDD8CB0608BA2479751B44BB15F1FC1F";
 
-IHash haval_3_160 = HashFactory::Crypto::CreateHaval_3_160();
+IHash haval_3_160 = HashLib4CPP::Crypto::CreateHaval_3_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -958,7 +958,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -992,7 +992,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1014,21 +1014,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1049,11 +1049,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "6FEAC0105DA74AEDC8FA76A1
 string ExpectedHashOfOnetoNine = "B03439BE6F2A3EBED93AC86846D029D76F62FD99";
 string ExpectedHashOfabcde = "F74B326FE2CE8F5BA151B85B16E67B28FE71F131";
 
-IHash haval_4_160 = HashFactory::Crypto::CreateHaval_4_160();
+IHash haval_4_160 = HashLib4CPP::Crypto::CreateHaval_4_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1062,7 +1062,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1096,7 +1096,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1118,21 +1118,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1153,11 +1153,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "A0FFFE2DE177281E64C5D0A9
 string ExpectedHashOfOnetoNine = "11F592B3A1A1A9C0F9C638C33B69E442D06C1D99";
 string ExpectedHashOfabcde = "53734616DD6761E2A1D2BD520035287972625385";
 
-IHash haval_5_160 = HashFactory::Crypto::CreateHaval_5_160();
+IHash haval_5_160 = HashLib4CPP::Crypto::CreateHaval_5_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1166,7 +1166,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1200,7 +1200,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1222,21 +1222,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1257,11 +1257,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "3E72C9200EAA6ED8D2EF60B8
 string ExpectedHashOfOnetoNine = "6B92F078E73AF2E0F9F049FAA5016D32173A3D62D2F08554";
 string ExpectedHashOfabcde = "4A106D88931B60DF1BA352782141C473E79019022D65D7A5";
 
-IHash haval_3_192 = HashFactory::Crypto::CreateHaval_3_192();
+IHash haval_3_192 = HashLib4CPP::Crypto::CreateHaval_3_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1270,7 +1270,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1304,7 +1304,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1326,21 +1326,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1361,11 +1361,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "8AB3C2ED5E17CC15EE9D0740
 string ExpectedHashOfOnetoNine = "A5C285EAD0FF2F47C15C27B991C4A3A5007BA57137B18D07";
 string ExpectedHashOfabcde = "88A58D9011CA363A3F3CD113FFEAA44870C07CC14E94FB1B";
 
-IHash haval_4_192 = HashFactory::Crypto::CreateHaval_4_192();
+IHash haval_4_192 = HashLib4CPP::Crypto::CreateHaval_4_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1374,7 +1374,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1408,7 +1408,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1430,21 +1430,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1465,11 +1465,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "AB2C407C403A82EEADF2A0B3
 string ExpectedHashOfOnetoNine = "EC32312AA79775539675C9BA83D079FFC7EA498FA6173A46";
 string ExpectedHashOfabcde = "CDDF16E273A09E9E2F1D7D4761C2D35E1DD6EE327F1F5AFD";
 
-IHash haval_5_192 = HashFactory::Crypto::CreateHaval_5_192();
+IHash haval_5_192 = HashLib4CPP::Crypto::CreateHaval_5_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1478,7 +1478,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1512,7 +1512,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1534,21 +1534,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1569,11 +1569,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "2C403CCE41533900919919CA
 string ExpectedHashOfOnetoNine = "28E8CC65356B43ACBED4DD70F11D0827F17C4442D323AAA0A0DE285F";
 string ExpectedHashOfabcde = "177DA8770D5BF50E1B5D82DD60DF2635102D490D86F876E70F7A4080";
 
-IHash haval_3_224 = HashFactory::Crypto::CreateHaval_3_224();
+IHash haval_3_224 = HashLib4CPP::Crypto::CreateHaval_3_224();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1582,7 +1582,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1616,7 +1616,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_224();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1638,21 +1638,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_224();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_224();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_224();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1673,11 +1673,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "334328027BA2D8F218F8BF37
 string ExpectedHashOfOnetoNine = "9A08D0CF1D52BB1AC22F6421CFB902E700C4C496B3E990F4606F577D";
 string ExpectedHashOfabcde = "3EEF5DC9C3B3DE0F142DB08B89C21A1FDB1C64D7B169425DBA161190";
 
-IHash haval_4_224 = HashFactory::Crypto::CreateHaval_4_224();
+IHash haval_4_224 = HashLib4CPP::Crypto::CreateHaval_4_224();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1686,7 +1686,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1720,7 +1720,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_224();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1742,21 +1742,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_224();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_224();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_224();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1777,11 +1777,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "12B6415C63F4BBA34F0ADD23
 string ExpectedHashOfOnetoNine = "2EAADFB8007D9A4D8D7F21182C2913D569F801B44D0920D4CE8A01F0";
 string ExpectedHashOfabcde = "D8CBE8D06DC58095EC0E69F1C1A4D4A90893AAE80401779CEB6646A9";
 
-IHash haval_5_224 = HashFactory::Crypto::CreateHaval_5_224();
+IHash haval_5_224 = HashLib4CPP::Crypto::CreateHaval_5_224();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1790,7 +1790,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1824,7 +1824,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_224();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1846,21 +1846,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_224();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_224();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_224();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_224();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1881,11 +1881,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "7E24B475617096B102F0F645
 string ExpectedHashOfOnetoNine = "63E8D0AEEC87738F1E820294CBDF7961CD2246B3620B4BAC81BE0B9827D612C7";
 string ExpectedHashOfabcde = "3913AB70F6219EEFE10B202DE5991EFDBC4A808203BD60BBFBFC043383AE8F90";
 
-IHash haval_3_256 = HashFactory::Crypto::CreateHaval_3_256();
+IHash haval_3_256 = HashLib4CPP::Crypto::CreateHaval_3_256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1894,7 +1894,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_3_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_3_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1928,7 +1928,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -1950,21 +1950,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_3_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_3_256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -1985,11 +1985,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "FD0122B375A581D3F06DB6EB
 string ExpectedHashOfOnetoNine = "DDC95DF473DD169456484BEB4B04EDCA83A5572D9D7ECCD00092365AE4EF8D79";
 string ExpectedHashOfabcde = "8F9B46785E52C6C48A0178EDC66D3C23C220D15E52C3C8A13E1CD45D21369193";
 
-IHash haval_4_256 = HashFactory::Crypto::CreateHaval_4_256();
+IHash haval_4_256 = HashLib4CPP::Crypto::CreateHaval_4_256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -1998,7 +1998,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_4_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_4_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2032,7 +2032,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2054,21 +2054,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_4_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_4_256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2089,11 +2089,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "C702F985817A2596D7E0BB07
 string ExpectedHashOfOnetoNine = "77FD61460DB5F89DEFC9A9296FAB68A1730EA6C9C0037A9793DAC8492C0A953C";
 string ExpectedHashOfabcde = "C464C9A669D5B43E4C34808114DCE4ECC732D1B71407E7F05468D0B15BFF7E30";
 
-IHash haval_5_256 = HashFactory::Crypto::CreateHaval_5_256();
+IHash haval_5_256 = HashLib4CPP::Crypto::CreateHaval_5_256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2102,7 +2102,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateHaval_5_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateHaval_5_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2136,7 +2136,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2158,21 +2158,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateHaval_5_256();
+	IHash hash = HashLib4CPP::Crypto::CreateHaval_5_256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2193,11 +2193,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "C5F4625462CD5CF7723C19E8
 string ExpectedHashOfOnetoNine = "12BD4EFDD922B5C8C7B773F26EF4E35F";
 string ExpectedHashOfabcde = "DFF9959487649F5C7AF5D0680A9A5D22";
 
-IHash md2 = HashFactory::Crypto::CreateMD2();
+IHash md2 = HashLib4CPP::Crypto::CreateMD2();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateMD2());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateMD2());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2206,7 +2206,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateMD2());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateMD2());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2240,7 +2240,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateMD2();
+	IHash hash = HashLib4CPP::Crypto::CreateMD2();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2262,21 +2262,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateMD2();
+	IHash hash = HashLib4CPP::Crypto::CreateMD2();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateMD2();
+	IHash hash = HashLib4CPP::Crypto::CreateMD2();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateMD2();
+	IHash hash = HashLib4CPP::Crypto::CreateMD2();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2297,11 +2297,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "BF21F9EC05E480EEDB12AF20
 string ExpectedHashOfOnetoNine = "2AE523785D0CAF4D2FB557C12016185C";
 string ExpectedHashOfabcde = "9803F4A34E8EB14F96ADBA49064A0C41";
 
-IHash md4 = HashFactory::Crypto::CreateMD4();
+IHash md4 = HashLib4CPP::Crypto::CreateMD4();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateMD4());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateMD4());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2310,7 +2310,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateMD4());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateMD4());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2344,7 +2344,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateMD4();
+	IHash hash = HashLib4CPP::Crypto::CreateMD4();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2366,21 +2366,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateMD4();
+	IHash hash = HashLib4CPP::Crypto::CreateMD4();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateMD4();
+	IHash hash = HashLib4CPP::Crypto::CreateMD4();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateMD4();
+	IHash hash = HashLib4CPP::Crypto::CreateMD4();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2401,11 +2401,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "09F705F43799213192622CCA
 string ExpectedHashOfOnetoNine = "25F9E794323B453885F5181F1B624D0B";
 string ExpectedHashOfabcde = "AB56B4D92B40713ACC5AF89985D4B786";
 
-IHash md5 = HashFactory::Crypto::CreateMD5();
+IHash md5 = HashLib4CPP::Crypto::CreateMD5();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateMD5());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateMD5());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2414,7 +2414,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateMD5());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateMD5());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2448,7 +2448,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateMD5();
+	IHash hash = HashLib4CPP::Crypto::CreateMD5();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2470,21 +2470,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateMD5();
+	IHash hash = HashLib4CPP::Crypto::CreateMD5();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateMD5();
+	IHash hash = HashLib4CPP::Crypto::CreateMD5();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateMD5();
+	IHash hash = HashLib4CPP::Crypto::CreateMD5();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2505,11 +2505,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "3C15C9B7CDC77470BC02CA96
 string ExpectedHashOfOnetoNine = "3C83D2C9109DE4D1FA64833683A7C280591A7CFD8516769EA879E56A4AD39B99";
 string ExpectedHashOfabcde = "B064E5476A3F511105B75305FC2EC31578A6B200FB5084CF937C179F1C52A891";
 
-IHash panama = HashFactory::Crypto::CreatePanama();
+IHash panama = HashLib4CPP::Crypto::CreatePanama();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreatePanama());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreatePanama());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2518,7 +2518,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreatePanama());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreatePanama());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2552,7 +2552,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreatePanama();
+	IHash hash = HashLib4CPP::Crypto::CreatePanama();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2574,21 +2574,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreatePanama();
+	IHash hash = HashLib4CPP::Crypto::CreatePanama();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreatePanama();
+	IHash hash = HashLib4CPP::Crypto::CreatePanama();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreatePanama();
+	IHash hash = HashLib4CPP::Crypto::CreatePanama();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2609,11 +2609,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "72EB7D36180C1B1BBF88E062
 string ExpectedHashOfOnetoNine = "D77629174F56D8451F73CBE80EC7A20EF2DD65C46A1480CD004CBAA96F3FA1FD";
 string ExpectedHashOfabcde = "A593059B12513A1BD88A2D433F07B239BC14743AF0FF7294837B5DF756BF9C7A";
 
-IHash radioGatun32 = HashFactory::Crypto::CreateRadioGatun32();
+IHash radioGatun32 = HashLib4CPP::Crypto::CreateRadioGatun32();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRadioGatun32());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRadioGatun32());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2622,7 +2622,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRadioGatun32());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRadioGatun32());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2656,7 +2656,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateRadioGatun32();
+	IHash hash = HashLib4CPP::Crypto::CreateRadioGatun32();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2678,21 +2678,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRadioGatun32();
+	IHash hash = HashLib4CPP::Crypto::CreateRadioGatun32();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateRadioGatun32();
+	IHash hash = HashLib4CPP::Crypto::CreateRadioGatun32();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRadioGatun32();
+	IHash hash = HashLib4CPP::Crypto::CreateRadioGatun32();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2713,11 +2713,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "FA280F80C1323C32AACC7F1C
 string ExpectedHashOfOnetoNine = "76A565017A42B258F5C8C9D2D9FD4C7347947A659ED142FF61C1BEA592F103C5";
 string ExpectedHashOfabcde = "36B4DD23A97424844662E882AD1DA1DBAD8CB435A57F380455393C9FF9DE9D37";
 
-IHash radioGatun64 = HashFactory::Crypto::CreateRadioGatun64();
+IHash radioGatun64 = HashLib4CPP::Crypto::CreateRadioGatun64();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRadioGatun64());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRadioGatun64());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2726,7 +2726,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRadioGatun64());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRadioGatun64());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2760,7 +2760,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateRadioGatun64();
+	IHash hash = HashLib4CPP::Crypto::CreateRadioGatun64();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2782,21 +2782,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRadioGatun64();
+	IHash hash = HashLib4CPP::Crypto::CreateRadioGatun64();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateRadioGatun64();
+	IHash hash = HashLib4CPP::Crypto::CreateRadioGatun64();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRadioGatun64();
+	IHash hash = HashLib4CPP::Crypto::CreateRadioGatun64();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2817,11 +2817,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "219ACFCF07BDB775FBA73DAC
 string ExpectedHashOfOnetoNine = "C905B44C6429AD0A1934550037D4816F";
 string ExpectedHashOfabcde = "68D2362617E85CF1BF7381DF14045DBB";
 
-IHash ripemd = HashFactory::Crypto::CreateRIPEMD();
+IHash ripemd = HashLib4CPP::Crypto::CreateRIPEMD();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2830,7 +2830,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2864,7 +2864,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2886,21 +2886,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -2921,11 +2921,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "BA844D13A1215E20634A49D5
 string ExpectedHashOfOnetoNine = "1886DB8ACDCBFEAB1E7EE3780400536F";
 string ExpectedHashOfabcde = "A0A954BE2A779BFB2129B72110C5782D";
 
-IHash ripemd128 = HashFactory::Crypto::CreateRIPEMD128();
+IHash ripemd128 = HashLib4CPP::Crypto::CreateRIPEMD128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2934,7 +2934,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -2968,7 +2968,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD128();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -2990,21 +2990,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD128();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD128();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD128();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3025,11 +3025,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "76D728D9BF39ED42E0C451A9
 string ExpectedHashOfOnetoNine = "D3D0379126C1E5E0BA70AD6E5E53FF6AEAB9F4FA";
 string ExpectedHashOfabcde = "973398B6E6C6CFA6B5E6A5173F195CE3274BF828";
 
-IHash ripemd160 = HashFactory::Crypto::CreateRIPEMD160();
+IHash ripemd160 = HashLib4CPP::Crypto::CreateRIPEMD160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3038,7 +3038,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3072,7 +3072,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD160();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3094,21 +3094,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD160();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD160();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD160();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3128,11 +3128,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "D59B820A708FA31C39BD33BA
 string ExpectedHashOfOnetoNine = "6BE43FF65DD40EA4F2FF4AD58A7C1ACC7C8019137698945B16149EB95DF244B7";
 string ExpectedHashOfabcde = "81D8B58A3110A9139B4DDECCB031409E8AF023067CF4C6F0B701DAB9ECC0EB4E";
 
-IHash ripemd256 = HashFactory::Crypto::CreateRIPEMD256();
+IHash ripemd256 = HashLib4CPP::Crypto::CreateRIPEMD256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3141,7 +3141,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3175,7 +3175,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD256();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3197,21 +3197,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD256();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD256();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD256();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3232,11 +3232,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "4D3DFCCB43E5A60611A850C2
 string ExpectedHashOfOnetoNine = "7E36771775A8D279475D4FD76B0C8E412B6AD085A0002475A148923CCFA5D71492E12FA88EEAF1A9";
 string ExpectedHashOfabcde = "A94DC1BC825DB64E97718305CE36BFEF32CC5410A630999678BCD89CC38C424269012EC8C5A95830";
 
-IHash ripemd320 = HashFactory::Crypto::CreateRIPEMD320();
+IHash ripemd320 = HashLib4CPP::Crypto::CreateRIPEMD320();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD320());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD320());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3245,7 +3245,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateRIPEMD320());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateRIPEMD320());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3279,7 +3279,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD320();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD320();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3301,21 +3301,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD320();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD320();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD320();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD320();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateRIPEMD320();
+	IHash hash = HashLib4CPP::Crypto::CreateRIPEMD320();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3336,11 +3336,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "EAA73E85DCAC5BAD0A0E71C0
 string ExpectedHashOfOnetoNine = "F0360779D2AF6615F306BB534223CF762A92E988";
 string ExpectedHashOfabcde = "D624E34951BB800F0ACAE773001DF8CFFE781BA8";
 
-IHash sha0 = HashFactory::Crypto::CreateSHA0();
+IHash sha0 = HashLib4CPP::Crypto::CreateSHA0();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA0());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA0());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3349,7 +3349,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA0());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA0());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3383,7 +3383,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA0();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA0();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3405,21 +3405,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA0();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA0();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA0();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA0();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA0();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA0();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3440,11 +3440,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "CD409025AA5F34ABDC660856
 string ExpectedHashOfOnetoNine = "F7C3BC1D808E04732ADF679965CCC34CA7AE3441";
 string ExpectedHashOfabcde = "03DE6C570BFE24BFC328CCD7CA46B76EADAF4334";
 
-IHash sha1 = HashFactory::Crypto::CreateSHA1();
+IHash sha1 = HashLib4CPP::Crypto::CreateSHA1();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA1());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA1());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3453,7 +3453,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA1());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA1());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3487,7 +3487,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA1();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA1();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3509,21 +3509,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA1();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA1();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA1();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA1();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA1();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA1();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3544,11 +3544,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "EC47E83DB5DD735EBB7AA4A8
 string ExpectedHashOfOnetoNine = "9B3E61BF29F17C75572FAE2E86E17809A4513D07C8A18152ACF34521";
 string ExpectedHashOfabcde = "BDD03D560993E675516BA5A50638B6531AC2AC3D5847C61916CFCED6";
 
-IHash sha2_224 = HashFactory::Crypto::CreateSHA2_224();
+IHash sha2_224 = HashLib4CPP::Crypto::CreateSHA2_224();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3557,7 +3557,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3591,7 +3591,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_224();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_224();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3613,21 +3613,21 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_224();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_224();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_224();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_224();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_224();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_224();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3648,11 +3648,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "92678A1C746AAEAA1D3F0C9D
 string ExpectedHashOfOnetoNine = "15E2B0D3C33891EBB0F1EF609EC419420C20E320CE94C65FBC8C3312448EB225";
 string ExpectedHashOfabcde = "36BBE50ED96841D10443BCB670D6554F0A34B761BE67EC9C4A8AD2C0C44CA42C";
 
-IHash sha2_256 = HashFactory::Crypto::CreateSHA2_256();
+IHash sha2_256 = HashLib4CPP::Crypto::CreateSHA2_256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3661,7 +3661,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3695,7 +3695,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3711,21 +3711,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3746,11 +3746,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "3D6DCED731DAF3599CC09716
 string ExpectedHashOfOnetoNine = "EB455D56D2C1A69DE64E832011F3393D45F3FA31D6842F21AF92D2FE469C499DA5E3179847334A18479C8D1DEDEA1BE3";
 string ExpectedHashOfabcde = "4C525CBEAC729EAF4B4665815BC5DB0C84FE6300068A727CF74E2813521565ABC0EC57A37EE4D8BE89D097C0D2AD52F0";
 
-IHash sha2_384 = HashFactory::Crypto::CreateSHA2_384();
+IHash sha2_384 = HashLib4CPP::Crypto::CreateSHA2_384();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_384());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_384());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3759,7 +3759,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_384());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_384());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3793,7 +3793,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_384();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_384();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3809,21 +3809,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_384();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_384();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_384();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_384();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_384();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_384();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3844,11 +3844,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "DEDFCEAD40225068527D0E53
 string ExpectedHashOfOnetoNine = "D9E6762DD1C8EAF6D61B3C6192FC408D4D6D5F1176D0C29169BC24E71C3F274AD27FCD5811B313D681F7E55EC02D73D499C95455B6B5BB503ACF574FBA8FFE85";
 string ExpectedHashOfabcde = "878AE65A92E86CAC011A570D4C30A7EAEC442B85CE8ECA0C2952B5E3CC0628C2E79D889AD4D5C7C626986D452DD86374B6FFAA7CD8B67665BEF2289A5C70B0A1";
 
-IHash sha2_512 = HashFactory::Crypto::CreateSHA2_512();
+IHash sha2_512 = HashLib4CPP::Crypto::CreateSHA2_512();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_512());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_512());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3857,7 +3857,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_512());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_512());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3891,7 +3891,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -3907,21 +3907,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -3942,11 +3942,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "9BC318A84B90F7FF55C53E3F
 string ExpectedHashOfOnetoNine = "F2A68A474BCBEA375E9FC62EAAB7B81FEFBDA64BB1C72D72E7C27314";
 string ExpectedHashOfabcde = "880E79BB0A1D2C9B7528D851EDB6B8342C58C831DE98123B432A4515";
 
-IHash sha2_512_224 = HashFactory::Crypto::CreateSHA2_512_224();
+IHash sha2_512_224 = HashLib4CPP::Crypto::CreateSHA2_512_224();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_512_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_512_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3955,7 +3955,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_512_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_512_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -3989,7 +3989,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512_224();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512_224();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4005,21 +4005,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512_224();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512_224();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512_224();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512_224();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512_224();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512_224();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4040,11 +4040,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "1467239C9D47E1962905D03D
 string ExpectedHashOfOnetoNine = "1877345237853A31AD79E14C1FCB0DDCD3DF9973B61AF7F906E4B4D052CC9416";
 string ExpectedHashOfabcde = "DE8322B46E78B67D4431997070703E9764E03A1237B896FD8B379ED4576E8363";
 
-IHash sha2_512_256 = HashFactory::Crypto::CreateSHA2_512_256();
+IHash sha2_512_256 = HashLib4CPP::Crypto::CreateSHA2_512_256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_512_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_512_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4053,7 +4053,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSHA2_512_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSHA2_512_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4087,7 +4087,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512_256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4103,21 +4103,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512_256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512_256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSHA2_512_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSHA2_512_256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4138,11 +4138,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "D6CE783743A36717F893DFF8
 string ExpectedHashOfOnetoNine = "06471DE6C635A88E7470284B2C2EBF9BD7E5E888CBBD128C21CB8308";
 string ExpectedHashOfabcde = "16F91F7E036DF526340440C34C231862D8F6319772B670EEFD4703FF";
 
-IHash keccak_224 = HashFactory::Crypto::CreateKeccak_224();
+IHash keccak_224 = HashLib4CPP::Crypto::CreateKeccak_224();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateKeccak_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4151,7 +4151,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_224());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateKeccak_224());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4185,7 +4185,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_224();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_224();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4201,21 +4201,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_224();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_224();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_224();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_224();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_224();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_224();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4236,11 +4236,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "1660234E7CCC29CFC8DEC8C6
 string ExpectedHashOfOnetoNine = "2A359FEEB8E488A1AF2C03B908B3ED7990400555DB73E1421181D97CAC004D48";
 string ExpectedHashOfabcde = "6377C7E66081CB65E473C1B95DB5195A27D04A7108B468890224BEDBE1A8A6EB";
 
-IHash keccak_256 = HashFactory::Crypto::CreateKeccak_256();
+IHash keccak_256 = HashLib4CPP::Crypto::CreateKeccak_256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateKeccak_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4249,7 +4249,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateKeccak_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4283,7 +4283,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_256();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4299,21 +4299,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_256();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_256();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_256();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4334,11 +4334,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "044628643016E3EA30DE6CA3
 string ExpectedHashOfOnetoNine = "EFCCAE72CE14656C434751CF737E70A57AB8DD2C76F5ABE01E52770AFFD77B66D2B80977724A00A6D971B702906F8032";
 string ExpectedHashOfabcde = "6E577A02A783232ACF34841399883F5F69D9AC78F48C7F4431CBC4F669C2A0F1CA3B1BECB7701B8315588D64D6C3746A";
 
-IHash keccak_384 = HashFactory::Crypto::CreateKeccak_384();
+IHash keccak_384 = HashLib4CPP::Crypto::CreateKeccak_384();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_384());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateKeccak_384());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4347,7 +4347,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_384());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateKeccak_384());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4381,7 +4381,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_384();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_384();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4397,21 +4397,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_384();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_384();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_384();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_384();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_384();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_384();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4432,11 +4432,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "6FA826F0AFFE589DFD166526
 string ExpectedHashOfOnetoNine = "40B787E94778266FB196A73B7A77EDF9DE2EF172451A2B87531324812250DF8F26FCC11E69B35AFDDBE639956C96153E71363F97010BC99405DD2D77B8C41986";
 string ExpectedHashOfabcde = "37491BD4BF2A4629D4E35602E09812FA94BFC63BAEE4487075E2B6D73F36D01A7392A1719EDBBB5D1D6FA3BA0D144F18229ABC13B7933A4736D6AAB4A3177F18";
 
-IHash keccak_512 = HashFactory::Crypto::CreateKeccak_512();
+IHash keccak_512 = HashLib4CPP::Crypto::CreateKeccak_512();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_512());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateKeccak_512());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4445,7 +4445,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateKeccak_512());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateKeccak_512());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4479,7 +4479,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_512();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_512();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4495,21 +4495,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_512();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_512();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_512();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_512();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateKeccak_512();
+	IHash hash = HashLib4CPP::Crypto::CreateKeccak_512();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4530,11 +4530,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "7E33D94C5A09B2E5F8004171
 string ExpectedHashOfOnetoNine = "1C7DEDC33125AF7517970B97B635777FFBA8905D7A0B359776E3E683B115F992";
 string ExpectedHashOfabcde = "8D2891FC6020D7DC93F7561C0CFDDE26426192B3E364A1F52B634482009DC8C8";
 
-IHash snefru_8_256 = HashFactory::Crypto::CreateSnefru_8_256();
+IHash snefru_8_256 = HashLib4CPP::Crypto::CreateSnefru_8_256();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSnefru_8_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSnefru_8_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4543,7 +4543,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSnefru_8_256());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSnefru_8_256());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4577,7 +4577,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSnefru_8_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSnefru_8_256();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4593,21 +4593,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSnefru_8_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSnefru_8_256();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSnefru_8_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSnefru_8_256();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSnefru_8_256();
+	IHash hash = HashLib4CPP::Crypto::CreateSnefru_8_256();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4628,11 +4628,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "B7D06604FCA943939525BA82
 string ExpectedHashOfOnetoNine = "486D27B1F5F4A20DEE14CC466EDA9069";
 string ExpectedHashOfabcde = "ADD78FA0BEA8F6283FE5D011BE6BCA3B";
 
-IHash snefru_8_128 = HashFactory::Crypto::CreateSnefru_8_128();
+IHash snefru_8_128 = HashLib4CPP::Crypto::CreateSnefru_8_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSnefru_8_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSnefru_8_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4641,7 +4641,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateSnefru_8_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateSnefru_8_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4675,7 +4675,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateSnefru_8_128();
+	IHash hash = HashLib4CPP::Crypto::CreateSnefru_8_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4691,21 +4691,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSnefru_8_128();
+	IHash hash = HashLib4CPP::Crypto::CreateSnefru_8_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateSnefru_8_128();
+	IHash hash = HashLib4CPP::Crypto::CreateSnefru_8_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateSnefru_8_128();
+	IHash hash = HashLib4CPP::Crypto::CreateSnefru_8_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4726,11 +4726,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "0FA849F65841F2E621E2C882
 string ExpectedHashOfOnetoNine = "0672665140A491BB35040AA9943D769A";
 string ExpectedHashOfabcde = "BFD4041233531F1EF1E9A66D7A0CEF76";
 
-IHash tiger_3_128 = HashFactory::Crypto::CreateTiger_3_128();
+IHash tiger_3_128 = HashLib4CPP::Crypto::CreateTiger_3_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_3_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_3_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4739,7 +4739,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_3_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_3_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4773,7 +4773,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4789,21 +4789,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4824,11 +4824,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "856B697CEB606B1DF42B475D
 string ExpectedHashOfOnetoNine = "D9902D13011BD217DE965A3BA709F5CE";
 string ExpectedHashOfabcde = "7FD0E2FAEC50261EF48D3B87C554EE73";
 
-IHash tiger_4_128 = HashFactory::Crypto::CreateTiger_4_128();
+IHash tiger_4_128 = HashLib4CPP::Crypto::CreateTiger_4_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_4_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_4_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4837,7 +4837,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_4_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_4_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4871,7 +4871,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4887,21 +4887,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -4922,11 +4922,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "49D450EC293D5565CE82284F
 string ExpectedHashOfOnetoNine = "BCCCB6421B3EC291A062A33DFF21BA76";
 string ExpectedHashOfabcde = "1AB49D19F3C93B6FF4AB536951E5A6D0";
 
-IHash tiger_5_128 = HashFactory::Crypto::CreateTiger_5_128();
+IHash tiger_5_128 = HashLib4CPP::Crypto::CreateTiger_5_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_5_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_5_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4935,7 +4935,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_5_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_5_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -4969,7 +4969,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -4985,21 +4985,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5020,11 +5020,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "45AF6513756EB15B9504CE82
 string ExpectedHashOfOnetoNine = "0672665140A491BB35040AA9943D769A47BE83FE";
 string ExpectedHashOfabcde = "BFD4041233531F1EF1E9A66D7A0CEF76A3E0FE75";
 
-IHash tiger_3_160 = HashFactory::Crypto::CreateTiger_3_160();
+IHash tiger_3_160 = HashLib4CPP::Crypto::CreateTiger_3_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_3_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_3_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5033,7 +5033,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_3_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_3_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5067,7 +5067,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5083,21 +5083,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5118,11 +5118,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "E8E8B8EF52CF7866A4E0AEAE
 string ExpectedHashOfOnetoNine = "D9902D13011BD217DE965A3BA709F5CE7E75ED2C";
 string ExpectedHashOfabcde = "7FD0E2FAEC50261EF48D3B87C554EE739E8FBD98";
 
-IHash tiger_4_160 = HashFactory::Crypto::CreateTiger_4_160();
+IHash tiger_4_160 = HashLib4CPP::Crypto::CreateTiger_4_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_4_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_4_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5131,7 +5131,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_4_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_4_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5165,7 +5165,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5181,21 +5181,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5216,11 +5216,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "5F403B5F7F9A341545F55265
 string ExpectedHashOfOnetoNine = "BCCCB6421B3EC291A062A33DFF21BA764596C58E";
 string ExpectedHashOfabcde = "1AB49D19F3C93B6FF4AB536951E5A6D05EF6394C";
 
-IHash tiger_5_160 = HashFactory::Crypto::CreateTiger_5_160();
+IHash tiger_5_160 = HashLib4CPP::Crypto::CreateTiger_5_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_5_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_5_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5229,7 +5229,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_5_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_5_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5263,7 +5263,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5279,21 +5279,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5314,11 +5314,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "9B53DDED2647666E9C31CF0F
 string ExpectedHashOfOnetoNine = "0672665140A491BB35040AA9943D769A47BE83FEF2126E50";
 string ExpectedHashOfabcde = "BFD4041233531F1EF1E9A66D7A0CEF76A3E0FE756B36A7D7";
 
-IHash tiger_3_192 = HashFactory::Crypto::CreateTiger_3_192();
+IHash tiger_3_192 = HashLib4CPP::Crypto::CreateTiger_3_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_3_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_3_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5327,7 +5327,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_3_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_3_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5361,7 +5361,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5377,21 +5377,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_3_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5412,11 +5412,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "D1113A9110545D0F3C97BE14
 string ExpectedHashOfOnetoNine = "D9902D13011BD217DE965A3BA709F5CE7E75ED2CB791FEA6";
 string ExpectedHashOfabcde = "7FD0E2FAEC50261EF48D3B87C554EE739E8FBD98F9A0B332";
 
-IHash tiger_4_192 = HashFactory::Crypto::CreateTiger_4_192();
+IHash tiger_4_192 = HashLib4CPP::Crypto::CreateTiger_4_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_4_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_4_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5425,7 +5425,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_4_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_4_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5459,7 +5459,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5475,21 +5475,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_4_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5510,11 +5510,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "8D56E7164C246EAF4708AAEE
 string ExpectedHashOfOnetoNine = "BCCCB6421B3EC291A062A33DFF21BA764596C58E30854A92";
 string ExpectedHashOfabcde = "1AB49D19F3C93B6FF4AB536951E5A6D05EF6394C3471A08F";
 
-IHash tiger_5_192 = HashFactory::Crypto::CreateTiger_5_192();
+IHash tiger_5_192 = HashLib4CPP::Crypto::CreateTiger_5_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_5_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_5_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5523,7 +5523,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger_5_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger_5_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5557,7 +5557,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5573,21 +5573,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger_5_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5608,11 +5608,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "0393C69DD393D9E15C723DFA
 string ExpectedHashOfOnetoNine = "82FAF69673762B9FD8A0C902BDB395C1";
 string ExpectedHashOfabcde = "E1F0DAC9E852ECF1270FB691C35506D4";
 
-IHash tiger2_3_128 = HashFactory::Crypto::CreateTiger2_3_128();
+IHash tiger2_3_128 = HashLib4CPP::Crypto::CreateTiger2_3_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_3_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_3_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5621,7 +5621,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_3_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_3_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5655,7 +5655,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5671,21 +5671,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5706,11 +5706,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "A24C1DD76CACA54D3CB2BDDE
 string ExpectedHashOfOnetoNine = "75B7D71ACD40FE5B5D3263C1F68F4CF5";
 string ExpectedHashOfabcde = "9FBB0FBF818C0302890CE373559D2370";
 
-IHash tiger2_4_128 = HashFactory::Crypto::CreateTiger2_4_128();
+IHash tiger2_4_128 = HashLib4CPP::Crypto::CreateTiger2_4_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_4_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_4_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5719,7 +5719,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_4_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_4_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5753,28 +5753,28 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_128();
 
 	HMACCloneIsCorrect(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5804,11 +5804,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "F545BB88FBE3E5FB85E6DE06
 string ExpectedHashOfOnetoNine = "F720446C9BFDC8479D9FA53BC8B9144F";
 string ExpectedHashOfabcde = "14F45FAC4BE0302E740CCC6FE99D75A6";
 
-IHash tiger2_5_128 = HashFactory::Crypto::CreateTiger2_5_128();
+IHash tiger2_5_128 = HashLib4CPP::Crypto::CreateTiger2_5_128();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_5_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_5_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5817,7 +5817,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_5_128());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_5_128());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5851,7 +5851,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_128();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5867,21 +5867,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_128();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_128();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_128();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_128();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -5902,11 +5902,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "71028DCDC197492195110EA5
 string ExpectedHashOfOnetoNine = "82FAF69673762B9FD8A0C902BDB395C12B0CBDDC";
 string ExpectedHashOfabcde = "E1F0DAC9E852ECF1270FB691C35506D4BEDB12A0";
 
-IHash tiger2_3_160 = HashFactory::Crypto::CreateTiger2_3_160();
+IHash tiger2_3_160 = HashLib4CPP::Crypto::CreateTiger2_3_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_3_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_3_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5915,7 +5915,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_3_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_3_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -5949,7 +5949,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -5965,21 +5965,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -6000,11 +6000,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "283A6ED11043AAA947A12843
 string ExpectedHashOfOnetoNine = "75B7D71ACD40FE5B5D3263C1F68F4CF5A5DA963B";
 string ExpectedHashOfabcde = "9FBB0FBF818C0302890CE373559D23702D87C69B";
 
-IHash tiger2_4_160 = HashFactory::Crypto::CreateTiger2_4_160();
+IHash tiger2_4_160 = HashLib4CPP::Crypto::CreateTiger2_4_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_4_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_4_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6013,7 +6013,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_4_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_4_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6047,7 +6047,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -6063,21 +6063,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -6098,11 +6098,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "DDEE30DCE9CD2A11C38ADA8A
 string ExpectedHashOfOnetoNine = "F720446C9BFDC8479D9FA53BC8B9144FC3FE42ED";
 string ExpectedHashOfabcde = "14F45FAC4BE0302E740CCC6FE99D75A6CAB0E177";
 
-IHash tiger2_5_160 = HashFactory::Crypto::CreateTiger2_5_160();
+IHash tiger2_5_160 = HashLib4CPP::Crypto::CreateTiger2_5_160();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_5_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_5_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6111,7 +6111,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_5_160());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_5_160());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6145,7 +6145,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_160();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -6161,21 +6161,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_160();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_160();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_160();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_160();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -6196,11 +6196,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "C70FA522EACE7D870F914A08
 string ExpectedHashOfOnetoNine = "82FAF69673762B9FD8A0C902BDB395C12B0CBDDC66957838";
 string ExpectedHashOfabcde = "E1F0DAC9E852ECF1270FB691C35506D4BEDB12A09D6BF911";
 
-IHash tiger2_3_192 = HashFactory::Crypto::CreateTiger2_3_192();
+IHash tiger2_3_192 = HashLib4CPP::Crypto::CreateTiger2_3_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_3_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_3_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6209,7 +6209,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_3_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_3_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6243,7 +6243,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -6259,21 +6259,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_3_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_3_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -6294,11 +6294,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "3B182344C171E8843B3D3088
 string ExpectedHashOfOnetoNine = "75B7D71ACD40FE5B5D3263C1F68F4CF5A5DA963B39413ACA";
 string ExpectedHashOfabcde = "9FBB0FBF818C0302890CE373559D23702D87C69B9D1B29D5";
 
-IHash tiger2_4_192 = HashFactory::Crypto::CreateTiger2_4_192();
+IHash tiger2_4_192 = HashLib4CPP::Crypto::CreateTiger2_4_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_4_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_4_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6307,7 +6307,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_4_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_4_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6341,7 +6341,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -6357,21 +6357,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_4_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_4_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -6392,11 +6392,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "19AD11BA8D3534C41CAA2A9D
 string ExpectedHashOfOnetoNine = "F720446C9BFDC8479D9FA53BC8B9144FC3FE42ED1440C213";
 string ExpectedHashOfabcde = "14F45FAC4BE0302E740CCC6FE99D75A6CAB0E177B4ADF2A8";
 
-IHash tiger2_5_192 = HashFactory::Crypto::CreateTiger2_5_192();
+IHash tiger2_5_192 = HashLib4CPP::Crypto::CreateTiger2_5_192();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_5_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_5_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6405,7 +6405,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateTiger2_5_192());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateTiger2_5_192());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6439,7 +6439,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_192();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -6455,21 +6455,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_192();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_192();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateTiger2_5_192();
+	IHash hash = HashLib4CPP::Crypto::CreateTiger2_5_192();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -6490,11 +6490,11 @@ string ExpectedHashOfDefaultDataWithHMACWithShortKey = "72B3CFC10CC32F9203670984
 string ExpectedHashOfOnetoNine = "21D5CB651222C347EA1284C0ACF162000B4D3E34766F0D00312E3480F633088822809B6A54BA7EDFA17E8FCB5713F8912EE3A218DD98D88C38BBF611B1B1ED2B";
 string ExpectedHashOfabcde = "5D745E26CCB20FE655D39C9E7F69455758FBAE541CB892B3581E4869244AB35B4FD6078F5D28B1F1A217452A67D9801033D92724A221255A5E377FE9E9E5F0B2";
 
-IHash whirlpool = HashFactory::Crypto::CreateWhirlPool();
+IHash whirlpool = HashLib4CPP::Crypto::CreateWhirlPool();
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateWhirlPool());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateWhirlPool());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6503,7 +6503,7 @@ BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndLongKey)
 
 BOOST_AUTO_TEST_CASE(HMACWithDefaultDataAndShortKey)
 {
-	IHMAC hmac = HashFactory::HMAC::CreateHMAC(HashFactory::Crypto::CreateWhirlPool());
+	IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(HashLib4CPP::Crypto::CreateWhirlPool());
 	hmac->SetKey(Converters::ConvertStringToBytes(HMACShortStringKey));
 	string ActualString = hmac->ComputeString(DefaultData)->ToString();
 
@@ -6537,7 +6537,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Crypto::CreateWhirlPool();
+	IHash hash = HashLib4CPP::Crypto::CreateWhirlPool();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -6553,21 +6553,21 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateWhirlPool();
+	IHash hash = HashLib4CPP::Crypto::CreateWhirlPool();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateWhirlPool();
+	IHash hash = HashLib4CPP::Crypto::CreateWhirlPool();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateWhirlPool();
+	IHash hash = HashLib4CPP::Crypto::CreateWhirlPool();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -6584,7 +6584,7 @@ BOOST_AUTO_TEST_SUITE(Blake2BTestCase)
 string ExpectedHashOfEmptyData = "786A02F742015903C6C6FD852552D272912F4740E15847618A86E217F71F5419D25E1031AFEE585313896444934EB04B903A685B1448B755D56F701AFE9BE2CE";
 string ExpectedHashOfQuickBrownDog = "A8ADD4BDDDFD93E4877D2746E62817B116364A1FA7BC148D95090BC7333B3673F82401CF7AA2E4CB1ECD90296E3F14CB5413F8ED77BE73045B13914CDCD6A918";
 
-IHash blake = HashFactory::Crypto::CreateBlake2B();
+IHash blake = HashLib4CPP::Crypto::CreateBlake2B();
 
 BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 {
@@ -6608,7 +6608,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 		blake->TransformString(temp);
 
 		string ActualString = blake->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Crypto::CreateBlake2B()
+		string ExpectedString = HashLib4CPP::Crypto::CreateBlake2B()
 			->ComputeString(ChunkedData)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -6632,7 +6632,7 @@ BOOST_AUTO_TEST_CASE(TestCheckKeyedTestVectors)
 
 	IBlake2BConfig config = make_shared<Blake2BConfig>();
 	config->SetKey(Key);
-	blake2BWithKey = HashFactory::Crypto::CreateBlake2B(config);
+	blake2BWithKey = HashLib4CPP::Crypto::CreateBlake2B(config);
 
 	for (len = 0; len < KeyedBlake2B.size(); len++)
 	{
@@ -6746,10 +6746,10 @@ BOOST_AUTO_TEST_CASE(TestNullKeyVsUnKeyed)
 		configNullKeyed = make_shared<Blake2BConfig>(Idx);
 		configNullKeyed->SetKey(HashLibByteArray());
 
-		string ExpectedString = HashFactory::Crypto::CreateBlake2B(configNoKeyed)
+		string ExpectedString = HashLib4CPP::Crypto::CreateBlake2B(configNoKeyed)
 												->ComputeBytes(MainData)->ToString();
 
-		string ActualString = HashFactory::Crypto::CreateBlake2B(configNullKeyed)
+		string ActualString = HashLib4CPP::Crypto::CreateBlake2B(configNullKeyed)
 												->ComputeBytes(MainData)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString,
@@ -6760,21 +6760,21 @@ BOOST_AUTO_TEST_CASE(TestNullKeyVsUnKeyed)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateBlake2B();
+	IHash hash = HashLib4CPP::Crypto::CreateBlake2B();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateBlake2B();
+	IHash hash = HashLib4CPP::Crypto::CreateBlake2B();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateBlake2B();
+	IHash hash = HashLib4CPP::Crypto::CreateBlake2B();
 
 	HMACCloneIsCorrect(hash);
 }
@@ -6791,7 +6791,7 @@ BOOST_AUTO_TEST_SUITE(Blake2STestCase)
 string ExpectedHashOfEmptyData = "69217A3079908094E11121D042354A7C1F55B6482CA1A51E1B250DFD1ED0EEF9";
 string ExpectedHashOfQuickBrownDog = "606BEEEC743CCBEFF6CBCDF5D5302AA855C256C29B88C8ED331EA1A6BF3C8812";
 
-IHash blake = HashFactory::Crypto::CreateBlake2S();
+IHash blake = HashLib4CPP::Crypto::CreateBlake2S();
 
 BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 {
@@ -6815,7 +6815,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 		blake->TransformString(temp);
 
 		string ActualString = blake->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Crypto::CreateBlake2S()
+		string ExpectedString = HashLib4CPP::Crypto::CreateBlake2S()
 			->ComputeString(ChunkedData)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -6839,7 +6839,7 @@ BOOST_AUTO_TEST_CASE(TestCheckKeyedTestVectors)
 
 	IBlake2SConfig config = make_shared<Blake2SConfig>();
 	config->SetKey(Key);
-	blake2SWithKey = HashFactory::Crypto::CreateBlake2S(config);
+	blake2SWithKey = HashLib4CPP::Crypto::CreateBlake2S(config);
 
 	for (len = 0; len < KeyedBlake2S.size(); len++)
 	{
@@ -6953,10 +6953,10 @@ BOOST_AUTO_TEST_CASE(TestNullKeyVsUnKeyed)
 		configNullKeyed = make_shared<Blake2SConfig>(Idx);
 		configNullKeyed->SetKey(HashLibByteArray());
 
-		string ExpectedString = HashFactory::Crypto::CreateBlake2S(configNoKeyed)
+		string ExpectedString = HashLib4CPP::Crypto::CreateBlake2S(configNoKeyed)
 			->ComputeBytes(MainData)->ToString();
 
-		string ActualString = HashFactory::Crypto::CreateBlake2S(configNullKeyed)
+		string ActualString = HashLib4CPP::Crypto::CreateBlake2S(configNullKeyed)
 			->ComputeBytes(MainData)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString,
@@ -6967,21 +6967,21 @@ BOOST_AUTO_TEST_CASE(TestNullKeyVsUnKeyed)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateBlake2S();
+	IHash hash = HashLib4CPP::Crypto::CreateBlake2S();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Crypto::CreateBlake2S();
+	IHash hash = HashLib4CPP::Crypto::CreateBlake2S();
 
 	HashCloneIsUnique(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHMACCloneIsCorrect)
 {
-	IHash hash = HashFactory::Crypto::CreateBlake2S();
+	IHash hash = HashLib4CPP::Crypto::CreateBlake2S();
 
 	HMACCloneIsCorrect(hash);
 }

@@ -1,5 +1,5 @@
 // ///////////////////////////////////////////////////////////////// //
-// *C++ 11 HashFactory Library                                 
+// *C++ 11 HashLib4CPP Library                                 
 // *Copyright(c) 2018  Mbadiwe Nnaemeka Ronald                 
 // *Github Repository <https://github.com/ron4fun>             
 
@@ -29,7 +29,7 @@ string ExpectedHashOfDefaultData = "061A6856F5925B83";
 string ExpectedHashOfOnetoNine = "B8FB573C21FE68F1";
 string ExpectedHashOfabcde = "77018B280326F529";
 
-IHash fnv = HashFactory::Hash64::CreateFNV();
+IHash fnv = HashLib4CPP::Hash64::CreateFNV();
 
 BOOST_AUTO_TEST_CASE(TestBytesabcde)
 {
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Hash64::CreateFNV();
+	IHash hash = HashLib4CPP::Hash64::CreateFNV();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -80,14 +80,14 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Hash64::CreateFNV();
+	IHash hash = HashLib4CPP::Hash64::CreateFNV();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Hash64::CreateFNV();
+	IHash hash = HashLib4CPP::Hash64::CreateFNV();
 
 	HashCloneIsUnique(hash);
 }
@@ -106,7 +106,7 @@ string ExpectedHashOfDefaultData = "5997E22BF92B0598";
 string ExpectedHashOfOnetoNine = "06D5573923C6CDFC";
 string ExpectedHashOfabcde = "6348C52D762364A8";
 
-IHash fnv1a = HashFactory::Hash64::CreateFNV1a();
+IHash fnv1a = HashLib4CPP::Hash64::CreateFNV1a();
 
 BOOST_AUTO_TEST_CASE(TestBytesabcde)
 {
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Hash64::CreateFNV1a();
+	IHash hash = HashLib4CPP::Hash64::CreateFNV1a();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -157,14 +157,14 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Hash64::CreateFNV1a();
+	IHash hash = HashLib4CPP::Hash64::CreateFNV1a();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Hash64::CreateFNV1a();
+	IHash hash = HashLib4CPP::Hash64::CreateFNV1a();
 
 	HashCloneIsUnique(hash);
 }
@@ -184,7 +184,7 @@ string ExpectedHashOfOnetoNine = "F22BE622518FAF39";
 string ExpectedHashOfabcde = "AF7BA284707E90C2";
 string ExpectedHashOfDefaultDataWithMaxUInt32AsKey = "49F2E215E924B552";
 
-IHash murmur2 = HashFactory::Hash64::CreateMurmur2();
+IHash murmur2 = HashLib4CPP::Hash64::CreateMurmur2();
 
 BOOST_AUTO_TEST_CASE(TestBytesabcde)
 {
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Hash64::CreateMurmur2();
+	IHash hash = HashLib4CPP::Hash64::CreateMurmur2();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 
 BOOST_AUTO_TEST_CASE(TestWithDifferentKey)
 {
-	IHashWithKey HashWithKey = HashFactory::Hash64::CreateMurmur2();
+	IHashWithKey HashWithKey = HashLib4CPP::Hash64::CreateMurmur2();
 	HashWithKey->SetKey(Converters::ReadUInt32AsBytesLE(uint32_t(-1)));
 
 	string ActualString = HashWithKey->ComputeString(DefaultData)->ToString();
@@ -244,14 +244,14 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKey)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Hash64::CreateMurmur2();
+	IHash hash = HashLib4CPP::Hash64::CreateMurmur2();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Hash64::CreateMurmur2();
+	IHash hash = HashLib4CPP::Hash64::CreateMurmur2();
 
 	HashCloneIsUnique(hash);
 }
@@ -271,7 +271,7 @@ string ExpectedHashOfOnetoNine = "CA60FC96020EFEFD";
 string ExpectedHashOfabcde = "A74563E1EA79B873";
 string ExpectedHashOfShortMessage = "AE43DFAED1AB1C00";
 
-IHash siphash2_4 = HashFactory::Hash64::CreateSipHash2_4();
+IHash siphash2_4 = HashLib4CPP::Hash64::CreateSipHash2_4();
 
 BOOST_AUTO_TEST_CASE(TestBytesabcde)
 {
@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Hash64::CreateSipHash2_4();
+	IHash hash = HashLib4CPP::Hash64::CreateSipHash2_4();
 	string SipHashData = "HashLib4Pascal012345678";
 	string SipHashExpectedResult = "17D7F70CD2C5EBBC";
 	int i;
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE(TestShortMessage)
 
 BOOST_AUTO_TEST_CASE(TestWithOutsideKey)
 {
-	IHashWithKey HashWithKey = HashFactory::Hash64::CreateSipHash2_4();
+	IHashWithKey HashWithKey = HashLib4CPP::Hash64::CreateSipHash2_4();
 	HashWithKey->SetKey(Converters::ConvertHexStringToBytes(HexStringAsKey));
 
 	string ActualString = HashWithKey->ComputeString(DefaultData)->ToString();
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 		siphash2_4->TransformString(temp);
 
 		string ActualString = siphash2_4->TransformFinal()->ToString();
-		string ExpectedString = HashFactory::Hash64::CreateSipHash2_4()
+		string ExpectedString = HashLib4CPP::Hash64::CreateSipHash2_4()
 			->ComputeString(ChunkedData)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
@@ -397,14 +397,14 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Hash64::CreateSipHash2_4();
+	IHash hash = HashLib4CPP::Hash64::CreateSipHash2_4();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Hash64::CreateSipHash2_4();
+	IHash hash = HashLib4CPP::Hash64::CreateSipHash2_4();
 
 	HashCloneIsUnique(hash);
 }
@@ -425,7 +425,7 @@ string ExpectedHashOfZerotoFour = "34CB4C2EE6166F65";
 string ExpectedHashOfEmptyDataWithOneAsKey = "D5AFBA1336A3BE4B";
 string ExpectedHashOfDefaultDataWithMaxUInt64AsKey = "68DCC1056096A94F";
 
-IHash xxhash64 = HashFactory::Hash64::CreateXXHash64();
+IHash xxhash64 = HashLib4CPP::Hash64::CreateXXHash64();
 
 BOOST_AUTO_TEST_CASE(TestRandomString)
 {
@@ -454,7 +454,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Hash64::CreateXXHash64();
+	IHash hash = HashLib4CPP::Hash64::CreateXXHash64();
 
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -476,7 +476,7 @@ BOOST_AUTO_TEST_CASE(TestZerotoFour)
 
 BOOST_AUTO_TEST_CASE(TestWithDifferentKeyMaxUInt64DefaultData)
 {
-	IHashWithKey HashWithKey = HashFactory::Hash64::CreateXXHash64();
+	IHashWithKey HashWithKey = HashLib4CPP::Hash64::CreateXXHash64();
 	HashWithKey->SetKey(Converters::ReadUInt64AsBytesLE(uint64_t(-1)));
 
 	string ActualString = HashWithKey->ComputeString(DefaultData)->ToString();
@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyMaxUInt64DefaultData)
 
 BOOST_AUTO_TEST_CASE(TestWithDifferentKeyOneEmptyString)
 {
-	IHashWithKey HashWithKey = HashFactory::Hash64::CreateXXHash64();
+	IHashWithKey HashWithKey = HashLib4CPP::Hash64::CreateXXHash64();
 	HashWithKey->SetKey(Converters::ReadUInt64AsBytesLE(uint64_t(1)));
 
 	string ActualString = HashWithKey->ComputeString(EmptyData)->ToString();
@@ -494,14 +494,14 @@ BOOST_AUTO_TEST_CASE(TestWithDifferentKeyOneEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsCorrect)
 {
-	IHash hash = HashFactory::Hash64::CreateXXHash64();
+	IHash hash = HashLib4CPP::Hash64::CreateXXHash64();
 
 	HashCloneIsCorrectTestHelper(hash);
 }
 
 BOOST_AUTO_TEST_CASE(TestHashCloneIsUnique)
 {
-	IHash hash = HashFactory::Hash64::CreateXXHash64();
+	IHash hash = HashLib4CPP::Hash64::CreateXXHash64();
 
 	HashCloneIsUnique(hash);
 }

@@ -1,5 +1,5 @@
 // ///////////////////////////////////////////////////////////////// //
-// *C++ 11 HashFactory Library                                 
+// *C++ 11 HashLib4CPP Library                                 
 // *Copyright(c) 2018  Mbadiwe Nnaemeka Ronald                 
 // *Github Repository <https://github.com/ron4fun>             
 

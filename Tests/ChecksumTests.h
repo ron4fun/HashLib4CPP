@@ -1,5 +1,5 @@
 // ///////////////////////////////////////////////////////////////// //
-// *C++ 11 HashFactory Library                                 
+// *C++ 11 HashLib4CPP Library                                 
 // *Copyright(c) 2018  Mbadiwe Nnaemeka Ronald                 
 // *Github Repository <https://github.com/ron4fun>             
 
@@ -28,7 +28,7 @@ string ExpectedHashOfDefaultData = "25D40524";
 string ExpectedHashOfOnetoNine = "091E01DE";
 string ExpectedHashOfabcde = "05C801F0";
 
-IHash adler = HashFactory::Checksum::CreateAdler32();
+IHash adler = HashLib4CPP::Checksum::CreateAdler32();
 
 BOOST_AUTO_TEST_CASE(TestBytesabcde)
 {
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(TestEmptyString)
 
 BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 {
-	IHash hash = HashFactory::Checksum::CreateAdler32();
+	IHash hash = HashLib4CPP::Checksum::CreateAdler32();
 		
 	hash->Initialize();
 	hash->TransformString(DefaultData.substr(0, 3));
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(TestCheckValue)
 {
 	for (register uint32_t i = 0; i <= 100; i++)
 	{
-		ICRC crc = HashFactory::Checksum::CreateCRC(CRCStandard(i));
+		ICRC crc = HashLib4CPP::Checksum::CreateCRC(CRCStandard(i));
 
 		string ExpectedString = lstrip(IntToHex(crc->GetCheckValue()), '0');
 		
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(TestCheckValueWithIncrementalHash)
 {
 	for (register uint32_t i = 0; i <= 100; i++)
 	{
-		ICRC crc = HashFactory::Checksum::CreateCRC(CRCStandard(i));
+		ICRC crc = HashLib4CPP::Checksum::CreateCRC(CRCStandard(i));
 		
 		crc->Initialize();
 
