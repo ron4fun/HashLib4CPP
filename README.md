@@ -32,15 +32,15 @@ It also supports **Incremental Hashing**, **Cloning** and **NullDigest**.
     
 **Usage Examples.**
 
-    #include "Base\HlpHashFactory.h"
+    #include "HashLib4CPP.h"
 
     int main()
     {
-        IHash hash = HashFactory::Crypto::CreateMD5();
+        IHash hash = HashLib4CPP::Crypto::CreateMD5();
 			
         IHash clone = hash->Clone();
 
-        IHMAC hmac = HashFactory::HMAC::CreateHMAC(hash);
+        IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(hash);
         hmac->SetKey(Converters::ConvertStringToBytes("password"));
 
         IHashResult Result1 = hash->ComputeString("Hash");
