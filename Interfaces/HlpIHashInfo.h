@@ -107,9 +107,17 @@ class IIHash128 : public virtual IIHash
 
 typedef shared_ptr<IIHash128> IHash128;
 
-class IIHashWithKey : public IIWithKey
-{}; // end class IHashWithKey
+
+class IIHashWithKey;
 
 typedef shared_ptr<IIHashWithKey> IHashWithKey;
+
+class IIHashWithKey : public IIWithKey
+{
+public:
+	virtual IHashWithKey CloneHashWithKey() const = 0;
+
+}; // end class IHashWithKey
+
 
 #endif // !HLPIHASHINFO_H
