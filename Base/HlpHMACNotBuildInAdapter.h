@@ -32,13 +32,18 @@ public:
 
 		hash = ::move(a_underlyingHash);
 		blocksize = hash->GetBlockSize();
-		key = make_shared<HashLibByteArray>(0);
-		ipad = make_shared<HashLibByteArray>(blocksize);
-		opad = make_shared<HashLibByteArray>(blocksize);
+		key.resize(0);
+		ipad.resize(blocksize);
+		opad.resize(blocksize);
 	} // end constructor
 
 	~HMACNotBuildInAdapter()
 	{} // end destructor
+
+	virtual IHash Clone() const
+	{
+		return hash;
+	}
 
 	virtual IHMAC CloneHMAC() const
 	{
@@ -55,13 +60,13 @@ public:
 	{
 		hash->Initialize();
 		UpdatePads();
-		hash->TransformBytes(*ipad);
+		hash->TransformBytes(ipad);
 	} // end function Initialize
 
 	virtual IHashResult TransformFinal()
 	{
 		IHashResult result = hash->TransformFinal();
-		hash->TransformBytes(*opad);
+		hash->TransformBytes(opad);
 		hash->TransformBytes(result->GetBytes());
 		result = hash->TransformFinal();
 		Initialize();
@@ -85,7 +90,7 @@ protected:
 
 	virtual HashLibByteArray GetKey() const
 	{
-		return *key;
+		return key;
 	} // end function GetKey
 
 	virtual NullableInteger GetKeyLength() const
@@ -96,9 +101,9 @@ protected:
 	virtual void SetKey(const HashLibByteArray &value)
 	{
 		if (value.empty())
-			key->clear();
+			key.clear();
 		else
-			*key = value;
+			key = value;
 	} // end function SetKey
 
 	void UpdatePads()
@@ -106,31 +111,31 @@ protected:
 		HashLibByteArray LKey;
 		register int32_t Idx;
 
-		if (key->size() > blocksize)
+		if (key.size() > blocksize)
 		{
-			LKey = hash->ComputeBytes(*key)->GetBytes();
+			LKey = hash->ComputeBytes(key)->GetBytes();
 		} // end if
 		else
 		{
-			LKey = *key;
+			LKey = key;
 		} // end else
 
 		
-		memset(&(*ipad)[0], 0x36, blocksize * sizeof(uint8_t));
-		memset(&(*opad)[0], 0x5C, blocksize * sizeof(uint8_t));
+		memset(&ipad[0], 0x36, blocksize * sizeof(uint8_t));
+		memset(&opad[0], 0x5C, blocksize * sizeof(uint8_t));
 
 		Idx = 0;
 		while ((Idx < int32_t(LKey.size())) && (Idx < blocksize))
 		{
-			(*ipad)[Idx] = (*ipad)[Idx] ^ LKey[Idx];
-			(*opad)[Idx] = (*opad)[Idx] ^ LKey[Idx];
+			ipad[Idx] = ipad[Idx] ^ LKey[Idx];
+			opad[Idx] = opad[Idx] ^ LKey[Idx];
 			Idx++;
 		} // end while
 	} // end function UpdatePads
 
 private:
 	IHash hash;
-	shared_ptr<HashLibByteArray> opad, ipad, key;
+	HashLibByteArray opad, ipad, key;
 	int32_t blocksize;
 
 }; // end class HMACNotBuildInAdapter
