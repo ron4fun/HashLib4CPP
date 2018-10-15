@@ -58,7 +58,7 @@ public:
 		streampos size = GetStreamSize(*Out);
 		
 		res.resize(size);
-		Out->read((char *)&res[0], size);
+		if (!res.empty()) Out->read((char *)&res[0], size);
 
 		IHashResult result(new HashResult(res));
 
@@ -69,10 +69,14 @@ public:
 
 	virtual void TransformBytes(const HashLibByteArray &a_data, int32_t a_index, int32_t a_length)
 	{
-		const HashLibByteArray::const_iterator start = a_data.begin() + a_index;
-		const HashLibByteArray::const_iterator end = start + a_length;
+		if (!a_data.empty())
+		{
+			const HashLibByteArray::const_iterator start = a_data.begin() + a_index;
+			const HashLibByteArray::const_iterator end = start + a_length;
 
-		*Out << string(start, end);
+			*Out << string(start, end);
+		}
+		
 		hash_size = int32_t(GetStreamSize(*Out));
 	} // end function TransformBytes
 
