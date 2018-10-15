@@ -276,6 +276,7 @@ public:
 
 	static string ConvertBytesToHexString(const HashLibByteArray &a_in, const bool a_group)
 	{
+		if (a_in.empty()) return string("");
 		return ConvertBytesToHexString(&a_in[0], a_in.size(), a_group);
 	} // end function ConvertBytesToHexString
 
