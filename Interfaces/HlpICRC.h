@@ -18,9 +18,15 @@
 
 #include "HlpIHash.h"
 
+class IICRC;
+
+typedef shared_ptr<IICRC> ICRC;
+
 class IICRC : public virtual IIHash
 {
 public:
+	virtual ICRC CloneCRC() const = 0;
+
 	virtual HashLibStringArray GetNames() const = 0;
 	virtual int32_t GetWidth() const = 0;
 	virtual uint64_t GetPolynomial() const = 0;
@@ -32,6 +38,5 @@ public:
 	
 }; // end class ICRC
 
-typedef shared_ptr<IICRC> ICRC;
 
 #endif // !HLPICRC_H
