@@ -30,57 +30,58 @@ private:
 
 public:
 	HashResult() 
-		: hash(make_shared<HashLibByteArray>(0))
+		: hash(HashLibByteArray(0))
 	{} // end constructor
 
 	HashResult(const uint64_t a_hash)
-		: hash(make_shared<HashLibByteArray>(8))
+		: hash(HashLibByteArray(8))
 	{
-		(*hash)[0] = uint8_t(a_hash >> 56);
-		(*hash)[1] = uint8_t(a_hash >> 48);
-		(*hash)[2] = uint8_t(a_hash >> 40);
-		(*hash)[3] = uint8_t(a_hash >> 32);
-		(*hash)[4] = uint8_t(a_hash >> 24);
-		(*hash)[5] = uint8_t(a_hash >> 16);
-		(*hash)[6] = uint8_t(a_hash >> 8);
-		(*hash)[7] = uint8_t(a_hash);
+		hash[0] = uint8_t(a_hash >> 56);
+		hash[1] = uint8_t(a_hash >> 48);
+		hash[2] = uint8_t(a_hash >> 40);
+		hash[3] = uint8_t(a_hash >> 32);
+		hash[4] = uint8_t(a_hash >> 24);
+		hash[5] = uint8_t(a_hash >> 16);
+		hash[6] = uint8_t(a_hash >> 8);
+		hash[7] = uint8_t(a_hash);
 	} // end constructor
 	
 	HashResult(const HashLibByteArray &a_hash)
 	{
-		hash = make_shared<HashLibByteArray>(a_hash.size());
-		memmove(&(*hash)[0], &a_hash[0], a_hash.size() * sizeof(uint8_t));		
+		hash = HashLibByteArray(a_hash.size());
+		if (!hash.empty())
+			memmove(&hash[0], &a_hash[0], a_hash.size() * sizeof(uint8_t));		
 	} // end constructor
 	
 	HashResult(const uint32_t a_hash)
-		: hash(make_shared<HashLibByteArray>(4))
+		: hash(HashLibByteArray(4))
 	{
-		(*hash)[0] = uint8_t(a_hash >> 24);
-		(*hash)[1] = uint8_t(a_hash >> 16);
-		(*hash)[2] = uint8_t(a_hash >> 8);
-		(*hash)[3] = uint8_t(a_hash);
+		hash[0] = uint8_t(a_hash >> 24);
+		hash[1] = uint8_t(a_hash >> 16);
+		hash[2] = uint8_t(a_hash >> 8);
+		hash[3] = uint8_t(a_hash);
 	} // end constructor
 
 	HashResult(const uint8_t a_hash)
-		: hash(make_shared<HashLibByteArray>(1))
+		: hash(HashLibByteArray(1))
 	{
-		(*hash)[0] = a_hash;
+		hash[0] = a_hash;
 	} // end constructor
 	
 	HashResult(const uint16_t a_hash)
-		: hash(make_shared<HashLibByteArray>(2))
+		: hash(HashLibByteArray(2))
 	{
-		(*hash)[0] = uint8_t(a_hash >> 8);
-		(*hash)[1] = uint8_t(a_hash);
+		hash[0] = uint8_t(a_hash >> 8);
+		hash[1] = uint8_t(a_hash);
 	} // end constructor
 	
 	HashResult(const int32_t a_hash)
-		: hash(make_shared<HashLibByteArray>(4))
+		: hash(HashLibByteArray(4))
 	{
-		(*hash)[0] = uint8_t(Bits::Asr32(a_hash, 24));
-		(*hash)[1] = uint8_t(Bits::Asr32(a_hash, 16));
-		(*hash)[2] = uint8_t(Bits::Asr32(a_hash, 8));
-		(*hash)[3] = uint8_t(a_hash);
+		hash[0] = uint8_t(Bits::Asr32(a_hash, 24));
+		hash[1] = uint8_t(Bits::Asr32(a_hash, 16));
+		hash[2] = uint8_t(Bits::Asr32(a_hash, 8));
+		hash[3] = uint8_t(a_hash);
 	} // end constructor
 
 	~HashResult()
@@ -98,30 +99,30 @@ public:
 	
 	virtual bool CompareTo(const IHashResult &a_hashResult) const
 	{
-		return HashResult::SlowEquals(a_hashResult->GetBytes(), *hash);
+		return HashResult::SlowEquals(a_hashResult->GetBytes(), hash);
 	} // end function CompareTo
 
 	bool operator==(const HashResult &a_hashResult) const
 	{
-		return HashResult::SlowEquals(a_hashResult.GetBytes(), *hash);
+		return HashResult::SlowEquals(a_hashResult.GetBytes(), hash);
 	} // end function operator==
 
 	virtual HashLibByteArray GetBytes() const
 	{
-		return *hash;
+		return hash;
 	} // end function GetBytesAsVector
 
 	virtual inline int32_t GetHashCode() const
 	{
-		shared_ptr<uint8_t> TempHolder = shared_ptr<uint8_t>(new uint8_t[hash->size()], default_delete<uint8_t[]>());
+		shared_ptr<uint8_t> TempHolder = shared_ptr<uint8_t>(new uint8_t[hash.size()], default_delete<uint8_t[]>());
 		
-		Converters::toUpper(TempHolder.get(), hash->size());
+		Converters::toUpper(TempHolder.get(), hash.size());
 		
 		//transform(TempHolder->begin(), TempHolder->end(), TempHolder->begin(), ::toupper);
 
 		int32_t LResult = 0;
 		int32_t I = 0;
-		int32_t Top = hash->size();
+		int32_t Top = hash.size();
 
 		while (I < Top)
 		{
@@ -135,55 +136,55 @@ public:
 
 	virtual inline int32_t GetInt32() const
 	{
-		if (hash->size() != 4)
+		if (hash.size() != 4)
 		{
 			throw InvalidOperationHashLibException(HashResult::ImpossibleRepresentationInt32);
 		} // end if
 		
-		return (int32_t((*hash)[0]) << 24) | (int32_t((*hash)[1]) << 16) | 
-			(int32_t((*hash)[2]) << 8) | int32_t((*hash)[3]);
+		return (int32_t(hash[0]) << 24) | (int32_t(hash[1]) << 16) | 
+			(int32_t(hash[2]) << 8) | int32_t(hash[3]);
 	} // end function GetInt32
 		
 	virtual inline uint8_t GetUInt8() const
 	{
-		if (hash->size() != 1)
+		if (hash.size() != 1)
 		{
 			throw InvalidOperationHashLibException(HashResult::ImpossibleRepresentationUInt8);
 		} // end if
 		
-		return (*hash)[0];
+		return hash[0];
 	} // end function GetUInt8
 			
 	virtual inline  uint16_t GetUInt16() const
 	{
-		if (hash->size() != 2)
+		if (hash.size() != 2)
 		{
 			throw InvalidOperationHashLibException(HashResult::ImpossibleRepresentationUInt16);
 		} // end if
 		 
-		return (uint16_t((*hash)[0]) << 8) | uint16_t((*hash)[1]);
+		return (uint16_t(hash[0]) << 8) | uint16_t(hash[1]);
 	} // end function GetUInt16
 				
 	virtual inline uint32_t GetUInt32() const
 	{
-		if (hash->size() != 4)
+		if (hash.size() != 4)
 		{
 			throw InvalidOperationHashLibException(HashResult::ImpossibleRepresentationUInt32);
 		} // end if
 		
-		return (uint32_t((*hash)[0]) << 24) | (uint32_t((*hash)[1]) << 16) |
-			(uint32_t((*hash)[2]) << 8) | uint32_t((*hash)[3]);
+		return (uint32_t(hash[0]) << 24) | (uint32_t(hash[1]) << 16) |
+			(uint32_t(hash[2]) << 8) | uint32_t(hash[3]);
 	} // end function GetUInt32
 					
 	virtual inline uint64_t GetUInt64() const
 	{
-		if (hash->size() != 8)
+		if (hash.size() != 8)
 		{
 			throw InvalidOperationHashLibException(HashResult::ImpossibleRepresentationUInt64);
 		} // end if
 		
-		return (uint64_t((*hash)[0]) << 56) | (uint64_t((*hash)[1]) << 48) | (uint64_t((*hash)[2]) << 40) | (uint64_t((*hash)[3]) << 32) |
-			(uint64_t((*hash)[4]) << 24) | (uint64_t((*hash)[5]) << 16) | (uint64_t((*hash)[6]) << 8) | uint64_t((*hash)[7]);
+		return (uint64_t(hash[0]) << 56) | (uint64_t(hash[1]) << 48) | (uint64_t(hash[2]) << 40) | (uint64_t(hash[3]) << 32) |
+			(uint64_t(hash[4]) << 24) | (uint64_t(hash[5]) << 16) | (uint64_t(hash[6]) << 8) | uint64_t(hash[7]);
 	} // end function GetUInt64
 						
 	static inline bool SlowEquals(const HashLibByteArray &a_ar1, const HashLibByteArray &a_ar2)
@@ -202,12 +203,12 @@ public:
 							
 	virtual inline string ToString(const bool a_group = false) const
 	{
-		return Converters::ConvertBytesToHexString(&(*hash)[0], hash->size(), a_group);
+		return Converters::ConvertBytesToHexString(hash, a_group);
 	} // end function ToString
 			
 
 private:
-	shared_ptr<HashLibByteArray> hash;
+	HashLibByteArray hash;
 
 }; // end class HashResult
 
