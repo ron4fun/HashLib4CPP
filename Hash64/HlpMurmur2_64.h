@@ -32,16 +32,17 @@ public:
 		key = CKEY;
 	} // end constructor
 
+	virtual IHashWithKey CloneHashWithKey() const
+	{
+		IHashWithKey hash = make_shared<Murmur2_64>(Copy());
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual IHash Clone() const
 	{
-		Murmur2_64 HashInstance;
-
-		HashInstance = Murmur2_64();
-		HashInstance.key = key;
-		HashInstance.working_key = working_key;
-		HashInstance._list = _list;
-
-		IHash hash = make_shared<Murmur2_64>(HashInstance);
+		IHash hash = make_shared<Murmur2_64>(Copy());
 		hash->SetBufferSize(GetBufferSize());
 
 		return hash;
@@ -170,6 +171,18 @@ protected:
 	} // end function ComputeAggregatedBytes
 
 private:
+	Murmur2_64 Copy() const
+	{
+		Murmur2_64 HashInstance;
+
+		HashInstance = Murmur2_64();
+		HashInstance.key = key;
+		HashInstance.working_key = working_key;
+		HashInstance._list = _list;
+
+		return HashInstance;
+	}
+
 	virtual inline NullableInteger GetKeyLength() const
 	{
 		return 4;

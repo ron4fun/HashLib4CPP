@@ -34,21 +34,17 @@ public:
 		buf.resize(16); 
 	} // end constructor
 
+	virtual IHashWithKey CloneHashWithKey() const
+	{
+		IHashWithKey hash = make_shared<MurmurHash3_x86_128>(Copy());
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual IHash Clone() const
 	{
-		MurmurHash3_x86_128 HashInstance;
-
-		HashInstance = MurmurHash3_x86_128();
-		HashInstance.key = key;
-		HashInstance.h1 = h1;
-		HashInstance.h2 = h2;
-		HashInstance.h3 = h3;
-		HashInstance.h4 = h4;
-		HashInstance.total_length = total_length;
-		HashInstance.idx = idx;
-		HashInstance.buf = buf;
-
-		IHash hash = make_shared<MurmurHash3_x86_128>(HashInstance);
+		IHash hash = make_shared<MurmurHash3_x86_128>(Copy());
 		hash->SetBufferSize(GetBufferSize());
 
 		return hash;
@@ -177,6 +173,23 @@ public:
 	} // end function TransformBytes
 
 private:
+	MurmurHash3_x86_128 Copy() const
+	{
+		MurmurHash3_x86_128 HashInstance;
+
+		HashInstance = MurmurHash3_x86_128();
+		HashInstance.key = key;
+		HashInstance.h1 = h1;
+		HashInstance.h2 = h2;
+		HashInstance.h3 = h3;
+		HashInstance.h4 = h4;
+		HashInstance.total_length = total_length;
+		HashInstance.idx = idx;
+		HashInstance.buf = buf;
+
+		return HashInstance;
+	}
+
 	void ByteUpdate(const uint8_t a_b)
 	{
 		buf[idx] = a_b;

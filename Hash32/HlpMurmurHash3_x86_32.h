@@ -30,21 +30,20 @@ public:
 		name = __func__;
 
 		key = CKEY;
-		buf = make_shared<HashLibByteArray>(4);
+		buf.resize(4);
 	} // end constructor
+
+	virtual IHashWithKey CloneHashWithKey() const
+	{
+		IHashWithKey hash = make_shared<MurmurHash3_x86_32>(Copy());
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
 
 	virtual IHash Clone() const
 	{
-		MurmurHash3_x86_32 HashInstance;
-
-		HashInstance = MurmurHash3_x86_32();
-		HashInstance.key = key;
-		HashInstance.h = h;
-		HashInstance.total_length = total_length;
-		HashInstance.idx = idx;
-		*(HashInstance.buf) = *buf;
-
-		IHash hash = make_shared<MurmurHash3_x86_32>(HashInstance);
+		IHash hash = make_shared<MurmurHash3_x86_32>(Copy());
 		hash->SetBufferSize(GetBufferSize());
 
 		return hash;
@@ -86,14 +85,14 @@ public:
 			
             while (idx < 4 && len)
             {
-                (*buf)[idx++] = *(ptr_a_data + a_index);
+                buf[idx++] = *(ptr_a_data + a_index);
                 a_index++;
                 len--;
             }
             
             if (idx == 4)
             {
-                uint8_t *ptr_Fm_buf = &(*buf)[0];
+                uint8_t *ptr_Fm_buf = &buf[0];
 			    k = Converters::ReadBytesAsUInt32LE(ptr_Fm_buf, 0);
 			    TransformUInt32Fast(k);
                 idx = 0;
@@ -133,6 +132,21 @@ public:
 	} // end function TransformFinal
 
 private:
+
+	MurmurHash3_x86_32 Copy() const
+	{
+		MurmurHash3_x86_32 HashInstance;
+
+		HashInstance = MurmurHash3_x86_32();
+		HashInstance.key = key;
+		HashInstance.h = h;
+		HashInstance.total_length = total_length;
+		HashInstance.idx = idx;
+		HashInstance.buf = buf;
+
+		return HashInstance;
+	}
+
 	inline void TransformUInt32Fast(const uint32_t a_data)
 	{
 		register uint32_t k = a_data;
@@ -151,11 +165,11 @@ private:
 		register uint32_t k = 0;
 		uint8_t *ptr_Fm_buf = 0;
 		
-		(*buf)[idx] = a_b;
+		buf[idx] = a_b;
 		idx++;
 		if (idx >= 4)
 		{
-			ptr_Fm_buf = &(*buf)[0];
+			ptr_Fm_buf = &buf[0];
 			k = Converters::ReadBytesAsUInt32LE(ptr_Fm_buf, 0);
 			TransformUInt32Fast(k);
 			idx = 0;
@@ -172,9 +186,9 @@ private:
 			 switch (idx)
 			 {
 			 case 3:
-				 k = k ^ ((*buf)[2] << 16);
-				 k = k ^ ((*buf)[1] << 8);
-				 k = k ^ (*buf)[0];
+				 k = k ^ (buf[2] << 16);
+				 k = k ^ (buf[1] << 8);
+				 k = k ^ buf[0];
 				 k = k * C1;
 				 k = Bits::RotateLeft32(k, 15);
 				 k = k * C2;
@@ -182,8 +196,8 @@ private:
 				 break;
 
 			 case 2:
-				 k = k ^ ((*buf)[1] << 8);
-				 k = k ^ (*buf)[0];
+				 k = k ^ (buf[1] << 8);
+				 k = k ^ buf[0];
 				 k = k * C1;
 				 k = Bits::RotateLeft32(k, 15);
 				 k = k * C2;
@@ -191,7 +205,7 @@ private:
 				 break;
 
 			 case 1:
-				 k = k ^ (*buf)[0];
+				 k = k ^ buf[0];
 				 k = k * C1;
 				 k = Bits::RotateLeft32(k, 15);
 				 k = k * C2;
@@ -233,7 +247,7 @@ private:
 private:
 	uint32_t key, h, total_length;
 	int32_t idx;
-	shared_ptr<HashLibByteArray> buf;
+	HashLibByteArray buf;
 
 	static const uint32_t CKEY = uint32_t(0x0);
 

@@ -296,7 +296,24 @@ public:
 		: SipHash(2, 4)
 	{} // end constructor
 
+	virtual IHashWithKey CloneHashWithKey() const
+	{
+		IHashWithKey hash = make_shared<SipHash2_4>(Copy());
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual IHash Clone() const
+	{
+		IHash hash = make_shared<SipHash2_4>(Copy());
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
+private:
+	SipHash2_4 Copy() const
 	{
 		SipHash2_4 HashInstance;
 
@@ -313,10 +330,7 @@ public:
 		HashInstance.idx = idx;
 		HashInstance.buf = buf;
 
-		IHash hash = make_shared<SipHash2_4>(HashInstance);
-		hash->SetBufferSize(GetBufferSize());
-
-		return hash;
+		return HashInstance;
 	}
 
 }; // end class SipHash2_4

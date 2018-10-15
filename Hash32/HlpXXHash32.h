@@ -34,22 +34,17 @@ public:
 		memory = make_shared<HashLibByteArray>(16);
 	} // end constructor
 
+	virtual IHashWithKey CloneHashWithKey() const
+	{
+		IHashWithKey hash = make_shared<XXHash32>(Copy());
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual IHash Clone() const
 	{
-		XXHash32 HashInstance;
-
-		HashInstance = XXHash32();
-		HashInstance.key = key;
-		HashInstance.hash = hash;
-		HashInstance.total_len = total_len;
-		HashInstance.memsize = memsize;
-		HashInstance.v1 = v1;
-		HashInstance.v2 = v2;
-		HashInstance.v3 = v3;
-		HashInstance.v4 = v4;
-		HashInstance.memory = memory;
-
-		IHash hash = make_shared<XXHash32>(HashInstance);
+		IHash hash = make_shared<XXHash32>(Copy());
 		hash->SetBufferSize(GetBufferSize());
 
 		return hash;
@@ -178,6 +173,24 @@ public:
 	} // end function TransformFinal
 
 private:
+	XXHash32 Copy() const
+	{
+		XXHash32 HashInstance;
+
+		HashInstance = XXHash32();
+		HashInstance.key = key;
+		HashInstance.hash = hash;
+		HashInstance.total_len = total_len;
+		HashInstance.memsize = memsize;
+		HashInstance.v1 = v1;
+		HashInstance.v2 = v2;
+		HashInstance.v3 = v3;
+		HashInstance.v4 = v4;
+		HashInstance.memory = memory;
+
+		return HashInstance;
+	}
+
 	virtual inline NullableInteger GetKeyLength() const
 	{
 		return 4;

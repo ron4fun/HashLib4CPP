@@ -31,18 +31,17 @@ public:
 		key = CKEY;
 	} // end constructor
 	
+	virtual IHashWithKey CloneHashWithKey() const
+	{
+		IHashWithKey hash = make_shared<Murmur2>(Copy());
+		hash->SetBufferSize(GetBufferSize());
+
+		return hash;
+	}
+
 	virtual IHash Clone() const
 	{
-		Murmur2 HashInstance;
-
-		HashInstance = Murmur2();
-		HashInstance.key = key;
-		HashInstance.working_key = working_key;
-		HashInstance.working_key = working_key;
-		HashInstance.h = h;
-		HashInstance._list = _list;
-
-		IHash hash = make_shared<Murmur2>(HashInstance);
+		IHash hash = make_shared<Murmur2>(Copy());
 		hash->SetBufferSize(GetBufferSize());
 
 		return hash;
@@ -61,6 +60,20 @@ protected:
 	} // end function ComputeAggregatedBytes
 
 private:
+	Murmur2 Copy() const
+	{
+		Murmur2 HashInstance;
+
+		HashInstance = Murmur2();
+		HashInstance.key = key;
+		HashInstance.working_key = working_key;
+		HashInstance.working_key = working_key;
+		HashInstance.h = h;
+		HashInstance._list = _list;
+
+		return HashInstance;
+	}
+
 	int32_t InternalComputeBytes(const HashLibByteArray &a_data)
 	{
 		register int32_t Length, current_index;
