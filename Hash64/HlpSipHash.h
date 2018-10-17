@@ -54,7 +54,7 @@ public:
 	virtual void TransformBytes(const HashLibByteArray &a_data, int32_t a_index, int32_t a_length)
 	{
 		register int32_t i, Length, iter, offset;
-		const uint8_t *ptr_a_data = &a_data[a_index];
+		const uint8_t *ptr_a_data = &a_data[0];
 
 
 		Length = a_length;
@@ -86,6 +86,10 @@ public:
 				ProcessBlock(m);
 				idx = 0;
 			}
+		}
+		else
+		{
+			i = 0;
 		}
 
 		iter = Length >> 3;

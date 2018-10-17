@@ -68,7 +68,7 @@ public:
 		total_length += len;
         
         //consume last pending bytes
-        if (idx && a_length)
+        if (idx != 0 && a_length != 0)
         {
             /*                       buf    data
                  idx = 1, len = 3 -> [0, 1[ + [0, 3[ => Block = [], buf []
@@ -83,7 +83,7 @@ public:
             */
             //assert(a_index == 0); //nothing would work anyways if a_index is !=0
 			
-            while (idx < 4 && len)
+            while (idx < 4 && len != 0)
             {
                 buf[idx++] = *(ptr_a_data + a_index);
                 a_index++;
@@ -97,7 +97,11 @@ public:
 			    TransformUInt32Fast(k);
                 idx = 0;
             }
-        }
+        } 
+		else
+		{
+			i = 0;
+		}
 
         nBlocks = (len) >> 2;
         offset = 0;
