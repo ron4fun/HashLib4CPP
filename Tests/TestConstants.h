@@ -193,7 +193,7 @@ void HMACCloneIsCorrect(const IHash hash)
 	IHash hash2 = hash;
 	IHMAC Original, Copy;
 
-	Original = HashFactory::HMAC::CreateHMAC(hash2);
+	Original = HashLib4CPP::HMAC::CreateHMAC(hash2);
 	Original->SetKey(Converters::ConvertStringToBytes(HMACLongStringKey));
 	Original->Initialize();
 	Original->TransformBytes(ChunkOne);

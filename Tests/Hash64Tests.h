@@ -233,6 +233,63 @@ BOOST_AUTO_TEST_CASE(TestOnetoNine)
 	BOOST_CHECK(ExpectedHashOfOnetoNine == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
+{
+	register size_t Count, i;
+	HashLibByteArray temp, ChunkedDataBytes;
+
+	ChunkedDataBytes = Converters::ConvertStringToBytes(ChunkedData);
+	for (i = 0; i < ChunkedDataBytes.size(); i++)
+	{
+		Count = ChunkedDataBytes.size() - i;
+
+		const HashLibByteArray::const_iterator start = ChunkedDataBytes.begin() + i;
+		const HashLibByteArray::const_iterator end = ChunkedDataBytes.end();
+
+		temp = HashLibByteArray(start, end);
+		murmur2->Initialize();
+
+		murmur2->TransformBytes(ChunkedDataBytes, i, Count);
+
+		string ActualString = murmur2->TransformFinal()->ToString();
+		string ExpectedString = HashLib4CPP::Hash64::CreateMurmur2()
+			->ComputeBytes(temp)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
+{
+	register size_t x, size, i;
+	string temp;
+
+	for (x = 0; x < (sizeof(chunkSize) / sizeof(int32_t)); x++)
+	{
+		size = chunkSize[x];
+		murmur2->Initialize();
+		i = size;
+		while (i < ChunkedData.size())
+		{
+			temp = ChunkedData.substr((i - size), size);
+			murmur2->TransformString(temp);
+
+			i += size;
+		}
+
+		temp = ChunkedData.substr((i - size), ChunkedData.size() - ((i - size)));
+		murmur2->TransformString(temp);
+
+		string ActualString = murmur2->TransformFinal()->ToString();
+		string ExpectedString = HashLib4CPP::Hash64::CreateMurmur2()
+			->ComputeString(ChunkedData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
 BOOST_AUTO_TEST_CASE(TestWithDifferentKey)
 {
 	IHashWithKey HashWithKey = HashLib4CPP::Hash64::CreateMurmur2();
@@ -389,6 +446,33 @@ BOOST_AUTO_TEST_CASE(TestAnotherChunkedDataIncrementalHash)
 		string ActualString = siphash2_4->TransformFinal()->ToString();
 		string ExpectedString = HashLib4CPP::Hash64::CreateSipHash2_4()
 			->ComputeString(ChunkedData)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
+BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
+{
+	register size_t Count, i;
+	HashLibByteArray temp, ChunkedDataBytes;
+
+	ChunkedDataBytes = Converters::ConvertStringToBytes(ChunkedData);
+	for (i = 0; i < ChunkedDataBytes.size(); i++)
+	{
+		Count = ChunkedDataBytes.size() - i;
+
+		const HashLibByteArray::const_iterator start = ChunkedDataBytes.begin() + i;
+		const HashLibByteArray::const_iterator end = ChunkedDataBytes.end();
+
+		temp = HashLibByteArray(start, end);
+		siphash2_4->Initialize();
+
+		siphash2_4->TransformBytes(ChunkedDataBytes, i, Count);
+
+		string ActualString = siphash2_4->TransformFinal()->ToString();
+		string ExpectedString = HashLib4CPP::Hash64::CreateSipHash2_4()
+			->ComputeBytes(temp)->ToString();
 
 		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
 	}

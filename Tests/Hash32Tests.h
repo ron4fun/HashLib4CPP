@@ -1294,6 +1294,33 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
 }
 
+BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
+{
+	register size_t Count, i;
+	HashLibByteArray temp, ChunkedDataBytes;
+
+	ChunkedDataBytes = Converters::ConvertStringToBytes(ChunkedData);
+	for (i = 0; i < ChunkedDataBytes.size(); i++)
+	{
+		Count = ChunkedDataBytes.size() - i;
+
+		const HashLibByteArray::const_iterator start = ChunkedDataBytes.begin() + i;
+		const HashLibByteArray::const_iterator end = ChunkedDataBytes.end();
+
+		temp = HashLibByteArray(start, end);
+		murmur2->Initialize();
+
+		murmur2->TransformBytes(ChunkedDataBytes, i, Count);
+
+		string ActualString = murmur2->TransformFinal()->ToString();
+		string ExpectedString = HashLib4CPP::Hash32::CreateMurmur2()
+			->ComputeBytes(temp)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
+}
+
 BOOST_AUTO_TEST_CASE(TestOnetoNine)
 {
 	string ActualString = murmur2->ComputeString(OnetoNine)->ToString();
@@ -1422,6 +1449,33 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
         string ActualString = hash->TransformFinal()->ToString();
 	    BOOST_CHECK(MurMur3ExpectedResult == ActualString);
     }
+}
+
+BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
+{
+	register size_t Count, i;
+	HashLibByteArray temp, ChunkedDataBytes;
+
+	ChunkedDataBytes = Converters::ConvertStringToBytes(ChunkedData);
+	for (i = 0; i < ChunkedDataBytes.size(); i++)
+	{
+		Count = ChunkedDataBytes.size() - i;
+
+		const HashLibByteArray::const_iterator start = ChunkedDataBytes.begin() + i;
+		const HashLibByteArray::const_iterator end = ChunkedDataBytes.end();
+
+		temp = HashLibByteArray(start, end);
+		murmurhash3_x86_32->Initialize();
+
+		murmurhash3_x86_32->TransformBytes(ChunkedDataBytes, i, Count);
+
+		string ActualString = murmurhash3_x86_32->TransformFinal()->ToString();
+		string ExpectedString = HashLib4CPP::Hash32::CreateMurmurHash3_x86_32()
+			->ComputeBytes(temp)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
 }
 
 BOOST_AUTO_TEST_CASE(TestRandomString)
@@ -2330,6 +2384,33 @@ BOOST_AUTO_TEST_CASE(TestIncrementalHash)
 	string ActualString = hash->TransformFinal()->ToString();
 
 	BOOST_CHECK(ExpectedHashOfDefaultData == ActualString);
+}
+
+BOOST_AUTO_TEST_CASE(TestIndexChunkedDataIncrementalHash)
+{
+	register size_t Count, i;
+	HashLibByteArray temp, ChunkedDataBytes;
+
+	ChunkedDataBytes = Converters::ConvertStringToBytes(ChunkedData);
+	for (i = 0; i < ChunkedDataBytes.size(); i++)
+	{
+		Count = ChunkedDataBytes.size() - i;
+
+		const HashLibByteArray::const_iterator start = ChunkedDataBytes.begin() + i;
+		const HashLibByteArray::const_iterator end = ChunkedDataBytes.end();
+
+		temp = HashLibByteArray(start, end);
+		xxhash32->Initialize();
+
+		xxhash32->TransformBytes(ChunkedDataBytes, i, Count);
+
+		string ActualString = xxhash32->TransformFinal()->ToString();
+		string ExpectedString = HashLib4CPP::Hash32::CreateXXHash32()
+			->ComputeBytes(temp)->ToString();
+
+		BOOST_CHECK(ExpectedString == ActualString, Utils::string_format("Expected %s but got %s.", ExpectedString, ActualString));
+	}
+
 }
 
 BOOST_AUTO_TEST_CASE(TestRandomString)
