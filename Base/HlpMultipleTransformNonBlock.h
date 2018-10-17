@@ -37,7 +37,10 @@ public:
 
 	virtual void TransformBytes(const HashLibByteArray &a_data, int32_t a_index, int32_t a_length)
 	{
-		_list.push_back(a_data);
+		const HashLibByteArray::const_iterator start = a_data.begin() + a_index;
+		const HashLibByteArray::const_iterator end = start + a_length;
+
+		_list.push_back(HashLibByteArray(start, end));
 	} // end function TransformBytes
 
 	virtual IHashResult TransformFinal()
