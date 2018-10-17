@@ -16,7 +16,7 @@
 #ifndef HLPIBLAKE2SCONFIG_H
 #define HLPIBLAKE2SCONFIG_H
 
-#include "../Utils/HlpHashLibTypes.h"
+#include "../../Utils/HlpHashLibTypes.h"
 
 class IIBlake2SConfig
 {

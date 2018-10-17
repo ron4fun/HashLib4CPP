@@ -16,7 +16,7 @@
 #ifndef HLPIBLAKE2BTREECONFIG_H
 #define HLPIBLAKE2BTREECONFIG_H
 
-#include "../Utils/HlpHashLibTypes.h"
+#include "../../Utils/HlpHashLibTypes.h"
 
 class IIBlake2BTreeConfig
 {

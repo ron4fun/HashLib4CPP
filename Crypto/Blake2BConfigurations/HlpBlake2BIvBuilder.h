@@ -16,12 +16,12 @@
 #ifndef HLPBLAKE2BLVBUILDER_H
 #define HLPBLAKE2BLVBUILDER_H
 
-#include "../Interfaces/IBlake2BConfigurations/HlpIBlake2BConfig.h"
-#include "Blake2BConfigurations\HlpBlake2BTreeConfig.h"
-#include "../Base/HlpHashSize.h"
-#include "../Base/HlpConverters.h"
-#include "../Utils/HlpHashLibTypes.h"
-#include "../Utils/HlpUtils.h"
+#include "../../Interfaces/IBlake2BConfigurations/HlpIBlake2BConfig.h"
+#include "HlpBlake2BTreeConfig.h"
+#include "../../Base/HlpHashSize.h"
+#include "../../Base/HlpConverters.h"
+#include "../../Utils/HlpHashLibTypes.h"
+#include "../../Utils/HlpUtils.h"
 
 
 class Blake2BIvBuilder

@@ -16,10 +16,10 @@
 #ifndef HLPBLAKE2BTREECONFIG_H
 #define HLPBLAKE2BTREECONFIG_H
 
-#include "../Interfaces/IBlake2BConfigurations/HlpIBlake2BTreeConfig.h"
-#include "../Base/HlpHashSize.h"
-#include "../Utils/HlpHashLibTypes.h"
-#include "../Utils/HlpUtils.h"
+#include "../../Interfaces/IBlake2BConfigurations/HlpIBlake2BTreeConfig.h"
+#include "../../Base/HlpHashSize.h"
+#include "../../Utils/HlpHashLibTypes.h"
+#include "../../Utils/HlpUtils.h"
 
 class Blake2BTreeConfig : public virtual IIBlake2BTreeConfig
 {

@@ -16,10 +16,10 @@
 #ifndef HLPBLAKE2SCONFIG_H
 #define HLPBLAKE2SCONFIG_H
 
-#include "../Interfaces/IBlake2SConfigurations/HlpIBlake2SConfig.h"
-#include "../Base/HlpHashSize.h"
-#include "../Utils/HlpHashLibTypes.h"
-#include "../Utils/HlpUtils.h"
+#include "../../Interfaces/IBlake2SConfigurations/HlpIBlake2SConfig.h"
+#include "../../Base/HlpHashSize.h"
+#include "../../Utils/HlpHashLibTypes.h"
+#include "../../Utils/HlpUtils.h"
 
 
 class Blake2SConfig : public virtual IIBlake2SConfig
