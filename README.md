@@ -32,28 +32,34 @@ It also supports **Incremental Hashing**, **Cloning** and **NullDigest**.
     
 **Usage Examples.**
 
-    #include "HashLib4CPP.h"
+```c++
+#include "HashLib4CPP.h"
 
-    int main()
-    {
-        IHash hash = HashLib4CPP::Crypto::CreateMD5();
-			
-        IHash clone = hash->Clone();
-
-        IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(hash);
-        hmac->SetKey(Converters::ConvertStringToBytes("password"));
-
-        IHashResult Result1 = hash->ComputeString("Hash");
-        IHashResult Result2 = hmac->ComputeString("Hash");
+int main()
+{
+    IHash hash = HashLib4CPP::Crypto::CreateMD5();
 		
-        bool check = Result1->CompareTo(Result2);
-        
-        return 0;
-    }
+    IHash clone = hash->Clone();
+
+    IHMAC hmac = HashLib4CPP::HMAC::CreateHMAC(hash);
+    hmac->SetKey(Converters::ConvertStringToBytes("password"));
+
+    IHashResult Result1 = hash->ComputeString("Hash");
+    IHashResult Result2 = hmac->ComputeString("Hash");
+	
+    bool check = Result1->CompareTo(Result2);
+    
+    return 0;
+}
+```
 
  **Unit Tests:**
-To run the unit tests, you should have [boost library](http://www.boost.org/) installed in your workstation.
-For VisualStudio, set environment variable BOOST_ROOT to your boost root folder (where the bjam binary is)
+	
+	To run the unit tests, you should have [boost library](http://www.boost.org/) 
+	installed in your workstation.
+	
+	For VisualStudio, set environment variable BOOST_ROOT to your boost root folder 
+	(where the binary is).
 
 ###License
 
