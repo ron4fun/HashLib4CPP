@@ -1,3 +1,8 @@
+# DEPRECATED 
+⛔️ This library is no longer supported, please consider using the upgraded version [HashLibPlus](https://github.com/ron4fun/HashLibPlus) instead.
+
+
+
 # HashLib4CPP [![License](http://img.shields.io/badge/license-MIT-green.svg)](https://github.com/ron4fun/HashLib4CPP/blob/master/LICENSE)
 HashLib4CPP is a C++11 library that provides an easy to use interface for computing hashes and checksums of strings, files, streams, bytearrays and untyped data to mention but a few.
 It also supports **Incremental Hashing**, **Cloning** and **NullDigest**.
