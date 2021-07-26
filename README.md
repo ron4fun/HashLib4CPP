@@ -1,5 +1,5 @@
 # DEPRECATED 
-⛔️ This library is no longer supported, please consider using the upgraded version [HashLibPlus](https://github.com/ron4fun/HashLibPlus) instead.
+⛔️ This library is no longer maintained, please consider using the upgraded version [HashLibPlus](https://github.com/ron4fun/HashLibPlus) instead.
 
 
 
